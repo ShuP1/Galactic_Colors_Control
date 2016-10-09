@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\ClearCommand.cs" />
+    <Compile Include="Commands\PingCommand.cs" />
     <Compile Include="Commands\CloseCommand.cs" />
     <Compile Include="Commands\ConnectCommand.cs" />
     <Compile Include="Commands\CountCommand.cs" />
@@ -77,6 +78,7 @@
     <None Include="App.config" />
     <None Include="ConfigSchema.xsd">
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>

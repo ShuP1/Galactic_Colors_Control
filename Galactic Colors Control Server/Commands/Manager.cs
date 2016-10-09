@@ -45,12 +45,12 @@ namespace Galactic_Colors_Control_Server.Commands
                 }
                 else
                 {
-                    Utilities.Return("Unknown command", soc, server);
+                    Utilities.Return("Unknown command : " + args[0], soc, server);
                 }
             }
             else
             {
-                Utilities.Return("Unknown command", soc, server);
+                Utilities.Return("Unknown command : " + args[0], soc, server);
             }
         }
 
@@ -64,7 +64,7 @@ namespace Galactic_Colors_Control_Server.Commands
             {
                 if (command.IsClient)
                 {
-                    if(Utilities.IsConnect(soc))
+                    if(!Utilities.IsConnect(soc))
                     {
                         return command.IsNoConnect;
                     }

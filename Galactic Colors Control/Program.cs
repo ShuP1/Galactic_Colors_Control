@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -149,11 +150,36 @@ namespace Galactic_Colors_Control_Client
         private static void SendRequest()
         {
             string request = Console.ReadLine();
-            Send(request, dataType.message);
-
-            if (request.ToLower() == "/exit")
+            switch (request.ToLower())
             {
-                Exit();
+                case "/exit":
+                    Exit();
+                    break;
+
+                case "/ping":
+                    Ping();
+                    break;
+
+                default:
+                    Send(request, dataType.message);
+                    break;
+            }
+        }
+
+        private static void Ping()
+        {
+            Ping p = new Ping();
+            PingReply r;
+
+            r = p.Send(IP);
+
+            if (r.Status == IPStatus.Success)
+            {
+                Console.WriteLine(r.RoundtripTime.ToString() + " ms.");
+            }
+            else
+            {
+                Console.WriteLine("Time out");
             }
         }
 
