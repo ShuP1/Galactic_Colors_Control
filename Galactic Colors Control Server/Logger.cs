@@ -29,6 +29,9 @@ namespace Galactic_Colors_Control_Server
             }
         }
 
+        /// <summary>
+        /// Create log file and start logger thread
+        /// </summary>
         public static void Initialise()
         {
             if (!Directory.Exists(Program.config.logPath)) {
@@ -37,6 +40,7 @@ namespace Galactic_Colors_Control_Server
             }
             else
             {
+                //Sort old logs
                 string[] files = Directory.GetFiles(Program.config.logPath);
                 foreach(string file in files)
                 {
@@ -72,23 +76,36 @@ namespace Galactic_Colors_Control_Server
             Updater.Start();
         }
 
+        /// <summary>
+        /// Add log to log pile
+        /// </summary>
+        /// <param name="text">Log text</param>
+        /// <param name="type">Log status</param>
         public static void Write(string text, logType type)
         {
             Write(new Log(text, type));
         }
 
+        /// <summary>
+        /// Add log to log pile
+        /// </summary>
+        /// <param name="log">Log struct</param>
         public static void Write(Log log)
         {
             if (log.type != logType.debug || Program.config.logLevel == logType.debug)
             {
                 if(Program._debug)
                 {
+                    //Add Source Method
                     log.text = "[" + new StackTrace().GetFrame(2).GetMethod().Name + "]: " + log.text;
                 }
                 toWriteLogs.Add(log);
             }
         }
 
+        /// <summary>
+        /// Write log pile to logfile and console
+        /// </summary>
         public static void UpdaterLoop()
         {
             while (_run || toWriteLogs.Count > 0)

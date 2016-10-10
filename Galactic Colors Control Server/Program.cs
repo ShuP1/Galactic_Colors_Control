@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -45,6 +44,9 @@ namespace Galactic_Colors_Control_Server
 			CloseAllSockets();
 		}
 
+		/// <summary>
+		/// Initialise server and start threads.
+		/// </summary>
 		private static void SetupServer()
 		{
 			config = config.Load();
@@ -58,6 +60,9 @@ namespace Galactic_Colors_Control_Server
 			Logger.Write("Server setup complete", Logger.logType.info);
 		}
 
+		/// <summary>
+		/// Wait console commands and execute them.
+		/// </summary>
 		private static void ConsoleLoop()
 		{
 			while (_run)
@@ -70,8 +75,7 @@ namespace Galactic_Colors_Control_Server
 		}
 
 		/// <summary>
-		/// Close all connected client (we do not need to shutdown the server socket as its connections
-		/// are already closed with the clients).
+		/// Close all connected client.
 		/// </summary>
 		private static void CloseAllSockets()
 		{
@@ -81,7 +85,6 @@ namespace Galactic_Colors_Control_Server
 			{
 				socket.Shutdown(SocketShutdown.Both);
 				Logger.Write("Shutdown " + Utilities.GetName(socket),Logger.logType.debug);
-				//socket.Close();
 			}
 			serverSocket.Close();
 			Logger.Write("Server stoped", Logger.logType.info);
@@ -89,6 +92,9 @@ namespace Galactic_Colors_Control_Server
 			Logger.Updater.Join();
 		}
 
+		/// <summary>
+		/// Wait a client and check if is correct
+		/// </summary>
 		private static void AcceptCallback(IAsyncResult AR)
 		{
 			Socket socket;
@@ -103,7 +109,7 @@ namespace Galactic_Colors_Control_Server
 			}
 			if (_open)
 			{
-				if (clients.Count < Program.config.size)
+				if (clients.Count < config.size)
 				{
 					AddClient(socket);
 				}
@@ -123,6 +129,9 @@ namespace Galactic_Colors_Control_Server
 			serverSocket.BeginAccept(AcceptCallback, null);
 		}
 
+		/// <summary>
+		/// Add client and initialise receive
+		/// </summary>
 		private static void AddClient(Socket socket)
 		{
 			clients.Add(socket, new Data());
@@ -135,6 +144,9 @@ namespace Galactic_Colors_Control_Server
 			}
 		}
 
+		/// <summary>
+		/// Wait a client commands and execute them
+		/// </summary>
 		private static void ReceiveCallback(IAsyncResult AR)
 		{
 			Socket current = (Socket)AR.AsyncState;
@@ -181,6 +193,12 @@ namespace Galactic_Colors_Control_Server
 			if (clients.ContainsKey(current)) { current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current); }
 		}
 
+		/// <summary>
+		/// Execute send command
+		/// <param name="text">Command</param>
+		/// <param name="soc">Sender socket</param>
+		/// <param name="server">Is sender server?</param>
+		/// </summary>
 		private static void ExecuteMessage(string text, Socket soc = null, bool server = false)
 		{
 			if (text.Length > 0)

@@ -10,8 +10,12 @@ namespace Galactic_Colors_Control_Server.Commands
     {
         public static Dictionary<string, ICommand> commands { get; private set; } = new Dictionary<string, ICommand>();
 
+        /// <summary>
+        /// Find all ICommand and add them to commands
+        /// </summary>
         public static void Load()
         {
+            //C# is magic
             IEnumerable<ICommand> coms = Assembly.GetExecutingAssembly().GetTypes().Where(x => x.GetInterfaces().Contains(typeof(ICommand)) && x.GetConstructor(Type.EmptyTypes) != null).Select(x => Activator.CreateInstance(x) as ICommand);
             foreach (ICommand com in coms)
             {
@@ -20,6 +24,12 @@ namespace Galactic_Colors_Control_Server.Commands
             }
         }
 
+        /// <summary>
+        /// Execute sended command
+        /// </summary>
+        /// <param name="args">command with args</param>
+        /// <param name="soc">Sender socket</param>
+        /// <param name="server">Is server?</param>
         public static void Execute(string[] args, Socket soc = null, bool server = false)
         {
             if (commands.ContainsKey(args[0]))
@@ -54,6 +64,9 @@ namespace Galactic_Colors_Control_Server.Commands
             }
         }
 
+        /// <summary>
+        /// Check is socket can use specified command
+        /// </summary>
         public static bool CanAccess(ICommand command, Socket soc = null, bool server = false)
         {
             if (server)

@@ -19,6 +19,11 @@ namespace Galactic_Colors_Control_Server
         public ConsoleColor[] logForeColor = new ConsoleColor[5] {ConsoleColor.Gray , ConsoleColor.White, ConsoleColor.Yellow, ConsoleColor.Red, ConsoleColor.White};
         public ConsoleColor[] logBackColor = new ConsoleColor[5] { ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Red };
 
+        /// <summary>
+        /// Load config from xml file
+        /// App.config is too easy
+        /// </summary>
+        /// <returns>Loaded config</returns>
         public Config Load()
         {
             Logger.Write("Loading config", Logger.logType.info);
@@ -49,6 +54,9 @@ namespace Galactic_Colors_Control_Server
             return config;
         }
 
+        /// <summary>
+        /// Write actual config in xml file
+        /// </summary>
         public void Save()
         {
             XmlSerializer xs = new XmlSerializer(typeof(Config));
@@ -60,6 +68,9 @@ namespace Galactic_Colors_Control_Server
             if (Program._debug) { logLevel = Logger.logType.debug; }
         }
 
+        /// <summary>
+        /// Check config format using Schema
+        /// </summary>
         public bool CorrectConfig()
         {
             bool isCorrect = false;
