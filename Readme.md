@@ -5,12 +5,9 @@ Using .Net/[Mono](https://github.com/mono/mono) and [Monogame](https://github.co
 
 ### Prerequisities
 
-.Net or [Mono](https://github.com/mono/mono)
-
-Linux
-```
-apt-get install mono-runtime
-```
+* .NET/[Mono](https://github.com/mono/mono)
+* OpenGL
+* [OpenAL](https://www.openal.org/) => :warning: Not included in Windows :warning:
 
 ### Installing
 
@@ -18,14 +15,9 @@ Download last version for your system
 
 ## Running
 
-* Galactic_Colors_Control.exe 
-    Client without GUI
-
-* Galactic_Colors_Control_GUI.exe
-    Client
-
-* Galactic_Colors_Control_Server.exe
-    Server (Use --debug for DEBUG MODE)
+* Galactic_Colors_Control.exe => Client without GUI
+* Galactic_Colors_Control_GUI.exe => Client
+* Galactic_Colors_Control_Server.exe => Server (Use --debug for DEBUG MODE)
 
 Linux
 ```
