@@ -4,7 +4,9 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace Galactic_Colors_Control_GUI
@@ -24,8 +26,11 @@ namespace Galactic_Colors_Control_GUI
         private SpriteFont basicFont;
         private SpriteFont titleFont;
 
-        private Texture2D nullSprite;
+        internal static Texture2D nullSprite;
         private Texture2D[] pointerSprites = new Texture2D[1];
+        private GUI.buttonSprites[] buttonsSprites = new GUI.buttonSprites[1];
+
+        private List<GUI.Element> elements = new List<GUI.Element>();
 
         Version version;
 
@@ -33,18 +38,22 @@ namespace Galactic_Colors_Control_GUI
         private MouseState newState;
         private int mouseX;
         private int mouseY;
-        private bool haveOverButton = false;
+        private Keys[] oldKeys;
+        private Keys[] newKeys;
 
         private string skinName;
 
         private enum GameStatus { Home, Options, Game, Pause, End, Thanks }
         private GameStatus gameStatus;
 
+        private int ScreenWidth = 1080;
+        private int ScreenHeight = 720;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 720;
+            graphics.PreferredBackBufferWidth = ScreenWidth;
+            graphics.PreferredBackBufferHeight = ScreenHeight;
             graphics.IsFullScreen = false;
             graphics.ApplyChanges();
             Content.RootDirectory = "Content";
@@ -62,8 +71,20 @@ namespace Galactic_Colors_Control_GUI
             version = Assembly.GetEntryAssembly().GetName().Version;
             nullSprite = new Texture2D(GraphicsDevice, 1, 1);
             nullSprite.SetData(new Color[1 * 1] { Color.White });
-
             base.Initialize();
+        }
+
+        // TODO : remove this
+        private void AddRandom(object sender, EventArgs e)
+        {
+            Random rand = new Random();
+            elements.Add(new GUI.Button(new Rectangle(rand.Next(0, ScreenHeight - 20), rand.Next(0, ScreenWidth - 20), 20, 20), Color.Black, Color.DarkSlateGray, Color.SlateGray, RemoveThis));
+        }
+
+        // TODO : remove this
+        private void RemoveThis(object sender, EventArgs e)
+        {
+            elements.Remove(sender as GUI.Element);
         }
 
         /// <summary>
@@ -75,34 +96,73 @@ namespace Galactic_Colors_Control_GUI
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            //effects[0] = content.Load<SoundEffect>("Sounds/alert");
-            //effects[1] = content.Load<SoundEffect>("Sounds/bip");
-            //effects[2] = content.Load<SoundEffect>("Sounds/change");
-            //effects[3] = content.Load<SoundEffect>("Sounds/valid");
+            //Need OpenAL Update for Windows 10 at least
+            effects[0] = content.Load<SoundEffect>("Sounds/alert");
+            effects[1] = content.Load<SoundEffect>("Sounds/bip");
+            effects[2] = content.Load<SoundEffect>("Sounds/change");
+            effects[3] = content.Load<SoundEffect>("Sounds/valid");
 
             smallFont = content.Load<SpriteFont>("Fonts/small");
             basicFont = content.Load<SpriteFont>("Fonts/basic");
             titleFont = content.Load<SpriteFont>("Fonts/title");
 
             for (int i = 0; i < pointerSprites.Length; i++) {
-                Console.WriteLine("Load pointer" + i);
                 pointerSprites[i] = content.Load<Texture2D>("Textures/Hub/pointer" + i);
+            }
+
+            for (int i = 0; i < buttonsSprites.Length; i++)
+            {
+                buttonsSprites[i].topLeft = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/topLeft");
+                buttonsSprites[i].topCenter = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/topCenter");
+                buttonsSprites[i].topRight = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/topRight");
+                buttonsSprites[i].centerLeft = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/centerLeft");
+                buttonsSprites[i].centerCenter = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/centerCenter");
+                buttonsSprites[i].centerRight = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/centerRight");
+                buttonsSprites[i].bottomLeft = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/bottomLeft");
+                buttonsSprites[i].bottomCenter = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/bottomCenter");
+                buttonsSprites[i].bottomRight = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/bottomRight");
             }
 
             if (Directory.Exists("Skin/" + skinName))
             {
-                if (File.Exists("Skin/" + skinName + "/Sounds/alert.mp3")) using (FileStream fileStream = new FileStream("Skin/" + skinName + "/Sounds/alert.mp3", FileMode.Open)) { effects[0] = SoundEffect.FromStream(fileStream); }
-                if (File.Exists("Skin/" + skinName + "/Sounds/bip.mp3")) using (FileStream fileStream = new FileStream("Skin/" + skinName + "/Sounds/bip.mp3", FileMode.Open)) { effects[1] = SoundEffect.FromStream(fileStream); }
-                if (File.Exists("Skin/" + skinName + "/Sounds/change.mp3")) using (FileStream fileStream = new FileStream("Skin/" + skinName + "/Sounds/change.mp3", FileMode.Open)) { effects[2] = SoundEffect.FromStream(fileStream); }
-                if (File.Exists("Skin/" + skinName + "/Sounds/valid.mp3")) using (FileStream fileStream = new FileStream("Skin/" + skinName + "/Sounds/valid.mp3", FileMode.Open)) { effects[3] = SoundEffect.FromStream(fileStream); }
-
-                for (int i = 0; i < pointerSprites.Length; i++)
+                if (Directory.Exists("Skin/" + skinName + "/Sounds"))
                 {
-                    if (File.Exists("Skin/" + skinName + "/Textures/Hub/pointer" + i + ".png")) using (FileStream fileStream = new FileStream("Skin/" + skinName + "/Textures/Hub/pointer" + i + ".png", FileMode.Open)) { pointerSprites[i] = Texture2D.FromStream(GraphicsDevice, fileStream); }
+                    Utilities.SoundFromMp3("Skin/" + skinName + "/Sounds/alert.mp3", ref effects[0]);
+                    Utilities.SoundFromMp3("Skin/" + skinName + "/Sounds/bip.mp3", ref effects[1]);
+                    Utilities.SoundFromMp3("Skin/" + skinName + "/Sounds/change.mp3", ref effects[2]);
+                    Utilities.SoundFromMp3("Skin/" + skinName + "/Sounds/valid.mp3", ref effects[3]);
+                }
+
+                if (Directory.Exists("Skin/" + skinName + "/Textures"))
+                {
+                    if (Directory.Exists("Skin/" + skinName + "/Textures/Hub/"))
+                    {
+                        if(Directory.Exists("Skin/" + skinName + "/Textures/Hub/Buttons"))
+                        {
+                            for (int i = 0; i < buttonsSprites.Length; i++)
+                            {
+                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/topLeft.png", ref buttonsSprites[i].topLeft, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/topCenter.png", ref buttonsSprites[i].topCenter, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/topRight.png", ref buttonsSprites[i].topRight, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/centerLeft.png", ref buttonsSprites[i].centerLeft, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/centerCenter.png", ref buttonsSprites[i].centerCenter, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/centerRight.png", ref buttonsSprites[i].centerRight, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/bottomLeft.png", ref buttonsSprites[i].bottomLeft, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/bottomCenter.png", ref buttonsSprites[i].bottomCenter, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/bottomRight.png", ref buttonsSprites[i].bottomRight, GraphicsDevice);
+                            }
+                        }
+
+                        for (int i = 0; i < pointerSprites.Length; i++)
+                        {
+                            Utilities.SpriteFromPng("Skin/" + skinName + "/Textures/Hub/pointer" + i + ".png", ref pointerSprites[i], GraphicsDevice);
+                        }
+                    }
                 }
             }
 
             // TODO: use this.Content to load your game content here
+            ChangeTo(GameStatus.Home);
         }
 
         /// <summary>
@@ -124,11 +184,26 @@ namespace Galactic_Colors_Control_GUI
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            mouseX = Mouse.GetState().X;
-            mouseY = Mouse.GetState().Y;
+            oldState = newState;
+            newState = Mouse.GetState();
+            mouseX = newState.X;
+            mouseY = newState.Y;
+            GUI.Mouse nowState;
+            nowState.leftPress = (oldState.LeftButton == ButtonState.Released && newState.LeftButton == ButtonState.Pressed);
+            nowState.leftRelease = (oldState.LeftButton == ButtonState.Pressed && newState.LeftButton == ButtonState.Released);
+            nowState.rightPress = (oldState.LeftButton == ButtonState.Released && newState.LeftButton == ButtonState.Pressed);
+            nowState.rightRelease = (oldState.LeftButton == ButtonState.Pressed && newState.LeftButton == ButtonState.Released);
+
+            oldKeys = newKeys;
+            newKeys = Keyboard.GetState().GetPressedKeys();
+
             if (IsActive)
             {
-
+                EventArgs e = new EventArgs();
+                foreach(GUI.Element element in elements.ToArray())
+                {
+                    element.Update(mouseX, mouseY, nowState, e);
+                }
             }
 
             switch (gameStatus)
@@ -171,6 +246,50 @@ namespace Galactic_Colors_Control_GUI
 
             spriteBatch.Begin();
 
+            /*
+            switch (gameStatus)
+            {
+                case GameStatus.Home:
+                    drawElements = true;
+                    break;
+
+                case GameStatus.Options:
+
+                    break;
+
+                case GameStatus.Game:
+
+                    break;
+
+                case GameStatus.Pause:
+
+                    break;
+
+                case GameStatus.End:
+
+                    break;
+
+                case GameStatus.Thanks:
+
+                    break;
+            }
+            */
+
+                foreach (GUI.Element element in elements)
+            {
+                element.Draw(spriteBatch);
+            }
+
+            spriteBatch.Draw(pointerSprites[0], new Rectangle(mouseX - 10, mouseY - 10, 20, 20), Color.Red);
+
+            spriteBatch.End();
+
+            base.Draw(gameTime);
+        }
+
+        private void ChangeTo(GameStatus newGameStatus)
+        {
+            //Things to do when leave status
             switch (gameStatus)
             {
                 case GameStatus.Home:
@@ -198,11 +317,43 @@ namespace Galactic_Colors_Control_GUI
                     break;
             }
 
-            spriteBatch.Draw(pointerSprites[0], new Rectangle(mouseX - 10, mouseY - 10, 20, 20), Color.Red);
+            elements.Clear();
 
-            spriteBatch.End();
+            //Initialise new status
+            switch (newGameStatus)
+            {
+                case GameStatus.Home:
+                    elements.Add(new GUI.Label(new GUI.Vector(ScreenWidth / 2, ScreenHeight / 4), "Galactic Colors Control", titleFont, Color.DarkRed, true));
+                    //elements.Add(new GUI.TextField(new GUI.Vector(ScreenWidth / 2, ScreenHeight / 2), null, basicFont, Color.Black, Color.Black, Color.DarkSlateGray, true, "Server address"));
+                    elements.Add(new GUI.TexturedButton(new Rectangle(ScreenWidth / 2 - 100, ScreenHeight * 3 / 4,200,40),buttonsSprites[0], Color.White, Color.LightGray, Color.DarkGray, "Connect", basicFont, Color.Black, Color.Black, Color.White, ConnectClick));
+                    break;
 
-            base.Draw(gameTime);
+                case GameStatus.Options:
+
+                    break;
+
+                case GameStatus.Game:
+
+                    break;
+
+                case GameStatus.Pause:
+
+                    break;
+
+                case GameStatus.End:
+
+                    break;
+
+                case GameStatus.Thanks:
+
+                    break;
+            }
+            gameStatus = newGameStatus;
+        }
+
+        private void ConnectClick(object sender, EventArgs e)
+        {
+
         }
     }
 }
