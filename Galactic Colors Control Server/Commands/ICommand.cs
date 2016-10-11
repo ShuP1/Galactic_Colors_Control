@@ -9,6 +9,7 @@ namespace Galactic_Colors_Control_Server.Commands
         string HelpText { get; }
         bool IsServer { get; }
         bool IsClient { get; }
+        bool IsClientSide { get; }
         bool IsNoConnect { get; }
         int minArgs { get; }
         int maxArgs { get; }

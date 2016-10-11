@@ -10,6 +10,7 @@ namespace Galactic_Colors_Control_Server.Commands
         public string HelpText { get { return "Use /loglevel [loglevel] to change Loglevel."; } }
         public bool IsServer { get { return true; } }
         public bool IsClient { get { return false; } }
+        public bool IsClientSide { get { return true; } }
         public bool IsNoConnect { get { return false; } }
         public int minArgs { get { return 1; } }
         public int maxArgs { get { return 1; } }

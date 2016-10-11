@@ -10,6 +10,7 @@ namespace Galactic_Colors_Control_Server.Commands
         public string HelpText { get { return "Use /exit to stop actual program."; } }
         public bool IsServer { get { return true; } }
         public bool IsClient { get { return true; } }
+        public bool IsClientSide { get { return false; } }
         public bool IsNoConnect { get { return true; } }
         public int minArgs { get { return 0; } }
         public int maxArgs { get { return 0; } }

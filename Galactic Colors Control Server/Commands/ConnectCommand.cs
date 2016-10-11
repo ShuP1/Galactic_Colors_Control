@@ -11,6 +11,7 @@ namespace Galactic_Colors_Control_Server.Commands
         public string HelpText { get { return "Use /connect [username] to start identification"; } }
         public bool IsServer { get { return false; } }
         public bool IsClient { get { return true; } }
+        public bool IsClientSide { get { return false; } }
         public bool IsNoConnect { get { return true; } }
         public int minArgs { get { return 1; } }
         public int maxArgs { get { return 1; } }

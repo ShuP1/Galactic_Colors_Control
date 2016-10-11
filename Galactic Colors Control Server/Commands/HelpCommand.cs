@@ -12,6 +12,7 @@ namespace Galactic_Colors_Control_Server.Commands
         public string HelpText { get { return "Use /help [command] to display command help."; } }
         public bool IsServer { get { return true; } }
         public bool IsClient { get { return true; } }
+        public bool IsClientSide { get { return false; } }
         public bool IsNoConnect { get { return false; } }
         public int minArgs { get { return 0; } }
         public int maxArgs { get { return 1; } }

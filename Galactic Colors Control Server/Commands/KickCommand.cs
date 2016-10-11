@@ -12,6 +12,7 @@ namespace Galactic_Colors_Control_Server.Commands
         public string HelpText { get { return "Use /kick [username] <reason> to kick client from server."; } }
         public bool IsServer { get { return true; } }
         public bool IsClient { get { return false; } }
+        public bool IsClientSide { get { return false; } }
         public bool IsNoConnect { get { return true; } }
         public int minArgs { get { return 1; } }
         public int maxArgs { get { return 2; } }

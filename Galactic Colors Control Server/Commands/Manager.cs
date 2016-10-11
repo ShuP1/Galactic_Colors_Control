@@ -35,22 +35,30 @@ namespace Galactic_Colors_Control_Server.Commands
             if (commands.ContainsKey(args[0]))
             {
                 ICommand command = commands[args[0]];
-                if (CanAccess(command,soc,server))
+                if (CanAccess(command, soc, server))
                 {
-                    if(args.Length > command.minArgs)
+                    if (command.IsClientSide)
                     {
-                        if(args.Length - 1 <= command.maxArgs)
-                        {
-                            command.Execute(args, soc, server);
-                        }
-                        else
-                        {
-                            Utilities.Return("Command " + command.Name + " require at most " + command.minArgs + " argument(s).", soc, server);
-                        }
+                        Utilities.Return("It's a client side command", soc, server);
                     }
                     else
                     {
-                        Utilities.Return("Command " + command.Name + " require at least " + command.minArgs + " argument(s).", soc, server);
+                        if (args.Length > command.minArgs)
+                        {
+                            if (args.Length - 1 <= command.maxArgs)
+                            {
+                                command.Execute(args, soc, server);
+                            }
+                            else
+                            {
+                                Utilities.Return("Command " + command.Name + " require at most " + command.minArgs + " argument(s).", soc, server);
+                            }
+                        }
+
+                        else
+                        {
+                            Utilities.Return("Command " + command.Name + " require at least " + command.minArgs + " argument(s).", soc, server);
+                        }
                     }
                 }
                 else
