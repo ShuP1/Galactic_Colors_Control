@@ -28,9 +28,9 @@ namespace Galactic_Colors_Control_GUI
 
         internal static Texture2D nullSprite;
         private Texture2D[] pointerSprites = new Texture2D[1];
-        private GUI.boxSprites[] buttonsSprites = new GUI.boxSprites[1];
+        private MyMonoGame.GUI.boxSprites[] buttonsSprites = new MyMonoGame.GUI.boxSprites[1];
 
-        private List<GUI.Element> elements = new List<GUI.Element>();
+        private List<MyMonoGame.GUI.Element> elements = new List<MyMonoGame.GUI.Element>();
 
         Version version;
 
@@ -72,7 +72,7 @@ namespace Galactic_Colors_Control_GUI
             nullSprite = new Texture2D(GraphicsDevice, 1, 1);
             nullSprite.SetData(new Color[1 * 1] { Color.White });
 
-            GUI.KeyString.InitializeKeyString();
+            MyMonoGame.KeyString.InitializeKeyString();
             base.Initialize();
         }
 
@@ -177,7 +177,7 @@ namespace Galactic_Colors_Control_GUI
             newState = Mouse.GetState();
             mouseX = newState.X;
             mouseY = newState.Y;
-            GUI.Mouse nowState;
+            MyMonoGame.GUI.Mouse nowState;
             nowState.leftPress = (oldState.LeftButton == ButtonState.Released && newState.LeftButton == ButtonState.Pressed);
             nowState.leftRelease = (oldState.LeftButton == ButtonState.Pressed && newState.LeftButton == ButtonState.Released);
             nowState.rightPress = (oldState.LeftButton == ButtonState.Released && newState.LeftButton == ButtonState.Pressed);
@@ -196,7 +196,7 @@ namespace Galactic_Colors_Control_GUI
             if (IsActive)
             {
                 EventArgs e = new EventArgs();
-                foreach(GUI.Element element in elements.ToArray())
+                foreach(MyMonoGame.GUI.Element element in elements.ToArray())
                 {
                     element.Update(mouseX, mouseY, nowState, key, Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift),e);
                 }
@@ -271,7 +271,7 @@ namespace Galactic_Colors_Control_GUI
             }
             */
 
-                foreach (GUI.Element element in elements)
+                foreach (MyMonoGame.GUI.Element element in elements)
             {
                 element.Draw(spriteBatch);
             }
@@ -319,10 +319,10 @@ namespace Galactic_Colors_Control_GUI
             switch (newGameStatus)
             {
                 case GameStatus.Home:
-                    elements.Add(new GUI.Label(new GUI.Vector(ScreenWidth / 2, ScreenHeight / 4), "Galactic Colors Control", titleFont, new GUI.Colors(Color.DarkRed, Color.Green), GUI.Label.textAlign.centerCenter));
-                    elements.Add(new GUI.TextField(new GUI.Vector(ScreenWidth / 2, ScreenHeight / 2), null, basicFont, new GUI.Colors(Color.White, Color.WhiteSmoke, Color.LightGray), GUI.Label.textAlign.centerCenter, "Server address", ConnectClick));
-                    //elements.Add(new GUI.BoxButton(new Rectangle(ScreenWidth / 2 - 100, ScreenHeight * 3 / 4, 200, 40), buttonsSprites[0], new GUI.Colors(Color.White, Color.LightGray, Color.DarkGray), ConnectClick));
-                    elements.Add(new GUI.BoxLabelButton(new Rectangle(ScreenWidth / 2 - 100, ScreenHeight * 3 / 4,200,40),buttonsSprites[0], new GUI.Colors(Color.White, Color.LightGray, Color.DarkGray), "Connect", basicFont, new GUI.Colors(Color.Black, Color.Black, Color.White), GUI.Label.textAlign.centerCenter, ConnectClick));
+                    elements.Add(new MyMonoGame.GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4), "Galactic Colors Control", titleFont, new MyMonoGame.Colors(Color.DarkRed, Color.Green), MyMonoGame.GUI.Label.textAlign.centerCenter));
+                    elements.Add(new MyMonoGame.GUI.TextField(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 2), null, basicFont, new MyMonoGame.Colors(Color.White, Color.WhiteSmoke, Color.LightGray), MyMonoGame.GUI.Label.textAlign.centerCenter, "Server address", ConnectClick));
+                    //elements.Add(new MyMonoGame.GUI.BoxButton(new Rectangle(ScreenWidth / 2 - 100, ScreenHeight * 3 / 4, 200, 40), buttonsSprites[0], new MyMonoGame.GUI.Colors(Color.White, Color.LightGray, Color.DarkGray), ConnectClick));
+                    elements.Add(new MyMonoGame.GUI.BoxLabelButton(new Rectangle(ScreenWidth / 2 - 100, ScreenHeight * 3 / 4,200,40),buttonsSprites[0], new MyMonoGame.Colors(Color.White, Color.LightGray, Color.DarkGray), "Connect", basicFont, new MyMonoGame.Colors(Color.Black, Color.Black, Color.White), MyMonoGame.GUI.Label.textAlign.centerCenter, ConnectClick));
                     break;
 
                 case GameStatus.Options:

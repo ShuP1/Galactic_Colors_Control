@@ -6,7 +6,7 @@ namespace Galactic_Colors_Control_GUI
 {
     static class Utilities
     {
-        static public void SpriteFromPng(string path, ref Texture2D sprite, GraphicsDevice graphics )
+        static public void SpriteFromPng(string path, ref Texture2D sprite, GraphicsDevice graphics)
         {
             if (File.Exists(path))
             {
@@ -21,7 +21,8 @@ namespace Galactic_Colors_Control_GUI
         {
             if (File.Exists(path))
             {
-                using (FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read)) {
+                using (FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                {
                     sound = SoundEffect.FromStream(fileStream);
                 }
             }

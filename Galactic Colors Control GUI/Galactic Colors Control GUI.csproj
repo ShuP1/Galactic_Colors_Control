@@ -39,26 +39,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Game1.cs" />
-    <Compile Include="GUI\Box.cs" />
-    <Compile Include="GUI\BoxButton.cs" />
-    <Compile Include="GUI\BoxLabel.cs" />
-    <Compile Include="GUI\BoxLabelButton.cs" />
-    <Compile Include="GUI\Button.cs" />
-    <Compile Include="GUI\boxSprites.cs" />
-    <Compile Include="GUI\Colors.cs" />
-    <Compile Include="GUI\KeyString.cs" />
-    <Compile Include="GUI\Label.cs" />
-    <Compile Include="GUI\Mouse.cs" />
-    <Compile Include="GUI\TextField.cs" />
-    <Compile Include="GUI\Texture.cs" />
-    <Compile Include="GUI\TexturedButton.cs" />
-    <Compile Include="GUI\Element.cs" />
-    <Compile Include="GUI\Vector.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="MyMonoGame">
+      <HintPath>..\..\MonoGame\MyMonoGameGUI\MyMonoGameGUI\bin\Release\MyMonoGame.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\OpenTK.dll</HintPath>
     </Reference>
