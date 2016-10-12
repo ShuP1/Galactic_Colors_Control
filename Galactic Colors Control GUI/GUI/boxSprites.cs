@@ -2,7 +2,7 @@
 
 namespace Galactic_Colors_Control_GUI.GUI
 {
-    public struct buttonSprites
+    public struct boxSprites
     {
         public Texture2D topLeft;
         public Texture2D topCenter;

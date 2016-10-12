@@ -28,7 +28,7 @@ namespace Galactic_Colors_Control_GUI
 
         internal static Texture2D nullSprite;
         private Texture2D[] pointerSprites = new Texture2D[1];
-        private GUI.buttonSprites[] buttonsSprites = new GUI.buttonSprites[1];
+        private GUI.boxSprites[] buttonsSprites = new GUI.boxSprites[1];
 
         private List<GUI.Element> elements = new List<GUI.Element>();
 
@@ -71,20 +71,9 @@ namespace Galactic_Colors_Control_GUI
             version = Assembly.GetEntryAssembly().GetName().Version;
             nullSprite = new Texture2D(GraphicsDevice, 1, 1);
             nullSprite.SetData(new Color[1 * 1] { Color.White });
+
+            GUI.KeyString.InitializeKeyString();
             base.Initialize();
-        }
-
-        // TODO : remove this
-        private void AddRandom(object sender, EventArgs e)
-        {
-            Random rand = new Random();
-            elements.Add(new GUI.Button(new Rectangle(rand.Next(0, ScreenHeight - 20), rand.Next(0, ScreenWidth - 20), 20, 20), Color.Black, Color.DarkSlateGray, Color.SlateGray, RemoveThis));
-        }
-
-        // TODO : remove this
-        private void RemoveThis(object sender, EventArgs e)
-        {
-            elements.Remove(sender as GUI.Element);
         }
 
         /// <summary>
@@ -197,12 +186,19 @@ namespace Galactic_Colors_Control_GUI
             oldKeys = newKeys;
             newKeys = Keyboard.GetState().GetPressedKeys();
 
+            Keys key = Keys.None;
+
+            foreach (Keys newKey in newKeys)
+            {
+                if (!oldKeys.Contains(newKey)) { key = newKey; }
+            }
+
             if (IsActive)
             {
                 EventArgs e = new EventArgs();
                 foreach(GUI.Element element in elements.ToArray())
                 {
-                    element.Update(mouseX, mouseY, nowState, e);
+                    element.Update(mouseX, mouseY, nowState, key, Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift),e);
                 }
             }
 
@@ -242,7 +238,7 @@ namespace Galactic_Colors_Control_GUI
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.DarkGray);
 
             spriteBatch.Begin();
 
@@ -323,9 +319,10 @@ namespace Galactic_Colors_Control_GUI
             switch (newGameStatus)
             {
                 case GameStatus.Home:
-                    elements.Add(new GUI.Label(new GUI.Vector(ScreenWidth / 2, ScreenHeight / 4), "Galactic Colors Control", titleFont, Color.DarkRed, true));
-                    //elements.Add(new GUI.TextField(new GUI.Vector(ScreenWidth / 2, ScreenHeight / 2), null, basicFont, Color.Black, Color.Black, Color.DarkSlateGray, true, "Server address"));
-                    elements.Add(new GUI.TexturedButton(new Rectangle(ScreenWidth / 2 - 100, ScreenHeight * 3 / 4,200,40),buttonsSprites[0], Color.White, Color.LightGray, Color.DarkGray, "Connect", basicFont, Color.Black, Color.Black, Color.White, ConnectClick));
+                    elements.Add(new GUI.Label(new GUI.Vector(ScreenWidth / 2, ScreenHeight / 4), "Galactic Colors Control", titleFont, new GUI.Colors(Color.DarkRed, Color.Green), GUI.Label.textAlign.centerCenter));
+                    elements.Add(new GUI.TextField(new GUI.Vector(ScreenWidth / 2, ScreenHeight / 2), null, basicFont, new GUI.Colors(Color.White, Color.WhiteSmoke, Color.LightGray), GUI.Label.textAlign.centerCenter, "Server address", ConnectClick));
+                    //elements.Add(new GUI.BoxButton(new Rectangle(ScreenWidth / 2 - 100, ScreenHeight * 3 / 4, 200, 40), buttonsSprites[0], new GUI.Colors(Color.White, Color.LightGray, Color.DarkGray), ConnectClick));
+                    elements.Add(new GUI.BoxLabelButton(new Rectangle(ScreenWidth / 2 - 100, ScreenHeight * 3 / 4,200,40),buttonsSprites[0], new GUI.Colors(Color.White, Color.LightGray, Color.DarkGray), "Connect", basicFont, new GUI.Colors(Color.Black, Color.Black, Color.White), GUI.Label.textAlign.centerCenter, ConnectClick));
                     break;
 
                 case GameStatus.Options:
@@ -353,7 +350,7 @@ namespace Galactic_Colors_Control_GUI
 
         private void ConnectClick(object sender, EventArgs e)
         {
-
+            Console.WriteLine("plop");
         }
     }
 }

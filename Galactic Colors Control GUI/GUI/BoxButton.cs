@@ -1,27 +1,33 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Input;
 
 namespace Galactic_Colors_Control_GUI.GUI
 {
-    class TexturedButton : Texture
+    class BoxButton : Box
     {
-        Button button;
+        protected Button _button;
         private int _unFocusTime;
 
-        public TexturedButton(Rectangle pos, Texture2D sprite, Colors colors, EventHandler click = null)
+        public BoxButton() { }
+
+        public BoxButton(Rectangle pos, boxSprites backSprites, Colors colors, EventHandler click = null)
         {
             _pos = pos;
-            _sprite = sprite;
+            _backSprites = backSprites;
             _colors = colors;
-            button = new Button(pos, click);
+            _button = new Button(pos, click);
         }
 
         public override void Update(int x, int y, Mouse mouse, Keys key, bool isMaj, EventArgs e)
         {
             base.Update(x, y, mouse, key, isMaj, e);
-            button.Update(x, y, mouse, key, isMaj, e);
+            _button.Update(x, y, mouse, key, isMaj, e);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -40,7 +46,7 @@ namespace Galactic_Colors_Control_GUI.GUI
                 }
             }
 
-            button.Draw(spriteBatch);
+            _button.Draw(spriteBatch);
         }
     }
 }

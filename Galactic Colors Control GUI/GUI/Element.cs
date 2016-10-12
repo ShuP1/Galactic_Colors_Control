@@ -2,17 +2,16 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
 
 namespace Galactic_Colors_Control_GUI.GUI
 {
     class Element
     {
         protected Rectangle _pos;
-        protected bool _isHover;
-        protected bool _isFocus;
+        public bool _isHover;
+        public bool _isFocus;
 
-        public bool Contain(int x, int y)
+        public virtual bool Contain(int x, int y)
         {
             return _pos.Contains(x, y);
         }
@@ -22,7 +21,7 @@ namespace Galactic_Colors_Control_GUI.GUI
 
         }
 
-        public void Update(int x, int y, Mouse mouse, EventArgs e)
+        public virtual void Update(int x, int y, Mouse mouse, Keys key, bool isMaj, EventArgs e)
         {
             if (mouse.leftPress)
             {
