@@ -4,10 +4,16 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using MyMonoGame.GUI;
+using System.Threading;
+using System.Net;
+using System.Net.Sockets;
+using System.Collections.Generic;
+using System.Text;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Galactic_Colors_Control_GUI
 {
@@ -27,34 +33,55 @@ namespace Galactic_Colors_Control_GUI
         private SpriteFont titleFont;
 
         internal static Texture2D nullSprite;
-        private Texture2D[] pointerSprites = new Texture2D[1];
-        private MyMonoGame.GUI.boxSprites[] buttonsSprites = new MyMonoGame.GUI.boxSprites[1];
+        private Texture2D logoSprite;
+        private Texture2D[] backSprites = new Texture2D[2];
+        private double[] backgroundX = new double[2];
+        private double[] backgroundY = new double[2];
+        private double acceleratorX = 1;
 
-        private List<MyMonoGame.GUI.Element> elements = new List<MyMonoGame.GUI.Element>();
+        private Texture2D[] pointerSprites = new Texture2D[1];
+        private boxSprites[] buttonsSprites = new boxSprites[1];
+
+        private List<String> chat = new List<string>();
+
+        private string skinName;
+        private bool isFullScren = false;
+        private Manager GUI = new Manager();
+
+        private enum dataType { message, data };
 
         Version version;
 
-        private MouseState oldState;
-        private MouseState newState;
-        private int mouseX;
-        private int mouseY;
-        private Keys[] oldKeys;
-        private Keys[] newKeys;
+        private enum GameStatus { Home, Connect, Connection, Options, Game, Pause, End, Thanks, Exit, Error}
+        private GameStatus gameStatus = GameStatus.Home;
 
-        private string skinName;
-
-        private enum GameStatus { Home, Options, Game, Pause, End, Thanks }
-        private GameStatus gameStatus;
-
-        private int ScreenWidth = 1080;
+        private int ScreenWidth = 1280;
         private int ScreenHeight = 720;
+
+        private string addressText;
+        private static Socket ClientSocket = new Socket
+            (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+        private static int PORT = 0;
+        private static string IP = null;
+        private string username;
+
+        private Thread ReceiveThread;
+        private static bool _run = true;
+        private string errorText;
+        private int _errorCount = 0;
 
         public Game1()
         {
+            if (isFullScren)
+            {
+                ScreenWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+                ScreenHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            }
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = ScreenWidth;
             graphics.PreferredBackBufferHeight = ScreenHeight;
-            graphics.IsFullScreen = false;
+            graphics.IsFullScreen = isFullScren;
             graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             content = Content;
@@ -72,7 +99,7 @@ namespace Galactic_Colors_Control_GUI
             nullSprite = new Texture2D(GraphicsDevice, 1, 1);
             nullSprite.SetData(new Color[1 * 1] { Color.White });
 
-            MyMonoGame.KeyString.InitializeKeyString();
+            GUI.Initialise();
             base.Initialize();
         }
 
@@ -99,6 +126,11 @@ namespace Galactic_Colors_Control_GUI
                 pointerSprites[i] = content.Load<Texture2D>("Textures/Hub/pointer" + i);
             }
 
+            backSprites[0] = content.Load<Texture2D>("Textures/background0");
+            backSprites[1] = content.Load<Texture2D>("Textures/background1");
+
+            logoSprite = content.Load<Texture2D>("Textures/LogoSmall");
+
             for (int i = 0; i < buttonsSprites.Length; i++)
             {
                 buttonsSprites[i].topLeft = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/topLeft");
@@ -124,6 +156,8 @@ namespace Galactic_Colors_Control_GUI
 
                 if (Directory.Exists("Skin/" + skinName + "/Textures"))
                 {
+                    Utilities.SpriteFromPng("Skin/" + skinName + "Textures/background0.png", ref backSprites[0], GraphicsDevice);
+                    Utilities.SpriteFromPng("Skin/" + skinName + "Textures/background1.png", ref backSprites[1], GraphicsDevice);
                     if (Directory.Exists("Skin/" + skinName + "/Textures/Hub/"))
                     {
                         if(Directory.Exists("Skin/" + skinName + "/Textures/Hub/Buttons"))
@@ -151,7 +185,6 @@ namespace Galactic_Colors_Control_GUI
             }
 
             // TODO: use this.Content to load your game content here
-            ChangeTo(GameStatus.Home);
         }
 
         /// <summary>
@@ -170,65 +203,21 @@ namespace Galactic_Colors_Control_GUI
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            oldState = newState;
-            newState = Mouse.GetState();
-            mouseX = newState.X;
-            mouseY = newState.Y;
-            MyMonoGame.GUI.Mouse nowState;
-            nowState.leftPress = (oldState.LeftButton == ButtonState.Released && newState.LeftButton == ButtonState.Pressed);
-            nowState.leftRelease = (oldState.LeftButton == ButtonState.Pressed && newState.LeftButton == ButtonState.Released);
-            nowState.rightPress = (oldState.LeftButton == ButtonState.Released && newState.LeftButton == ButtonState.Pressed);
-            nowState.rightRelease = (oldState.LeftButton == ButtonState.Pressed && newState.LeftButton == ButtonState.Released);
-
-            oldKeys = newKeys;
-            newKeys = Keyboard.GetState().GetPressedKeys();
-
-            Keys key = Keys.None;
-
-            foreach (Keys newKey in newKeys)
-            {
-                if (!oldKeys.Contains(newKey)) { key = newKey; }
-            }
-
-            if (IsActive)
-            {
-                EventArgs e = new EventArgs();
-                foreach(MyMonoGame.GUI.Element element in elements.ToArray())
-                {
-                    element.Update(mouseX, mouseY, nowState, key, Keyboard.GetState().IsKeyDown(Keys.LeftShift) || Keyboard.GetState().IsKeyDown(Keys.RightShift),e);
-                }
-            }
-
             switch (gameStatus)
             {
                 case GameStatus.Home:
-
+                    backgroundX[0] -= 1 * acceleratorX;
+                    backgroundX[1] -= 2 * acceleratorX;
                     break;
 
-                case GameStatus.Options:
-
-                    break;
-
-                case GameStatus.Game:
-
-                    break;
-
-                case GameStatus.Pause:
-
-                    break;
-
-                case GameStatus.End:
-
-                    break;
-
-                case GameStatus.Thanks:
-
+                case GameStatus.Connect:
+                    backgroundX[0] -= 1 * acceleratorX;
+                    backgroundX[1] -= 2 * acceleratorX;
                     break;
             }
-            
+
+            GUI.Update();
+
             base.Update(gameTime);
         }
 
@@ -240,13 +229,45 @@ namespace Galactic_Colors_Control_GUI
         {
             GraphicsDevice.Clear(Color.DarkGray);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
 
-            /*
+            GUI.Draw(spriteBatch);
+
             switch (gameStatus)
             {
                 case GameStatus.Home:
-                    drawElements = true;
+                    DrawBackground(0);
+                    DrawBackground(1);
+                    GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4), "Galactic Colors Control", titleFont, new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
+                    if (GUI.Button(new Rectangle(ScreenWidth - 64, ScreenHeight - 74,64,64), logoSprite)) { System.Diagnostics.Process.Start("https://sheychen.shost.ca/"); }
+                    if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 - 30, 150, 40), buttonsSprites[0], "Connect", basicFont, new MyMonoGame.Colors(Color.White, Color.Green))) { new Thread(ChangeTo).Start(GameStatus.Connect); }
+                    if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 + 20, 150, 40), buttonsSprites[0], "Options", basicFont, new MyMonoGame.Colors(Color.White, Color.Blue))) { GUI.ResetFocus(); gameStatus = GameStatus.Options; }
+                    if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 + 70, 150, 40), buttonsSprites[0], "Exit", basicFont, new MyMonoGame.Colors(Color.White, Color.Red))) { new Thread(ChangeTo).Start(GameStatus.Exit); }
+                    break;
+
+                case GameStatus.Connect:
+                    DrawBackground(0);
+                    DrawBackground(1);
+                    GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4), "Connnect", titleFont, new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
+                    if (GUI.TextField(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 - 30, 150, 40), ref addressText, basicFont, new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter, "Server address")) { new Thread(ChangeTo).Start(GameStatus.Connection); }
+                    if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 + 20, 150, 40), buttonsSprites[0], "Connection", basicFont)) { new Thread(ChangeTo).Start(GameStatus.Connection); }
+                    if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 + 70, 150, 40), buttonsSprites[0], "Back", basicFont, new MyMonoGame.Colors(Color.White, Color.Red))) { new Thread(ChangeTo).Start(GameStatus.Home); }
+                    break;
+
+                case GameStatus.Connection:
+                    DrawBackground(0);
+                    DrawBackground(1);
+                    GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4), "Connnection", titleFont, new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
+                    GUI.Label(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 4 + 30, 150, 40), addressText, basicFont, new MyMonoGame.Colors(Color.White));
+                    if (GUI.TextField(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 - 30, 150, 40), ref username, basicFont, new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter, "Username")) { if (username != null) { new Thread(ChangeTo).Start(GameStatus.Game); } }
+                    if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 + 20, 150, 40), buttonsSprites[0], "Connection", basicFont)) { if (username != null) { new Thread(ChangeTo).Start(GameStatus.Game); } }
+                    if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 + 70, 150, 40), buttonsSprites[0], "Back", basicFont, new MyMonoGame.Colors(Color.White, Color.Red))) { _run = false; ReceiveThread.Join(); new Thread(ChangeTo).Start(GameStatus.Home); }
+                    break;
+
+                case GameStatus.Error:
+                    GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4), "Error", titleFont, null, Manager.textAlign.centerCenter);
+                    GUI.Label(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 4 + 30, 150, 40), errorText, basicFont);
+                    if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 + 70, 150, 40), buttonsSprites[0], "Exit", basicFont, new MyMonoGame.Colors(Color.White, Color.Red))) { _run = false; ReceiveThread.Join(); new Thread(ChangeTo).Start(GameStatus.Exit); }
                     break;
 
                 case GameStatus.Options:
@@ -254,7 +275,14 @@ namespace Galactic_Colors_Control_GUI
                     break;
 
                 case GameStatus.Game:
-
+                    DrawBackground(0);
+                    DrawBackground(1);
+                    int i = 1;
+                    foreach(string ligne in chat.ToArray().Reverse())
+                    {
+                        GUI.Label(new MyMonoGame.Vector(10, ScreenHeight - 12 * i), ligne, smallFont, new MyMonoGame.Colors(Color.White), Manager.textAlign.topRight);
+                        i++;
+                    }
                     break;
 
                 case GameStatus.Pause:
@@ -269,88 +297,263 @@ namespace Galactic_Colors_Control_GUI
 
                     break;
             }
-            */
 
-                foreach (MyMonoGame.GUI.Element element in elements)
-            {
-                element.Draw(spriteBatch);
-            }
-
-            spriteBatch.Draw(pointerSprites[0], new Rectangle(mouseX - 10, mouseY - 10, 20, 20), Color.Red);
+            Color ActiveColor = IsActive ? Color.Green : Color.Red;
+            GUI.Label(new MyMonoGame.Vector(10, 10), (1 / (float)gameTime.ElapsedGameTime.TotalSeconds).ToString(), smallFont, new MyMonoGame.Colors(ActiveColor));
+            spriteBatch.Draw(pointerSprites[0], new Rectangle(Mouse.GetState().X - 10, Mouse.GetState().Y - 10, 20, 20), Color.Red);
 
             spriteBatch.End();
 
             base.Draw(gameTime);
         }
 
-        private void ChangeTo(GameStatus newGameStatus)
+        private void ChangeTo( object target )
         {
-            //Things to do when leave status
-            switch (gameStatus)
+            GUI.ResetFocus();
+            switch ((GameStatus)target)
             {
                 case GameStatus.Home:
-
+                    if(gameStatus == GameStatus.Connect)
+                    {
+                        while (acceleratorX > 1)
+                        {
+                            Thread.Sleep(20);
+                            acceleratorX -= 0.1d;
+                        }
+                    }
+                    if (gameStatus == GameStatus.Connection || gameStatus == GameStatus.Error)
+                    {
+                        ClientSocket.Close();
+                        ClientSocket = new Socket
+            (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        while (acceleratorX > 1)
+                        {
+                            Thread.Sleep(20);
+                            acceleratorX -= 0.1d;
+                        }
+                    }
                     break;
 
-                case GameStatus.Options:
+                case GameStatus.Connect:
+                    addressText = null;
+                    while (acceleratorX < 5)
+                    {
+                        Thread.Sleep(20);
+                        acceleratorX += 0.1d;
+                    }
+                    break;
 
+                case GameStatus.Connection:
+                    if(addressText == null) { addressText = ""; }
+                    string text = addressText;
+                    string[] parts = text.Split(new char[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length == 0)
+                    {
+                        parts = new string[] { "" };
+                        PORT = 25001;
+                    }
+                    else
+                    {
+                        if (parts.Length > 1)
+                        {
+                            if (!int.TryParse(parts[1], out PORT)) { PORT = 0; }
+                            if (PORT < 0 || PORT > 65535) { PORT = 0; }
+                        }
+                        else
+                        {
+                            PORT = 25001;
+                        }
+                    }
+                    if (PORT != 0)
+                    {
+                        try
+                        {
+                            IPHostEntry ipHostEntry = Dns.GetHostEntry(parts[0]);
+                            IPAddress host = ipHostEntry.AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
+                            IP = host.ToString();
+                        }
+                        catch (Exception e)
+                        {
+                            addressText = e.Message;
+                            PORT = 0;
+                            Thread.CurrentThread.Abort();
+                        }
+                    }
+                    else
+                    {
+                        addressText = "Incorrect port";
+                        Thread.CurrentThread.Abort();
+                    }
+                    if(IP != null)
+                    {
+                        int attempts = 0;
+                        while (!ClientSocket.Connected && attempts < 5)
+                        {
+                            try
+                            {
+                                attempts++;
+                                addressText = "Connection attempt " + attempts;
+                                ClientSocket.Connect(IP, PORT);
+                            }
+                            catch (SocketException)
+                            {
+                                addressText = "Error";
+                            }
+                        }
+                        if (attempts < 5)
+                        {
+                            addressText = "Connected to " + IP.ToString();
+                            _run = true;
+                            chat.Clear();
+                            ReceiveThread = new Thread(ReceiveLoop);
+                            ReceiveThread.Start();
+                        }
+                        else
+                        {
+                            addressText = "Can't connected to " + IP.ToString();
+                            Thread.CurrentThread.Abort();
+                        }
+                    }
                     break;
 
                 case GameStatus.Game:
-
+                    Send("/connect " + username, dataType.message);
                     break;
 
-                case GameStatus.Pause:
-
-                    break;
-
-                case GameStatus.End:
-
-                    break;
-
-                case GameStatus.Thanks:
-
+                case GameStatus.Exit:
+                    while (acceleratorX > 0)
+                    {
+                        Thread.Sleep(20);
+                        acceleratorX -= 0.1d;
+                    }
+                    Thread.Sleep(500);
+                    Exit();
                     break;
             }
-
-            elements.Clear();
-
-            //Initialise new status
-            switch (newGameStatus)
-            {
-                case GameStatus.Home:
-                    elements.Add(new MyMonoGame.GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4), "Galactic Colors Control", titleFont, new MyMonoGame.Colors(Color.DarkRed, Color.Green), MyMonoGame.GUI.Label.textAlign.centerCenter));
-                    elements.Add(new MyMonoGame.GUI.TextField(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 2), null, basicFont, new MyMonoGame.Colors(Color.White, Color.WhiteSmoke, Color.LightGray), MyMonoGame.GUI.Label.textAlign.centerCenter, "Server address", ConnectClick));
-                    //elements.Add(new MyMonoGame.GUI.BoxButton(new Rectangle(ScreenWidth / 2 - 100, ScreenHeight * 3 / 4, 200, 40), buttonsSprites[0], new MyMonoGame.GUI.Colors(Color.White, Color.LightGray, Color.DarkGray), ConnectClick));
-                    elements.Add(new MyMonoGame.GUI.BoxLabelButton(new Rectangle(ScreenWidth / 2 - 100, ScreenHeight * 3 / 4,200,40),buttonsSprites[0], new MyMonoGame.Colors(Color.White, Color.LightGray, Color.DarkGray), "Connect", basicFont, new MyMonoGame.Colors(Color.Black, Color.Black, Color.White), MyMonoGame.GUI.Label.textAlign.centerCenter, ConnectClick));
-                    break;
-
-                case GameStatus.Options:
-
-                    break;
-
-                case GameStatus.Game:
-
-                    break;
-
-                case GameStatus.Pause:
-
-                    break;
-
-                case GameStatus.End:
-
-                    break;
-
-                case GameStatus.Thanks:
-
-                    break;
-            }
-            gameStatus = newGameStatus;
+            gameStatus = (GameStatus)target;
         }
 
-        private void ConnectClick(object sender, EventArgs e)
+        private void DrawBackground(int index)
         {
-            Console.WriteLine("plop");
+            if (backgroundX[index] > backSprites[index].Width) { backgroundX[index] = 0; }
+            if (backgroundY[index] > backSprites[index].Height) { backgroundY[index] = 0; }
+            if (backgroundX[index] < 0) { backgroundX[index] = backSprites[index].Width; }
+            if (backgroundY[index] < 0) { backgroundY[index] = backSprites[index].Height; }
+            for (int X = -1; X < ScreenWidth / backSprites[index].Width + 1; X++)
+            {
+                for (int Y = -1; Y < ScreenHeight / backSprites[index].Height + 1; Y++)
+                {
+                    GUI.Texture(new Rectangle(X * backSprites[index].Width + (int)backgroundX[index], Y * backSprites[index].Height + (int)backgroundY[index], backSprites[index].Width, backSprites[index].Height), backSprites[index], new MyMonoGame.Colors(Color.White));
+                }
+            }
+        }
+
+        private void ReceiveLoop()
+        {
+            while (_run)
+            {
+                var buffer = new byte[2048];
+                int received = 0;
+                try
+                {
+                    received = ClientSocket.Receive(buffer, SocketFlags.None);
+                }
+                catch
+                {
+                    errorText = "Server Timeout";
+                    new Thread(ChangeTo).Start(GameStatus.Error);
+                }
+                if (received == 0) return;
+                _errorCount = 0;
+                var data = new byte[received];
+                Array.Copy(buffer, data, received);
+                byte[] type = new byte[4];
+                type = data.Take(4).ToArray();
+                type.Reverse();
+                dataType dtype = (dataType)BitConverter.ToInt32(type, 0);
+                byte[] bytes = null;
+                bytes = data.Skip(4).ToArray();
+                switch (dtype)
+                {
+                    case dataType.message:
+                        string text = Encoding.ASCII.GetString(bytes);
+                        if (text[0] == '/')
+                        {
+                            text = text.Substring(1);
+                            text = text.ToLower();
+                            string[] array = text.Split(new char[1] { ' ' }, 4, StringSplitOptions.RemoveEmptyEntries);
+                            switch (array[0])
+                            {
+                                case "kick":
+                                    if (array.Length > 1)
+                                    {
+                                        errorText = "Kick : " + array[1];
+                                        new Thread(ChangeTo).Start(GameStatus.Error);
+                                    }
+                                    else
+                                    {
+                                        errorText = "Kick by server";
+                                        new Thread(ChangeTo).Start(GameStatus.Error);
+                                    }
+                                    _run = false;
+                                    break;
+
+                                default:
+                                    chat.Add("Unknown action from server");
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            chat.Add(text);
+                        }
+                        break;
+
+                    case dataType.data:
+                        chat.Add("data");
+                        break;
+                }
+                Thread.Sleep(200);
+            }
+        }
+
+        private void Send(object data, dataType dtype)
+        {
+            byte[] type = new byte[4];
+            type = BitConverter.GetBytes((int)dtype);
+            byte[] bytes = null;
+            switch (dtype)
+            {
+                case dataType.message:
+                    bytes = Encoding.ASCII.GetBytes((string)data);
+                    break;
+
+                case dataType.data:
+                    BinaryFormatter bf = new BinaryFormatter();
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        bf.Serialize(ms, data);
+                        bytes = ms.ToArray();
+                    }
+                    break;
+            }
+            byte[] final = new byte[type.Length + bytes.Length];
+            type.CopyTo(final, 0);
+            bytes.CopyTo(final, type.Length);
+            try
+            {
+                ClientSocket.Send(final);
+            }
+            catch
+            {
+                chat.Add("Can't contact server : " + _errorCount);
+                _errorCount++;
+            }
+            if (_errorCount >= 5)
+            {
+                errorText = "Can't contact server";
+                new Thread(ChangeTo).Start(GameStatus.Error);
+            }
         }
     }
 }

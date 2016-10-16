@@ -8,6 +8,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Galactic Colors Control", "Galactic Colors Control\Galactic Colors Control.csproj", "{93582CE8-C8C8-4E19-908B-D671ECBADE25}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Galactic Colors Control GUI", "Galactic Colors Control GUI\Galactic Colors Control GUI.csproj", "{F6CDDF1B-5A57-4A84-B57C-749FFF9AE031}"
+	ProjectSection(ProjectDependencies) = postProject
+		{93582CE8-C8C8-4E19-908B-D671ECBADE25} = {93582CE8-C8C8-4E19-908B-D671ECBADE25}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
