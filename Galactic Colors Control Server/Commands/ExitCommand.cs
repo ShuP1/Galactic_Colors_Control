@@ -26,8 +26,11 @@ namespace Galactic_Colors_Control_Server.Commands
             {
                 soc.Shutdown(SocketShutdown.Both);
                 Logger.Write("Client disconnected from " + Utilities.GetName(soc), Logger.logType.info);
+                string username = Utilities.GetName(soc);
+                bool connected = Program.clients[soc].status != -1;
                 soc.Close();
                 Program.clients.Remove(soc);
+                if (connected) { Utilities.Broadcast(username + " leave the server", Utilities.dataType.message); }
                 Logger.Write("Size: " + Program.clients.Count + "/" + Program.config.size, Logger.logType.debug);
             }
         }

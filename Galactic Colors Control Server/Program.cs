@@ -159,9 +159,12 @@ namespace Galactic_Colors_Control_Server
 			catch (SocketException)
 			{
 				Logger.Write("Client forcefully disconnected from " + Utilities.GetName(current), Logger.logType.info);
+				string username = Utilities.GetName(current);
+				bool connected = Program.clients[current].status != -1;
 				Logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.debug);
 				current.Close(); // Don't shutdown because the socket may be disposed and its disconnected anyway.
 				clients.Remove(current);
+				if (connected) { Utilities.Broadcast(username + " leave the server", Utilities.dataType.message); }
 				return;
 			}
 
