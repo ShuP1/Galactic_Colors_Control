@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Galactic Colors Control GUI
 		{93582CE8-C8C8-4E19-908B-D671ECBADE25} = {93582CE8-C8C8-4E19-908B-D671ECBADE25}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Galactic Colors Control Console", "Galactic Colors Control Console\Galactic Colors Control Console.csproj", "{5D6A09D1-DCAB-4FD8-B4E6-62D9F41AE8F0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,14 @@ Global
 		{F6CDDF1B-5A57-4A84-B57C-749FFF9AE031}.Release|Any CPU.Build.0 = Release|x86
 		{F6CDDF1B-5A57-4A84-B57C-749FFF9AE031}.Release|x86.ActiveCfg = Release|x86
 		{F6CDDF1B-5A57-4A84-B57C-749FFF9AE031}.Release|x86.Build.0 = Release|x86
+		{5D6A09D1-DCAB-4FD8-B4E6-62D9F41AE8F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D6A09D1-DCAB-4FD8-B4E6-62D9F41AE8F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D6A09D1-DCAB-4FD8-B4E6-62D9F41AE8F0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5D6A09D1-DCAB-4FD8-B4E6-62D9F41AE8F0}.Debug|x86.Build.0 = Debug|Any CPU
+		{5D6A09D1-DCAB-4FD8-B4E6-62D9F41AE8F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D6A09D1-DCAB-4FD8-B4E6-62D9F41AE8F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D6A09D1-DCAB-4FD8-B4E6-62D9F41AE8F0}.Release|x86.ActiveCfg = Release|Any CPU
+		{5D6A09D1-DCAB-4FD8-B4E6-62D9F41AE8F0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

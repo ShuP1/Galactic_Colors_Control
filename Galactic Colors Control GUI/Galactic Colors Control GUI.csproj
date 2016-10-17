@@ -110,6 +110,12 @@
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Galactic Colors Control\Galactic Colors Control.csproj">
+      <Project>{93582ce8-c8c8-4e19-908b-d671ecbade25}</Project>
+      <Name>Galactic Colors Control</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
