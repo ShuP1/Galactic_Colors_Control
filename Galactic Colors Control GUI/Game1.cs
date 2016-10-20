@@ -59,11 +59,12 @@ namespace Galactic_Colors_Control_GUI
         private static Thread Writer;
         private bool showOKMessage = false;
         private string messageTitle;
-        private List<string> messageText = new List<string>();
+        private string messageText = string.Empty;
         private bool showYNMessage = false;
         private bool showLoading = false;
-        private bool showChat = true;
-        private string chatText;
+        private bool showChat = false;
+        private string chatText = string.Empty;
+        private string chatInput = string.Empty;
 
         public Game1()
         {
@@ -207,6 +208,21 @@ namespace Galactic_Colors_Control_GUI
                     break;
 
                 case GameStatus.Game:
+                    if (client.Output.Count > 0)
+                    {
+                        string text = client.Output[0];
+                        switch (text)
+                        {
+                            case "/clear":
+                                chatText = string.Empty;
+                                break;
+
+                            default:
+                                ChatAdd(text);
+                                break;
+                        }
+                        client.Output.Remove(text);
+                    }
                     if (!client.isRunning) { gameStatus = GameStatus.Kick; }
                     break;
             }
@@ -287,7 +303,7 @@ namespace Galactic_Colors_Control_GUI
                         {
                             GUI.Box(new Rectangle(ScreenWidth / 2 - 150, ScreenHeight / 4 + 50, 300, 150), buttonsSprites[0]);
                             GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4 + 60), messageTitle, basicFont, null, Manager.textAlign.bottomCenter);
-                            DrawList(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4 + 100), messageText, smallFont, null, Manager.textAlign.bottomCenter);
+                            GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4 + 100), messageText, smallFont, null, Manager.textAlign.bottomCenter);
                             if (GUI.Button(new Rectangle(ScreenWidth / 2 - 140, ScreenHeight / 4 + 150, 280, 40), buttonsSprites[0], "Ok", basicFont)) { GUI.ResetFocus(); showOKMessage = false; }
                         }
                         else {
@@ -346,7 +362,7 @@ namespace Galactic_Colors_Control_GUI
                         {
                             GUI.Box(new Rectangle(ScreenWidth / 2 - 150, ScreenHeight / 4 + 50, 300, 150), buttonsSprites[0]);
                             GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4 + 60), messageTitle, basicFont, null, Manager.textAlign.bottomCenter);
-                            DrawList(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4 + 100), messageText, smallFont, null, Manager.textAlign.bottomCenter);
+                            GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4 + 100), messageText, smallFont, null, Manager.textAlign.bottomCenter);
                             if (GUI.Button(new Rectangle(ScreenWidth / 2 - 140, ScreenHeight / 4 + 150, 280, 40), buttonsSprites[0], "Ok", basicFont)) { GUI.ResetFocus(); showOKMessage = false; }
                         }
                         else {
@@ -373,18 +389,19 @@ namespace Galactic_Colors_Control_GUI
                 case GameStatus.Game:
                     DrawBackground(0);
                     DrawBackground(1);
-
+                    GUI.Texture(new Rectangle(0,0,ScreenWidth, 30), nullSprite, new MyMonoGame.Colors(new Color(0.1f,0.1f,0.1f)));
+                    if(GUI.Button(new Rectangle(5, 5, 50, 20), (showChat ? "Hide" : "Show") + " chat", smallFont, new MyMonoGame.Colors(Color.White, Color.LightGray, Color.Gray))) { GUI.ResetFocus(); showChat = !showChat; }
                     if (showChat)
                     {
-                        GUI.Box(new Rectangle(5, 5, 310, 310), buttonsSprites[0]);
-                        if(GUI.TextField(new Rectangle(10,10,300,20), ref chatText, basicFont, null, Manager.textAlign.centerLeft, "Enter message")) { if(messageText != null) { client.SendRequest(chatText); chatText = null; } }
-                        DrawList(new MyMonoGame.Vector(10, 30), client.Output, smallFont, null, Manager.textAlign.bottomRight);
+                        GUI.Box(new Rectangle(0, 30, 310, 310), buttonsSprites[0]);
+                        if(GUI.TextField(new Rectangle(5,35,305,20), ref chatInput, basicFont, null, Manager.textAlign.centerLeft, "Enter message")) { if(chatInput != null) { ChatAdd(chatInput); client.SendRequest(chatInput); chatInput = null; } }
+                        GUI.Label(new Rectangle(5, 60, 305, 245), chatText, smallFont, null, Manager.textAlign.topLeft, true);
                     }
                     break;
             }
 
             Color ActiveColor = IsActive ? Color.Green : Color.Red;
-            GUI.Label(new MyMonoGame.Vector(10, 10), (1 / (float)gameTime.ElapsedGameTime.TotalSeconds).ToString(), smallFont, new MyMonoGame.Colors(ActiveColor));
+            GUI.Label(new MyMonoGame.Vector(10, ScreenHeight - 20), (1 / (float)gameTime.ElapsedGameTime.TotalSeconds).ToString(), smallFont, new MyMonoGame.Colors(ActiveColor));
             spriteBatch.Draw(pointerSprites[0], new Rectangle(Mouse.GetState().X - 10, Mouse.GetState().Y - 10, 20, 20), Color.Red);
 
             spriteBatch.End();
@@ -400,8 +417,8 @@ namespace Galactic_Colors_Control_GUI
             if (Host == null)
             {
                 messageTitle = "Error";
-                messageText.Clear();
-                foreach(string line in client.Output.ToArray()) { messageText.Add(line); }
+                messageText = string.Empty;
+                foreach(string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
                 showOKMessage = true;
                 client.Output.Clear();
                 client.ResetHost();;
@@ -424,8 +441,8 @@ namespace Galactic_Colors_Control_GUI
             else
             {
                 messageTitle = "Error";
-                messageText.Clear();
-                foreach (string line in client.Output.ToArray()) { messageText.Add(line); }
+                messageText = string.Empty;
+                foreach (string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
                 showOKMessage = true;
                 client.Output.Clear();
                 client.ResetHost();
@@ -457,8 +474,8 @@ namespace Galactic_Colors_Control_GUI
                     else
                     {
                         messageTitle = "Error";
-                        messageText.Clear();
-                        foreach (string line in client.Output.ToArray()) { messageText.Add(line); }
+                        messageText = string.Empty;
+                        foreach (string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
                         showOKMessage = true;
                         showLoading = false;
                         client.Output.Clear();
@@ -468,14 +485,9 @@ namespace Galactic_Colors_Control_GUI
             showLoading = false;
         }
 
-        private void DrawList(MyMonoGame.Vector vector, List<string> list, SpriteFont font, MyMonoGame.Colors colors, Manager.textAlign align)
+        private void ChatAdd(string text)
         {
-            string text = "";
-            foreach(string line in list)
-            {
-                text += (line + Environment.NewLine);
-            }
-            spriteBatch.DrawString(font, text, new Vector2(vector.X, vector.Y), Color.Black);
+            chatText += ((chatText != string.Empty ? Environment.NewLine : "") + text);
         }
 
         private void DrawBackground(int index)

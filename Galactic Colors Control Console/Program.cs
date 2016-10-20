@@ -81,7 +81,16 @@ namespace Galactic_Colors_Control_Console
                 if (client.Output.Count > 0)
                 {
                     string text = client.Output[0];
-                    Write(text);
+                    switch (text)
+                    {
+                        case "/clear":
+                            Console.Clear();
+                            break;
+
+                        default:
+                            Write(text);
+                            break;
+                    }
                     client.Output.Remove(text);
                 }
                 Thread.Sleep(200);

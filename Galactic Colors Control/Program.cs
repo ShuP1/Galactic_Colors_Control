@@ -151,6 +151,10 @@ namespace Galactic_Colors_Control
                     PingHost();
                     break;
 
+                case "/clear":
+                    Output.Add("/clear");
+                    break;
+
                 default:
                     Send(request, dataType.message);
                     break;

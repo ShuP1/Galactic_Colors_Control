@@ -193,7 +193,10 @@ namespace Galactic_Colors_Control_Server
 
 				if (clients.ContainsKey(current)) { current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current); }
 			}
-			catch (Exception) { }
+			catch (Exception) {
+				Logger.Write("Client forcefully disconnected from " + Utilities.GetName(current), Logger.logType.info);
+				if (clients.ContainsKey(current)) { clients.Remove(current); }
+			}
 		}
 
 		/// <summary>
