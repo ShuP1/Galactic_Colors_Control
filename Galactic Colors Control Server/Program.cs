@@ -171,29 +171,35 @@ namespace Galactic_Colors_Control_Server
 			var data = new byte[received];
 			Array.Copy(buffer, data, received);
 
-			byte[] type = new byte[4];
-			type = data.Take(4).ToArray();
-			type.Reverse();
-			Utilities.dataType dtype = (Utilities.dataType)BitConverter.ToInt32(type, 0);
-			byte[] bytes = null;
-			bytes = data.Skip(4).ToArray();
-			switch (dtype)
-			{
-				case Utilities.dataType.message:
-					string text = Encoding.ASCII.GetString(bytes);
-					ExecuteMessage(text, current);
-					break;
+			try {
+				byte[] type = new byte[4];
+				type = data.Take(4).ToArray();
+				type.Reverse();
+				Utilities.dataType dtype = (Utilities.dataType)BitConverter.ToInt32(type, 0);
+				byte[] bytes = null;
+				bytes = data.Skip(4).ToArray();
+				switch (dtype)
+				{
+					case Utilities.dataType.message:
+						string text = Encoding.ASCII.GetString(bytes);
+						ExecuteMessage(text, current);
+						break;
 
-				case Utilities.dataType.data:
-					Console.WriteLine("data");
-					break;
+					case Utilities.dataType.data:
+						Console.WriteLine("data");
+						break;
 
-				default:
-					Logger.Write("Unknow type data form" + Utilities.GetName(current), Logger.logType.error);
-					break;
+					default:
+						Logger.Write("Unknow type data form" + Utilities.GetName(current), Logger.logType.error);
+						break;
+				}
+
+				if (clients.ContainsKey(current)) { current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current); }
 			}
-
-			if (clients.ContainsKey(current)) { current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current); }
+			catch (Exception) {
+				Logger.Write("Client forcefully disconnected from " + Utilities.GetName(current), Logger.logType.info);
+				if (clients.ContainsKey(current)) { clients.Remove(current); }
+			}
 		}
 
 		/// <summary>

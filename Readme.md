@@ -1,7 +1,6 @@
 # Galactic Colors Control
 
 GCC is a cross plateforme C# minimal RTS. 
-Using .Net/[Mono](https://github.com/mono/mono) and [Monogame](https://github.com/MonoGame/MonoGame)
 
 ### Prerequisities
 
@@ -38,6 +37,13 @@ As you wish, I am opened to new ideas.
 * **[Sheychen](https://sheychen.shost.ca)** - *Initial work*
 
 See also the list of [contributors](https://github.com/sheychen290/Galactic_Colors_Control/contributors) who participated in this project.
+
+## Using
+
+* .Net/[Mono](https://github.com/mono/mono)
+* [Monogame](https://github.com/MonoGame/MonoGame)
+* [MyMonoGame.GUI](https://github.com/sheychen290/MyMonoGame)
+* [Space Sprites](https://gamedevelopment.tutsplus.com/articles/enjoy-these-totally-free-space-based-shoot-em-up-sprites--gamedev-2368)
 
 ## License
 

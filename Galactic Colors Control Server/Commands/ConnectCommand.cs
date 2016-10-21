@@ -21,13 +21,24 @@ namespace Galactic_Colors_Control_Server.Commands
             if (!Utilities.IsConnect(soc))
             {
                 Logger.Write("Identifiaction request from " + Utilities.GetName(soc), Logger.logType.debug);
-                Program.clients[soc].status = 0;
-                //args[1] = args[1][0].ToString().ToUpper()[0] + args[1].Substring(1);
-                Program.clients[soc].pseudo = args[1];
-                Utilities.Send(soc, "Identified as " + args[1], Utilities.dataType.message);
-                Utilities.Broadcast(args[1] + " joined the server", Utilities.dataType.message);
-                Logger.Write("Identified as " + Utilities.GetName(soc) + " form " + ((IPEndPoint)soc.LocalEndPoint).Address.ToString(), Logger.logType.info);
-
+                bool allreadyconnected = false;
+                foreach(Data client in Program.clients.Values)
+                {
+                    if(client.pseudo == args[1]) { allreadyconnected = true; break; }
+                }
+                if (!allreadyconnected)
+                {
+                    Program.clients[soc].status = 0;
+                    //args[1] = args[1][0].ToString().ToUpper()[0] + args[1].Substring(1);
+                    Program.clients[soc].pseudo = args[1];
+                    Utilities.Send(soc, "/connected", Utilities.dataType.message);
+                    Utilities.Broadcast(args[1] + " joined the server", Utilities.dataType.message);
+                    Logger.Write("Identified as " + Utilities.GetName(soc) + " form " + ((IPEndPoint)soc.LocalEndPoint).Address.ToString(), Logger.logType.info);
+                }
+                else
+                {
+                    Utilities.Send(soc, "/allreadytaken", Utilities.dataType.message);
+                }
             }
             else
             {
