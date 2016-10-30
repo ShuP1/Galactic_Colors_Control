@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using Galactic_Colors_Control_Common;
 
 namespace Galactic_Colors_Control_Server.Commands
 {
@@ -31,18 +32,18 @@ namespace Galactic_Colors_Control_Server.Commands
                     Program.clients[soc].status = 0;
                     //args[1] = args[1][0].ToString().ToUpper()[0] + args[1].Substring(1);
                     Program.clients[soc].pseudo = args[1];
-                    Utilities.Send(soc, "/connected", Utilities.dataType.message);
-                    Utilities.Broadcast(args[1] + " joined the server", Utilities.dataType.message);
+                    Utilities.Send(soc, "/connected", Common.dataType.message);
+                    Utilities.Broadcast(args[1] + " joined the server", Common.dataType.message);
                     Logger.Write("Identified as " + Utilities.GetName(soc) + " form " + ((IPEndPoint)soc.LocalEndPoint).Address.ToString(), Logger.logType.info);
                 }
                 else
                 {
-                    Utilities.Send(soc, "/allreadytaken", Utilities.dataType.message);
+                    Utilities.Send(soc, "/allreadytaken", Common.dataType.message);
                 }
             }
             else
             {
-                Utilities.Send(soc, "You are allready " + Utilities.GetName(soc), Utilities.dataType.message);
+                Utilities.Send(soc, "You are allready " + Utilities.GetName(soc), Common.dataType.message);
             }
         }
     }

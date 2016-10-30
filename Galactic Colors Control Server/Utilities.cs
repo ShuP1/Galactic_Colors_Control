@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Galactic_Colors_Control_Common;
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -9,8 +10,6 @@ namespace Galactic_Colors_Control_Server
 {
     class Utilities
     {
-        public enum dataType { message, data };
-
         /// <summary>
         /// Check if socket is connect
         /// </summary>
@@ -91,7 +90,7 @@ namespace Galactic_Colors_Control_Server
         /// <param name="soc">Target socket</param>
         /// <param name="data">Data to send</param>
         /// <param name="dtype">Type of data</param>
-        public static void Send(Socket soc, object data, dataType dtype)
+        public static void Send(Socket soc, object data, Common.dataType dtype)
         {
             /*
             Format:
@@ -103,11 +102,11 @@ namespace Galactic_Colors_Control_Server
             byte[] bytes = null;
             switch (dtype)
             {
-                case dataType.message:
+                case Common.dataType.message:
                     bytes = Encoding.ASCII.GetBytes((string)data);
                     break;
 
-                case dataType.data:
+                case Common.dataType.data:
                     BinaryFormatter bf = new BinaryFormatter();
                     using (MemoryStream ms = new MemoryStream())
                     {
@@ -131,7 +130,7 @@ namespace Galactic_Colors_Control_Server
         /// </summary>
         /// <param name="data">Data to send</param>
         /// <param name="dtype">Type of data</param>
-        public static void Broadcast(object data, dataType dtype)
+        public static void Broadcast(object data, Common.dataType dtype)
         {
             foreach (Socket soc in Program.clients.Keys)
             {
@@ -153,7 +152,7 @@ namespace Galactic_Colors_Control_Server
             }
             else
             {
-                Send(soc, message, dataType.message);
+                Send(soc, message, Common.dataType.message);
             }
         }
     }

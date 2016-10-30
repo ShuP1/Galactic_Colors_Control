@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Galactic_Colors_Control_Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -116,14 +117,14 @@ namespace Galactic_Colors_Control_Server
 				else
 				{
 					Logger.Write("Client can't join from " + ((IPEndPoint)socket.LocalEndPoint).Address.ToString() + " no more space", Logger.logType.warm);
-					Utilities.Send(socket, "/kick can't_join_no_more_space", Utilities.dataType.message);
+					Utilities.Send(socket, "/kick can't_join_no_more_space", Common.dataType.message);
 					socket.Close();
 				}
 			}
 			else
 			{
 				Logger.Write("Client can't join from " + ((IPEndPoint)socket.LocalEndPoint).Address.ToString() + " server closed", Logger.logType.info);
-				Utilities.Send(socket, "/kick can't_join_server_closed", Utilities.dataType.message);
+				Utilities.Send(socket, "/kick can't_join_server_closed", Common.dataType.message);
 				socket.Close();
 			}
 			serverSocket.BeginAccept(AcceptCallback, null);
@@ -164,7 +165,7 @@ namespace Galactic_Colors_Control_Server
 				Logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.debug);
 				current.Close(); // Don't shutdown because the socket may be disposed and its disconnected anyway.
 				clients.Remove(current);
-				if (connected) { Utilities.Broadcast(username + " leave the server", Utilities.dataType.message); }
+				if (connected) { Utilities.Broadcast(username + " leave the server", Common.dataType.message); }
 				return;
 			}
 
@@ -175,17 +176,17 @@ namespace Galactic_Colors_Control_Server
 				byte[] type = new byte[4];
 				type = data.Take(4).ToArray();
 				type.Reverse();
-				Utilities.dataType dtype = (Utilities.dataType)BitConverter.ToInt32(type, 0);
+				Common.dataType dtype = (Common.dataType)BitConverter.ToInt32(type, 0);
 				byte[] bytes = null;
 				bytes = data.Skip(4).ToArray();
 				switch (dtype)
 				{
-					case Utilities.dataType.message:
+					case Common.dataType.message:
 						string text = Encoding.ASCII.GetString(bytes);
 						ExecuteMessage(text, current);
 						break;
 
-					case Utilities.dataType.data:
+					case Common.dataType.data:
 						Console.WriteLine("data");
 						break;
 
@@ -230,12 +231,12 @@ namespace Galactic_Colors_Control_Server
 				{
 					if (!Utilities.IsConnect(soc))
 					{
-						Utilities.Send(soc, "Only identified clients can talk.", Utilities.dataType.message);
+						Utilities.Send(soc, "Only identified clients can talk.", Common.dataType.message);
 					}
 					else
 					{
 						Logger.Write(Utilities.GetName(soc) + " : " + text, Logger.logType.info);
-						Utilities.Broadcast(Utilities.GetName(soc) + " : " + text, Utilities.dataType.message);
+						Utilities.Broadcast(Utilities.GetName(soc) + " : " + text, Common.dataType.message);
 					}
 				}
 			}

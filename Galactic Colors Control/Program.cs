@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Galactic_Colors_Control_Common;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,8 +23,6 @@ namespace Galactic_Colors_Control
         public string IP = null;
 
         public bool isRunning { get { return _run; } }
-
-        private enum dataType { message, data };
 
         public List<string> Output = new List<string>();
 
@@ -130,7 +129,7 @@ namespace Galactic_Colors_Control
         /// </summary>
         public void ExitHost()
         {
-            Send("/exit", dataType.message); // Tell the server we are exiting
+            Send("/exit", Common.dataType.message); // Tell the server we are exiting
             _run = false;
             RecieveThread.Join();
             ClientSocket.Shutdown(SocketShutdown.Both);
@@ -156,7 +155,7 @@ namespace Galactic_Colors_Control
                     break;
 
                 default:
-                    Send(request, dataType.message);
+                    Send(request, Common.dataType.message);
                     break;
             }
         }
@@ -178,18 +177,18 @@ namespace Galactic_Colors_Control
             }
         }
 
-        private void Send(object data, dataType dtype)
+        private void Send(object data, Common.dataType dtype)
         {
             byte[] type = new byte[4];
             type = BitConverter.GetBytes((int)dtype);
             byte[] bytes = null;
             switch (dtype)
             {
-                case dataType.message:
+                case Common.dataType.message:
                     bytes = Encoding.ASCII.GetBytes((string)data);
                     break;
 
-                case dataType.data:
+                case Common.dataType.data:
                     BinaryFormatter bf = new BinaryFormatter();
                     using (MemoryStream ms = new MemoryStream())
                     {
@@ -238,12 +237,12 @@ namespace Galactic_Colors_Control
                 byte[] type = new byte[4];
                 type = data.Take(4).ToArray();
                 type.Reverse();
-                dataType dtype = (dataType)BitConverter.ToInt32(type, 0);
+                Common.dataType dtype = (Common.dataType)BitConverter.ToInt32(type, 0);
                 byte[] bytes = null;
                 bytes = data.Skip(4).ToArray();
                 switch (dtype)
                 {
-                    case dataType.message:
+                    case Common.dataType.message:
                         string text = Encoding.ASCII.GetString(bytes);
                         if (text[0] == '/')
                         {
@@ -283,7 +282,7 @@ namespace Galactic_Colors_Control
                         }
                         break;
 
-                    case dataType.data:
+                    case Common.dataType.data:
                         Console.WriteLine("data");
                         break;
                 }

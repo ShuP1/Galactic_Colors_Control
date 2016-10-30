@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Galactic_Colors_Control_Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -29,11 +30,11 @@ namespace Galactic_Colors_Control_Server.Commands
                 Logger.Write(args[1] + " was kick by server.", Logger.logType.info);
                 if (args.Length > 2)
                 {
-                    Utilities.Send(target, "/kick " + args[2], Utilities.dataType.message);
+                    Utilities.Send(target, "/kick " + args[2], Common.dataType.message);
                     Logger.Write("because" + args[1], Logger.logType.debug);
                 }
                 else {
-                    Utilities.Send(target, "/kick", Utilities.dataType.message);
+                    Utilities.Send(target, "/kick", Common.dataType.message);
                 }
             }
             else

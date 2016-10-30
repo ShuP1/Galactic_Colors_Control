@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Galactic_Colors_Control_Common;
+using System;
 using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
@@ -30,7 +31,7 @@ namespace Galactic_Colors_Control_Server.Commands
                 bool connected = Program.clients[soc].status != -1;
                 soc.Close();
                 Program.clients.Remove(soc);
-                if (connected) { Utilities.Broadcast(username + " leave the server", Utilities.dataType.message); }
+                if (connected) { Utilities.Broadcast(username + " leave the server", Common.dataType.message); }
                 Logger.Write("Size: " + Program.clients.Count + "/" + Program.config.size, Logger.logType.debug);
             }
         }
