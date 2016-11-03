@@ -7,6 +7,7 @@ namespace Galactic_Colors_Control_Server.Commands
         public string Name { get { return "ping"; } }
         public string DescText { get { return "Clears the console screen."; } }
         public string HelpText { get { return "Use /ping to display our ping."; } }
+        public Manager.CommandGroup Group { get { return Manager.CommandGroup.root; } }
         public bool IsServer { get { return false; } }
         public bool IsClient { get { return true; } }
         public bool IsClientSide { get { return true; } }

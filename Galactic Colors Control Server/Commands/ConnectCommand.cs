@@ -10,6 +10,7 @@ namespace Galactic_Colors_Control_Server.Commands
         public string Name { get { return "connect"; } }
         public string DescText { get { return "Gets an username."; } }
         public string HelpText { get { return "Use /connect [username] to start identification"; } }
+        public Manager.CommandGroup Group { get { return Manager.CommandGroup.root; } }
         public bool IsServer { get { return false; } }
         public bool IsClient { get { return true; } }
         public bool IsClientSide { get { return false; } }
@@ -23,7 +24,7 @@ namespace Galactic_Colors_Control_Server.Commands
             {
                 Logger.Write("Identifiaction request from " + Utilities.GetName(soc), Logger.logType.debug);
                 bool allreadyconnected = false;
-                foreach(Data client in Program.clients.Values)
+                foreach(Client client in Program.clients.Values)
                 {
                     if(client.pseudo == args[1]) { allreadyconnected = true; break; }
                 }

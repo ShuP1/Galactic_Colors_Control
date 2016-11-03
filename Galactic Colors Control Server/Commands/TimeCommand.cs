@@ -8,6 +8,7 @@ namespace Galactic_Colors_Control_Server.Commands
         public string Name { get { return "time"; } }
         public string DescText { get { return "Gives server time."; } }
         public string HelpText { get { return "Use /time to display server time. (format is server dependent)"; } }
+        public Manager.CommandGroup Group { get { return Manager.CommandGroup.root; } }
         public bool IsServer { get { return true; } }
         public bool IsClient { get { return true; } }
         public bool IsClientSide { get { return false; } }

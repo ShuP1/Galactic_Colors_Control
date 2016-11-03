@@ -64,11 +64,11 @@ namespace Galactic_Colors_Control_Server
         /// Write line in console with correct colors
         /// </summary>
         /// <param name="v">Text to write</param>
-        public static void ConsoleWrite(string v)
+        public static void ConsoleWrite(string v, ConsoleColor Fore = ConsoleColor.White, ConsoleColor Back = ConsoleColor.Black)
         {
             Console.Write("\b");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = Fore;
+            Console.BackgroundColor = Back;
             Console.WriteLine(v);
             ConsoleResetColor();
             Console.Write(">");

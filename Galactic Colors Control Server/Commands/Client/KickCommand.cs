@@ -6,11 +6,12 @@ using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
 {
-    public class KickCommand : ICommand
+    public class ClientKickCommand : ICommand
     {
         public string Name { get { return "kick"; } }
         public string DescText { get { return "Kicks selected client."; } }
-        public string HelpText { get { return "Use /kick [username] <reason> to kick client from server."; } }
+        public string HelpText { get { return "Use /client kick [username] <reason> to kick client from server."; } }
+        public Manager.CommandGroup Group { get { return Manager.CommandGroup.client; } }
         public bool IsServer { get { return true; } }
         public bool IsClient { get { return false; } }
         public bool IsClientSide { get { return false; } }
@@ -23,15 +24,15 @@ namespace Galactic_Colors_Control_Server.Commands
             Socket target = null;
             foreach(Socket client in Program.clients.Keys)
             {
-                if(Utilities.GetName(client) == args[1]) { target = client; }
+                if(Utilities.GetName(client) == args[2]) { target = client; }
             }
             if (target != null)
             {
-                Logger.Write(args[1] + " was kick by server.", Logger.logType.info);
+                Logger.Write(args[2] + " was kick by server.", Logger.logType.info);
                 if (args.Length > 2)
                 {
-                    Utilities.Send(target, "/kick " + args[2], Common.dataType.message);
-                    Logger.Write("because" + args[1], Logger.logType.debug);
+                    Utilities.Send(target, "/kick " + args[3], Common.dataType.message);
+                    Logger.Write("because" + args[2], Logger.logType.debug);
                 }
                 else {
                     Utilities.Send(target, "/kick", Common.dataType.message);
@@ -39,7 +40,7 @@ namespace Galactic_Colors_Control_Server.Commands
             }
             else
             {
-                Utilities.Return("Can't find " + args[1], soc, server);
+                Utilities.Return("Can't find " + args[2], soc, server);
             }
         }
     }

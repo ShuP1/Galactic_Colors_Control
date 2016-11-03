@@ -17,7 +17,10 @@ namespace Galactic_Colors_Control_Server
 		public static bool _run = true;
 		public static bool _open = true;
 		private static readonly byte[] buffer = new byte[BUFFER_SIZE];
-		public static Dictionary<Socket, Data> clients { get; private set; } = new Dictionary<Socket, Data>();
+
+		public static Dictionary<Socket, Client> clients { get; private set; } = new Dictionary<Socket, Client>();
+		public static List<Party> parties { get; private set; } = new List<Party>();
+
 		public static Config config = new Config();
 
 		private static void Main(string[] args)
@@ -135,7 +138,8 @@ namespace Galactic_Colors_Control_Server
 		/// </summary>
 		private static void AddClient(Socket socket)
 		{
-			clients.Add(socket, new Data());
+			Client client = new Client();
+			clients.Add(socket, client);
 			socket.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
 			Logger.Write("Client connection from " + Utilities.GetName(socket), Logger.logType.info);
 			Logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.debug);
@@ -159,9 +163,9 @@ namespace Galactic_Colors_Control_Server
 			}
 			catch (SocketException)
 			{
-				Logger.Write("Client forcefully disconnected from " + Utilities.GetName(current), Logger.logType.info);
+				Logger.Write("Client forcefully disconnected from " + Utilities.GetName(current) + " : SocketException", Logger.logType.info);
 				string username = Utilities.GetName(current);
-				bool connected = Program.clients[current].status != -1;
+				bool connected = clients[current].status != -1;
 				Logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.debug);
 				current.Close(); // Don't shutdown because the socket may be disposed and its disconnected anyway.
 				clients.Remove(current);
@@ -198,7 +202,7 @@ namespace Galactic_Colors_Control_Server
 				if (clients.ContainsKey(current)) { current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current); }
 			}
 			catch (Exception) {
-				Logger.Write("Client forcefully disconnected from " + Utilities.GetName(current), Logger.logType.info);
+				Logger.Write("Client forcefully disconnected from " + Utilities.GetName(current) + " : ReceiveException", Logger.logType.info);
 				if (clients.ContainsKey(current)) { clients.Remove(current); }
 			}
 		}

@@ -3,13 +3,14 @@ using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
 {
-    public class CountCommand : ICommand
+    public class ClientCountCommand : ICommand
     {
         public string Name { get { return "count"; } }
         public string DescText { get { return "Counts connected clients."; } }
-        public string HelpText { get { return "Use /count to show connected clients count and size"; } }
+        public string HelpText { get { return "Use /client count to show connected clients count and size"; } }
+        public Manager.CommandGroup Group { get { return Manager.CommandGroup.client; } }
         public bool IsServer { get { return true; } }
-        public bool IsClient { get { return false; } }
+        public bool IsClient { get { return true; } }
         public bool IsClientSide { get { return false; } }
         public bool IsNoConnect { get { return false; } }
         public int minArgs { get { return 0; } }
@@ -17,7 +18,7 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public void Execute(string[] args, Socket soc, bool server = false)
         {
-            Utilities.ConsoleWrite(Program.clients.Count + "/" + Program.config.size);
+            Utilities.Return(Program.clients.Count + "/" + Program.config.size, soc, server);
         }
     }
 }

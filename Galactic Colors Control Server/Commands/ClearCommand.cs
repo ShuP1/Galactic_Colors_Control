@@ -8,6 +8,7 @@ namespace Galactic_Colors_Control_Server.Commands
         public string Name { get { return "clear"; } }
         public string DescText { get { return "Clears the console screen."; } }
         public string HelpText { get { return "Use /clear to execute Console.Clear()."; } }
+        public Manager.CommandGroup Group { get { return Manager.CommandGroup.root; } }
         public bool IsServer { get { return true; } }
         public bool IsClient { get { return true; } }
         public bool IsClientSide { get { return true; } }

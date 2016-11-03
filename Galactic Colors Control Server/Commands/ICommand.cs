@@ -7,6 +7,7 @@ namespace Galactic_Colors_Control_Server.Commands
         string Name { get; }
         string DescText { get; }
         string HelpText { get; }
+        Manager.CommandGroup Group { get; }
         bool IsServer { get; }
         bool IsClient { get; }
         bool IsClientSide { get; }

@@ -6,9 +6,10 @@ using System.Reflection;
 
 namespace Galactic_Colors_Control_Server.Commands
 {
-    class Manager
+    public class Manager
     {
-        public static Dictionary<string, ICommand> commands { get; private set; } = new Dictionary<string, ICommand>();
+        public static List<ICommand> commands { get; private set; } = new List<ICommand>();
+        public enum CommandGroup { root, server, party, client}
 
         /// <summary>
         /// Find all ICommand and add them to commands
@@ -19,8 +20,8 @@ namespace Galactic_Colors_Control_Server.Commands
             IEnumerable<ICommand> coms = Assembly.GetExecutingAssembly().GetTypes().Where(x => x.GetInterfaces().Contains(typeof(ICommand)) && x.GetConstructor(Type.EmptyTypes) != null).Select(x => Activator.CreateInstance(x) as ICommand);
             foreach (ICommand com in coms)
             {
-                commands.Add(com.Name, com);
-                Logger.Write("Added command " + com.GetType().Name, Logger.logType.debug);
+                commands.Add(com);
+                Logger.Write("Added command " + com.Group.ToString() + " " + com.Name, Logger.logType.debug);
             }
         }
 
@@ -32,12 +33,12 @@ namespace Galactic_Colors_Control_Server.Commands
         /// <param name="server">Is server?</param>
         public static void Execute(string[] args, Socket soc = null, bool server = false)
         {
-            if (commands.ContainsKey(args[0]))
+            ICommand command = null;
+            if (TryGetCommand(args, ref command))
             {
-                ICommand command = commands[args[0]];
                 if (CanAccess(command, soc, server))
                 {
-                    if (command.IsClientSide)
+                    if (!server && command.IsClientSide)
                     {
                         Utilities.Return("It's a client side command", soc, server);
                     }
@@ -45,30 +46,85 @@ namespace Galactic_Colors_Control_Server.Commands
                     {
                         if (args.Length > command.minArgs)
                         {
-                            if (args.Length - 1 <= command.maxArgs)
+                            if (args.Length - (command.Group == 0 ? 1 : 2) <= command.maxArgs)
                             {
                                 command.Execute(args, soc, server);
                             }
                             else
                             {
-                                Utilities.Return("Command " + command.Name + " require at most " + command.minArgs + " argument(s).", soc, server);
+                                Utilities.Return("Command " + CommandToString(command) + " require at most " + command.minArgs + " argument(s).", soc, server);
                             }
                         }
 
                         else
                         {
-                            Utilities.Return("Command " + command.Name + " require at least " + command.minArgs + " argument(s).", soc, server);
+                            Utilities.Return("Command " + CommandToString(command) + " require at least " + command.minArgs + " argument(s).", soc, server);
                         }
                     }
                 }
                 else
                 {
-                    Utilities.Return("Unknown command : " + args[0], soc, server);
+                    Utilities.Return("Unknown command : " + CommandToString(args), soc, server);
                 }
             }
             else
             {
-                Utilities.Return("Unknown command : " + args[0], soc, server);
+                Utilities.Return("Unknown command : " + CommandToString(args), soc, server);
+            }
+        }
+
+        public static string CommandToString(ICommand command)
+        {
+            string text = "";
+            if(command.Group != 0) { text += (command.Group.ToString() + " "); }
+            text += command.Name;
+            return text;
+        }
+
+        public static string CommandToString(string[] args)
+        {
+            if (args.Length > 0)
+            {
+                string text = "";
+                foreach(string arg in args)
+                {
+                    text += (arg + " ");
+                }
+                return text;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static bool TryGetCommand(string[] args, ref ICommand command)
+        {
+            if (args.Length > 0)
+            {
+                List<string> groups = Enum.GetNames(typeof(CommandGroup)).ToList();
+                CommandGroup group = 0;
+                if (groups.Contains(args[0]))
+                {
+                    if (args.Length > 1)
+                    {
+                        group = (CommandGroup)Enum.Parse(typeof(CommandGroup), args[0]);
+                    }
+                }
+                IEnumerable<ICommand> coms = commands.Where(p => (p.Name == args[group == 0 ? 0 : 1] && p.Group == group));
+                if (coms.Count() == 1)
+                {
+                    command = coms.First();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
             }
         }
 

@@ -3,17 +3,18 @@ using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
 {
-    public class OpenCommand : ICommand
+    public class ServerOpenCommand : ICommand
     {
         public string Name { get { return "open"; } }
-        public string DescText { get { return "Opens server for connections."; } }
-        public string HelpText { get { return "Use /open to restart connection process"; } }
+        public string DescText { get { return "Open server."; } }
+        public string HelpText { get { return "Use /server open to open server for connections"; } }
+        public Manager.CommandGroup Group { get { return Manager.CommandGroup.server; } }
         public bool IsServer { get { return true; } }
         public bool IsClient { get { return false; } }
         public bool IsClientSide { get { return false; } }
         public bool IsNoConnect { get { return false; } }
         public int minArgs { get { return 0; } }
-        public int maxArgs { get { return 0; } }
+        public int maxArgs { get { return 1; } }
 
         public void Execute(string[] args, Socket soc, bool server = false)
         {
