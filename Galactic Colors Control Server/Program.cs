@@ -19,10 +19,16 @@ namespace Galactic_Colors_Control_Server
 		private static readonly byte[] buffer = new byte[BUFFER_SIZE];
 
 		public static Dictionary<Socket, Client> clients { get; private set; } = new Dictionary<Socket, Client>();
-		public static List<Party> parties { get; private set; } = new List<Party>();
+
+		public static int partyID = 0;
+		public static Dictionary<int,Party> parties { get; private set; } = new Dictionary<int,Party>();
+		public static int selectedParty = -1;
 
 		public static Config config = new Config();
 
+		/// <summary>
+		/// Server Main thread
+		/// </summary>
 		private static void Main(string[] args)
 		{
 			Console.Title = "Galactic Colors Control Server";
@@ -176,35 +182,36 @@ namespace Galactic_Colors_Control_Server
 			var data = new byte[received];
 			Array.Copy(buffer, data, received);
 
-			try {
-				byte[] type = new byte[4];
-				type = data.Take(4).ToArray();
-				type.Reverse();
-				Common.dataType dtype = (Common.dataType)BitConverter.ToInt32(type, 0);
-				byte[] bytes = null;
-				bytes = data.Skip(4).ToArray();
-				switch (dtype)
-				{
-					case Common.dataType.message:
-						string text = Encoding.ASCII.GetString(bytes);
-						ExecuteMessage(text, current);
-						break;
+			//Server crash on command Exception
+			//try {
+			byte[] type = new byte[4];
+			type = data.Take(4).ToArray();
+			type.Reverse();
+			Common.dataType dtype = (Common.dataType)BitConverter.ToInt32(type, 0);
+			byte[] bytes = null;
+			bytes = data.Skip(4).ToArray();
+			switch (dtype)
+			{
+				case Common.dataType.message:
+					string text = Encoding.ASCII.GetString(bytes);
+					ExecuteMessage(text, current);
+					break;
 
-					case Common.dataType.data:
-						Console.WriteLine("data");
-						break;
+				case Common.dataType.data:
+					Console.WriteLine("data");
+					break;
 
-					default:
-						Logger.Write("Unknow type data form" + Utilities.GetName(current), Logger.logType.error);
-						break;
-				}
-
-				if (clients.ContainsKey(current)) { current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current); }
+				default:
+					Logger.Write("Unknow type data form" + Utilities.GetName(current), Logger.logType.error);
+					break;
 			}
+
+			if (clients.ContainsKey(current)) { current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current); }
+			/*}
 			catch (Exception) {
-				Logger.Write("Client forcefully disconnected from " + Utilities.GetName(current) + " : ReceiveException", Logger.logType.info);
-				if (clients.ContainsKey(current)) { clients.Remove(current); }
-			}
+				Logger.Write(Utilities.GetName(current) + " : ReceiveException", Logger.logType.info);
+				//if (clients.ContainsKey(current)) { clients.Remove(current); }
+			}*/
 		}
 
 		/// <summary>
@@ -239,11 +246,29 @@ namespace Galactic_Colors_Control_Server
 					}
 					else
 					{
-						Logger.Write(Utilities.GetName(soc) + " : " + text, Logger.logType.info);
-						Utilities.Broadcast(Utilities.GetName(soc) + " : " + text, Common.dataType.message);
+						int party = -1;
+						if (server)
+						{
+							party = selectedParty;
+						}
+						else
+						{
+							party = clients[soc].partyID;
+						}
+						Utilities.BroadcastParty(Utilities.GetName(soc) + " : " + text, Common.dataType.message, party);
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Add new party with index
+		/// </summary>
+		/// <param name="party">Party to add</param>
+		public static void AddParty(Party party)
+		{
+			parties.Add(partyID, party);
+			partyID++;
 		}
 	}
 }

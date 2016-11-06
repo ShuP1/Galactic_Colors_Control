@@ -64,6 +64,8 @@ namespace Galactic_Colors_Control_Server
         /// Write line in console with correct colors
         /// </summary>
         /// <param name="v">Text to write</param>
+        /// <param name="Fore">Foreground color</param>
+        /// <param name="Back">Background color</param>
         public static void ConsoleWrite(string v, ConsoleColor Fore = ConsoleColor.White, ConsoleColor Back = ConsoleColor.Black)
         {
             Console.Write("\b");
@@ -136,6 +138,25 @@ namespace Galactic_Colors_Control_Server
             {
                 Send(soc, data, dtype);
             }
+            if (dtype == Common.dataType.message) { ConsoleWrite((string)data); }
+        }
+
+        /// <summary>
+        /// Send data to all client of the party
+        /// </summary>
+        /// <param name="data">Data to send</param>
+        /// <param name="dtype">Type of data</param>
+        /// <param name="party">Id of the party</param>
+        public static void BroadcastParty(object data, Common.dataType dtype, int party)
+        {
+            foreach(Socket soc in Program.clients.Keys)
+            {
+                if (Program.clients[soc].partyID == party)
+                {
+                    Send(soc, data, dtype);
+                }
+            }
+            if (dtype == Common.dataType.message) { if (Program.selectedParty == party) { ConsoleWrite((string)data); } }
         }
 
         /// <summary>
@@ -153,6 +174,70 @@ namespace Galactic_Colors_Control_Server
             else
             {
                 Send(soc, message, Common.dataType.message);
+            }
+        }
+
+        /// <summary>
+        /// Try get party of the socket
+        /// </summary>
+        /// <param name="partyId">Result party ID</param>
+        /// <param name="needOwn">Return true only for owner and server</param>
+        /// <param name="soc">Target socket</param>
+        /// <param name="server">Is server?</param>
+        /// <returns>Can access?</returns>
+        public static bool AccessParty(ref int partyId, bool needOwn,  Socket soc = null, bool server = false)
+        {
+            if (server)
+            {
+                if(Program.selectedParty != -1)
+                {
+                    if (Program.parties.ContainsKey(Program.selectedParty))
+                    {
+                        partyId = Program.selectedParty;
+                        return true;
+                    }
+                    else
+                    {
+                        Logger.Write("Can't find party " + Program.selectedParty, Logger.logType.error);
+                        Program.selectedParty = -1;
+                        return false;
+                    }
+                }
+                else
+                {
+                    ConsoleWrite("Join a party before");
+                    return false;
+                }
+            }
+            else
+            {
+                if(Program.clients[soc].partyID != -1)
+                {
+                    if (Program.parties.ContainsKey(Program.clients[soc].partyID))
+                    {
+                        if (Program.parties[Program.clients[soc].partyID].IsOwner(GetName(soc)) || !needOwn)
+                        {
+                            partyId = Program.clients[soc].partyID;
+                            return true;
+                        }
+                        else
+                        {
+                            Send(soc, "You are not owner", Common.dataType.message);
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        Send(soc, "Can't find party " + Program.clients[soc].partyID, Common.dataType.message);
+                        Program.clients[soc].partyID = -1;
+                        return false;
+                    }
+                }
+                else
+                {
+                    Send(soc, "Join a party before", Common.dataType.message);
+                    return false;
+                }
             }
         }
     }

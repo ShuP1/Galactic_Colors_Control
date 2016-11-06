@@ -271,6 +271,24 @@ namespace Galactic_Colors_Control
                                     _run = false;
                                     break;
 
+                                case "party":
+                                    if (array[1] == "kick")
+                                    {
+                                        if (array.Length > 2)
+                                        {
+                                            Output.Add("Kick from party : " + array[2]);
+                                        }
+                                        else
+                                        {
+                                            Output.Add("Kick from party");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Output.Add("Unknown action from server");
+                                    }
+                                    break;
+
                                 default:
                                     Output.Add("Unknown action from server");
                                     break;

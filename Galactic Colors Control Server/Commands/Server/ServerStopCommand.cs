@@ -1,13 +1,14 @@
-﻿using System;
+﻿using Galactic_Colors_Control_Common;
+using System;
 using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
 {
-    public class ServerCloseCommand : ICommand
+    public class ServerStopCommand : ICommand
     {
-        public string Name { get { return "close"; } }
-        public string DescText { get { return "Close server."; } }
-        public string HelpText { get { return "Use /server close to close server for connections"; } }
+        public string Name { get { return "stop"; } }
+        public string DescText { get { return "Stop the server."; } }
+        public string HelpText { get { return "Use /server stop to completly stop server."; } }
         public Manager.CommandGroup Group { get { return Manager.CommandGroup.server; } }
         public bool IsServer { get { return true; } }
         public bool IsClient { get { return false; } }
@@ -18,15 +19,8 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public void Execute(string[] args, Socket soc, bool server = false)
         {
-            if (Program._open)
-            {
-                Program._open = false;
-                Logger.Write("Server closed", Logger.logType.warm);
-            }
-            else
-            {
-                Utilities.ConsoleWrite("Server allready close");
-            }
+            Program._run = false;
+            Utilities.ConsoleWrite("Stop server");
         }
     }
 }

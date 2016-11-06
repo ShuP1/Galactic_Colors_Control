@@ -59,6 +59,17 @@
     <Compile Include="Client.cs" />
     <Compile Include="Commands\ClearCommand.cs" />
     <Compile Include="Commands\Client\StatusCommand.cs" />
+    <Compile Include="Commands\Party\PartyLeaveCommand.cs" />
+    <Compile Include="Commands\Party\PartyCreateCommand.cs" />
+    <Compile Include="Commands\Party\PartyJoinCommand.cs" />
+    <Compile Include="Commands\Party\PartyCloseCommand.cs" />
+    <Compile Include="Commands\Party\PartyClientCommand.cs" />
+    <Compile Include="Commands\Party\PartyStopCommand.cs" />
+    <Compile Include="Commands\Party\PartyPasswordCommand.cs" />
+    <Compile Include="Commands\Party\PartyListCommand.cs" />
+    <Compile Include="Commands\Party\PartyOpenCommand.cs" />
+    <Compile Include="Commands\Party\PartyStatusCommand.cs" />
+    <Compile Include="Commands\Party\PartyKickCommand.cs" />
     <Compile Include="Commands\PingCommand.cs" />
     <Compile Include="Commands\Server\ServerOpenCommand.cs" />
     <Compile Include="Commands\ConnectCommand.cs" />
@@ -106,9 +117,7 @@
       <Name>Galactic Colors Control Common</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Commands\Party\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

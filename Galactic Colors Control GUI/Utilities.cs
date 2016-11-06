@@ -6,6 +6,11 @@ namespace Galactic_Colors_Control_GUI
 {
     static class Utilities
     {
+        /// <summary>
+        /// Load Texture2D from files
+        /// </summary>
+        /// <param name="path">File .png path</param>
+        /// <param name="sprite">Result sprite</param>
         static public void SpriteFromPng(string path, ref Texture2D sprite, GraphicsDevice graphics)
         {
             if (File.Exists(path))
@@ -17,6 +22,11 @@ namespace Galactic_Colors_Control_GUI
             }
         }
 
+        /// <summary>
+        /// Load SoundEffect from files
+        /// </summary>
+        /// <param name="path">File .mp3 path</param>
+        /// <param name="sound">Result sound</param>
         static public void SoundFromMp3(string path, ref SoundEffect sound)
         {
             if (File.Exists(path))

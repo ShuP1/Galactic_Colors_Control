@@ -9,7 +9,7 @@ namespace Galactic_Colors_Control_Server.Commands
     {
         public string Name { get { return "help"; } }
         public string DescText { get { return "Shows the help."; } }
-        public string HelpText { get { return "Use /help [command] to display command help."; } }
+        public string HelpText { get { return "Use /help [command] to display command help. (-all for full help)"; } }
         public Manager.CommandGroup Group { get { return Manager.CommandGroup.root; } }
         public bool IsServer { get { return true; } }
         public bool IsClient { get { return true; } }
@@ -20,7 +20,14 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public void Execute(string[] args, Socket soc, bool server = false)
         {
-            if(args.Length == 1)
+            bool isGroup = false;
+            bool isAll = false;
+            if (args.Length == 2)
+            {
+                isGroup = Enum.GetNames(typeof(Manager.CommandGroup)).Contains(args[1]);
+                isAll = (args[1] == "-all");
+            }
+            if (args.Length == 1 || (isGroup || isAll))
             {
                 int maxLen = 0;
                 List<ICommand> list = new List<ICommand>();
@@ -28,8 +35,11 @@ namespace Galactic_Colors_Control_Server.Commands
                 {
                     if(Manager.CanAccess(com, soc, server))
                     {
-                        list.Add(com);
-                        if(com.Name.Length + (com.Group == 0 ? 0 : 4) > maxLen) { maxLen = com.Name.Length + (com.Group == 0 ? 0 : 4); }
+                        if (!isGroup || (isGroup && com.Group == (Manager.CommandGroup)Enum.Parse(typeof(Manager.CommandGroup), args[1])))
+                        {
+                            list.Add(com);
+                            if (com.Name.Length + (com.Group == 0 ? 0 : 4) > maxLen) { maxLen = com.Name.Length + (com.Group == 0 ? 0 : 4); }
+                        }
                     }
                 }
                 list.Sort((x,y) => x.Group.CompareTo(y.Group));
@@ -39,10 +49,13 @@ namespace Galactic_Colors_Control_Server.Commands
                 {
                     if(com.Group != actualGroup)
                     {
-                        text += (Environment.NewLine + "  " + com.Group.ToString() + Environment.NewLine);
+                        text += (Environment.NewLine + "  " + com.Group.ToString() + Environment.NewLine + ((isGroup || isAll) ? "" : ("    Use /help " + com.Group.ToString())));
                         actualGroup = com.Group;
                     }
-                    text += ("  " + (com.Group != 0 ? new string(' ',4) : "") + com.Name + new string(' ', maxLen - com.Name.Length - (com.Group == 0 ? 0 : 4)) + " : " + com.DescText + Environment.NewLine);
+                    if ((!(isGroup || isAll) && com.Group == 0) || (isGroup || isAll))
+                    {
+                        text += ("  " + (com.Group != 0 ? new string(' ', 4) : "") + com.Name + new string(' ', maxLen - com.Name.Length - (com.Group == 0 ? 0 : 4)) + " : " + com.DescText + Environment.NewLine);
+                    }
                 }
                 Utilities.Return(text, soc, server);
             }

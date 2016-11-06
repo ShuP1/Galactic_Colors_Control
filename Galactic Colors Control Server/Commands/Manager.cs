@@ -44,7 +44,7 @@ namespace Galactic_Colors_Control_Server.Commands
                     }
                     else
                     {
-                        if (args.Length > command.minArgs)
+                        if (args.Length - (command.Group == 0 ? 0 : 1) > command.minArgs)
                         {
                             if (args.Length - (command.Group == 0 ? 1 : 2) <= command.maxArgs)
                             {
@@ -52,7 +52,7 @@ namespace Galactic_Colors_Control_Server.Commands
                             }
                             else
                             {
-                                Utilities.Return("Command " + CommandToString(command) + " require at most " + command.minArgs + " argument(s).", soc, server);
+                                Utilities.Return("Command " + CommandToString(command) + " require at most " + command.maxArgs + " argument(s).", soc, server);
                             }
                         }
 
@@ -81,6 +81,10 @@ namespace Galactic_Colors_Control_Server.Commands
             return text;
         }
 
+        /// <summary>
+        /// Convert command args in readable string
+        /// </summary>
+        /// <param name="args">Command args</param>
         public static string CommandToString(string[] args)
         {
             if (args.Length > 0)
@@ -98,6 +102,12 @@ namespace Galactic_Colors_Control_Server.Commands
             }
         }
 
+        /// <summary>
+        /// Try to get a command
+        /// </summary>
+        /// <param name="args">command args</param>
+        /// <param name="command">Command result</param>
+        /// <returns>Correct command</returns>
         public static bool TryGetCommand(string[] args, ref ICommand command)
         {
             if (args.Length > 0)

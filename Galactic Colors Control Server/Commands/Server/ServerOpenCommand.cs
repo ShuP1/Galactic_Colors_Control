@@ -14,7 +14,7 @@ namespace Galactic_Colors_Control_Server.Commands
         public bool IsClientSide { get { return false; } }
         public bool IsNoConnect { get { return false; } }
         public int minArgs { get { return 0; } }
-        public int maxArgs { get { return 1; } }
+        public int maxArgs { get { return 0; } }
 
         public void Execute(string[] args, Socket soc, bool server = false)
         {
@@ -25,7 +25,7 @@ namespace Galactic_Colors_Control_Server.Commands
             }
             else
             {
-                Utilities.ConsoleWrite("Server already open");
+                Utilities.ConsoleWrite("Server allready open");
             }
         }
     }
