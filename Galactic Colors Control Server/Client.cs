@@ -1,6 +1,4 @@
-﻿using System.Net.Sockets;
-
-namespace Galactic_Colors_Control_Server
+﻿namespace Galactic_Colors_Control_Server
 {
     public class Client
     {

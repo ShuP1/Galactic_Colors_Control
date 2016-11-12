@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Galactic_Colors_Control_GUI
 {
-    static class Utilities
+    internal static class Utilities
     {
         /// <summary>
         /// Load Texture2D from files

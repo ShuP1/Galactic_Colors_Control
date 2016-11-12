@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Galactic_Colors_Control_Common;
+using Galactic_Colors_Control_Common.Protocol;
+using System;
 using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
@@ -7,7 +9,7 @@ namespace Galactic_Colors_Control_Server.Commands
     {
         public string Name { get { return "loglevel"; } }
         public string DescText { get { return "Change console loglevel."; } }
-        public string HelpText { get { return "Use /loglevel [loglevel] to change Loglevel."; } }
+        public string HelpText { get { return "Use 'loglevel [loglevel]' to change Loglevel. (dev ,debug, info, warm, error, fatal)"; } }
         public Manager.CommandGroup Group { get { return Manager.CommandGroup.root; } }
         public bool IsServer { get { return true; } }
         public bool IsClient { get { return false; } }
@@ -16,15 +18,15 @@ namespace Galactic_Colors_Control_Server.Commands
         public int minArgs { get { return 1; } }
         public int maxArgs { get { return 1; } }
 
-        public void Execute(string[] args, Socket soc, bool server = false)
+        public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
             if (Enum.TryParse(args[1], true, out Program.config.logLevel))
             {
-                Utilities.ConsoleWrite("LogLevel: " + Program.config.logLevel.ToString());
+                return new RequestResult(ResultTypes.OK, Common.Strings(Program.config.logLevel.ToString()));
             }
             else
             {
-                Utilities.ConsoleWrite("Incorrect argument (debug, info, important, error, fatal)");
+                return new RequestResult(ResultTypes.Error, Common.Strings("Incorrect argument"));
             }
         }
     }

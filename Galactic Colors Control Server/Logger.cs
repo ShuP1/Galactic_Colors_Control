@@ -4,14 +4,16 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 
 namespace Galactic_Colors_Control_Server
 {
     public class Logger
     {
-        public enum logType { debug, info, warm, error, fatal }
+        public enum logType { dev, debug, info, warm, error, fatal }
+
+        public enum logConsole { normal, show, hide }
+
         private static List<Log> toWriteLogs = new List<Log>();
         private static string logPath;
         public static Thread Updater;
@@ -21,11 +23,13 @@ namespace Galactic_Colors_Control_Server
         {
             public string text;
             public logType type;
+            public logConsole console;
 
-            public Log(string p1, logType p2)
+            public Log(string p1, logType p2, logConsole p3 = logConsole.normal)
             {
                 text = p1;
                 type = p2;
+                console = p3;
             }
         }
 
@@ -34,15 +38,16 @@ namespace Galactic_Colors_Control_Server
         /// </summary>
         public static void Initialise()
         {
-            if (!Directory.Exists(Program.config.logPath)) {
+            if (!Directory.Exists(Program.config.logPath))
+            {
                 Directory.CreateDirectory(Program.config.logPath);
-                Write("Log Directory Created" ,logType.info);
+                Write("Log Directory Created", logType.info);
             }
             else
             {
                 //Sort old logs
                 string[] files = Directory.GetFiles(Program.config.logPath);
-                foreach(string file in files)
+                foreach (string file in files)
                 {
                     if (Path.GetExtension(file) == ".log")
                     {
@@ -55,7 +60,7 @@ namespace Galactic_Colors_Control_Server
                                 int y;
                                 int m;
                                 int d;
-                                if(int.TryParse(new string(name.Take(4).ToArray()), out y) && int.TryParse(new string(name.Skip(5).Take(2).ToArray()), out m) && int.TryParse(new string(name.Skip(8).Take(2).ToArray()), out d))
+                                if (int.TryParse(new string(name.Take(4).ToArray()), out y) && int.TryParse(new string(name.Skip(5).Take(2).ToArray()), out m) && int.TryParse(new string(name.Skip(8).Take(2).ToArray()), out d))
                                 {
                                     if (!Directory.Exists(Program.config.logPath + "/" + y + "/" + m + "/" + d))
                                     {
@@ -69,7 +74,7 @@ namespace Galactic_Colors_Control_Server
                 }
             }
             int i = 0;
-            while(File.Exists(Program.config.logPath + "/" + DateTime.UtcNow.ToString("yyyy-MM-dd-", CultureInfo.InvariantCulture) + i + ".log")) { i++; }
+            while (File.Exists(Program.config.logPath + "/" + DateTime.UtcNow.ToString("yyyy-MM-dd-", CultureInfo.InvariantCulture) + i + ".log")) { i++; }
             logPath = Program.config.logPath + "/" + DateTime.UtcNow.ToString("yyyy-MM-dd-", CultureInfo.InvariantCulture) + i + ".log";
             Write("Log path:" + logPath, logType.debug);
             Updater = new Thread(new ThreadStart(UpdaterLoop));
@@ -81,9 +86,10 @@ namespace Galactic_Colors_Control_Server
         /// </summary>
         /// <param name="text">Log text</param>
         /// <param name="type">Log status</param>
-        public static void Write(string text, logType type)
+        /// <param name="console">Server display modifier</param>
+        public static void Write(string text, logType type, logConsole console = logConsole.normal)
         {
-            Write(new Log(text, type));
+            Write(new Log(text, type, console));
         }
 
         /// <summary>
@@ -92,15 +98,12 @@ namespace Galactic_Colors_Control_Server
         /// <param name="log">Log struct</param>
         public static void Write(Log log)
         {
-            if (log.type != logType.debug || Program.config.logLevel == logType.debug)
+            if (Program.config.logLevel == logType.debug || Program.config.logLevel == logType.dev)
             {
-                if(Program._debug)
-                {
-                    //Add Source Method
-                    log.text = "[" + new StackTrace().GetFrame(2).GetMethod().Name + "]: " + log.text;
-                }
-                toWriteLogs.Add(log);
+                //Add Source Method
+                log.text = "[" + new StackTrace().GetFrame(2).GetMethod().Name + "]: " + log.text;
             }
+            toWriteLogs.Add(log);
         }
 
         /// <summary>
@@ -110,18 +113,36 @@ namespace Galactic_Colors_Control_Server
         {
             while (_run || toWriteLogs.Count > 0)
             {
-                while(toWriteLogs.Count > 0)
+                while (toWriteLogs.Count > 0)
                 {
                     Log log = toWriteLogs[0];
-                    File.AppendAllText(logPath,DateTime.UtcNow.ToString("[yyyy-MM-dd]", CultureInfo.InvariantCulture) + " [" + log.type.ToString().ToUpper() + "]: " + log.text + Environment.NewLine);
-                    if(log.type >= Program.config.logLevel) {
-                        Console.BackgroundColor = Program.config.logBackColor[(int)log.type];
-                        Console.ForegroundColor = Program.config.logForeColor[(int)log.type];
-                        Console.Write("\b");
-                        Console.WriteLine(DateTime.UtcNow.ToString("[yyyy-MM-dd]", CultureInfo.InvariantCulture) + ": " + log.text);
-                        Utilities.ConsoleResetColor();
-                        Console.Write(">");
+                    if (log.type >= Program.config.logLevel)
+                    {
+                        File.AppendAllText(logPath, DateTime.UtcNow.ToString("[yyyy-MM-dd]", CultureInfo.InvariantCulture) + " [" + log.type.ToString().ToUpper() + "]: " + log.text + Environment.NewLine);
+                        if (log.console != logConsole.hide)
+                        {
+                            Console.BackgroundColor = Program.config.logBackColor[(int)log.type];
+                            Console.ForegroundColor = Program.config.logForeColor[(int)log.type];
+                            Console.Write("\b");
+                            Console.WriteLine(DateTime.UtcNow.ToString("[yyyy-MM-dd]", CultureInfo.InvariantCulture) + ": " + log.text);
+                            Utilities.ConsoleResetColor();
+                            Console.Write(">");
+                        }
                     }
+                    //TODO reactive show logger
+                    /*
+                    else
+                    {
+                        if(log.console == logConsole.show)
+                        {
+                            Console.BackgroundColor = Program.config.logBackColor[(int)log.type];
+                            Console.ForegroundColor = Program.config.logForeColor[(int)log.type];
+                            Console.Write("\b");
+                            Console.WriteLine(DateTime.UtcNow.ToString("[yyyy-MM-dd]", CultureInfo.InvariantCulture) + ": " + log.text);
+                            Utilities.ConsoleResetColor();
+                            Console.Write(">");
+                        }
+                    }*/
                     toWriteLogs.Remove(log);
                 }
                 Thread.Sleep(200);

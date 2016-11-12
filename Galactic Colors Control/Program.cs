@@ -1,13 +1,10 @@
-﻿using Galactic_Colors_Control_Common;
+﻿using Galactic_Colors_Control_Common.Protocol;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading;
 
 namespace Galactic_Colors_Control
@@ -25,6 +22,7 @@ namespace Galactic_Colors_Control
         public bool isRunning { get { return _run; } }
 
         public List<string> Output = new List<string>();
+        private int RequestId = 0;
 
         private Thread RecieveThread;
 
@@ -66,14 +64,14 @@ namespace Galactic_Colors_Control
                 }
                 catch (Exception e)
                 {
-                    Output.Add(e.Message);
                     PORT = 0;
+                    Output.Add(e.Message);
                     return null;
                 }
             }
             else
             {
-                Output.Add("Incorrect port");
+                Output.Add("Incorrect Port");
                 return null;
             }
         }
@@ -129,9 +127,9 @@ namespace Galactic_Colors_Control
         /// </summary>
         public void ExitHost()
         {
-            Send("/exit", Common.dataType.message); // Tell the server we are exiting
+            Send(new RequestData(GetRequestId(), new string[1] { "exit" }));// Tell the server we are exiting
             _run = false;
-            RecieveThread.Join();
+            RecieveThread.Join(2000);
             ClientSocket.Shutdown(SocketShutdown.Both);
             ClientSocket.Close();
             Output.Add("Bye");
@@ -155,7 +153,27 @@ namespace Galactic_Colors_Control
                     break;
 
                 default:
-                    Send(request, Common.dataType.message);
+                    //TODO add key and send error here
+                    if (request.Length > 0)
+                    {
+                        if (request[0] == '/')
+                        {
+                            request = request.Substring(1);
+                            string[] array = request.Split(new char[1] { ' ' }, 4, StringSplitOptions.RemoveEmptyEntries);
+                            if (array.Length > 0)
+                            {
+                                Send(new RequestData(GetRequestId(), array));
+                            }
+                            else
+                            {
+                                Output.Add("Any Command");
+                            }
+                        }
+                        else
+                        {
+                            Send(new RequestData(GetRequestId(), new string[2] { "say", request }));
+                        }
+                    }
                     break;
             }
         }
@@ -177,32 +195,11 @@ namespace Galactic_Colors_Control
             }
         }
 
-        private void Send(object data, Common.dataType dtype)
+        private void Send(Data packet)
         {
-            byte[] type = new byte[4];
-            type = BitConverter.GetBytes((int)dtype);
-            byte[] bytes = null;
-            switch (dtype)
-            {
-                case Common.dataType.message:
-                    bytes = Encoding.ASCII.GetBytes((string)data);
-                    break;
-
-                case Common.dataType.data:
-                    BinaryFormatter bf = new BinaryFormatter();
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        bf.Serialize(ms, data);
-                        bytes = ms.ToArray();
-                    }
-                    break;
-            }
-            byte[] final = new byte[type.Length + bytes.Length];
-            type.CopyTo(final, 0);
-            bytes.CopyTo(final, type.Length);
             try
             {
-                ClientSocket.Send(final);
+                ClientSocket.Send(packet.ToBytes());
             }
             catch
             {
@@ -234,79 +231,40 @@ namespace Galactic_Colors_Control
                 _errorCount = 0;
                 var data = new byte[received];
                 Array.Copy(buffer, data, received);
-                byte[] type = new byte[4];
-                type = data.Take(4).ToArray();
-                type.Reverse();
-                Common.dataType dtype = (Common.dataType)BitConverter.ToInt32(type, 0);
-                byte[] bytes = null;
-                bytes = data.Skip(4).ToArray();
-                switch (dtype)
+
+                Data packet = Data.FromBytes(ref data);
+                if (packet != null)
                 {
-                    case Common.dataType.message:
-                        string text = Encoding.ASCII.GetString(bytes);
-                        if (text[0] == '/')
-                        {
-                            text = text.Substring(1);
-                            text = text.ToLower();
-                            string[] array = text.Split(new char[1] { ' ' }, 4, StringSplitOptions.RemoveEmptyEntries);
-                            switch (array[0])
-                            {
-                                case "connected":
-                                    Output.Add("Identifiaction succes");
-                                    break;
+                    switch (packet.GetType().Name)
+                    {
+                        case "EventData":
+                            EventData eve = (EventData)packet;
+                            Output.Add(eve.ToSmallString());
+                            break;
 
-                                case "allreadytaken":
-                                    Output.Add("Username Allready Taken");
-                                    break;
+                        case "ResultData":
+                            ResultData res = (ResultData)packet;
+                            Output.Add(res.ToSmallString());
+                            break;
 
-                                case "kick":
-                                    if (array.Length > 1)
-                                    {
-                                        Output.Add("Kick : " + array[1]);
-                                    }
-                                    else
-                                    {
-                                        Output.Add("Kick by server");
-                                    }
-                                    _run = false;
-                                    break;
-
-                                case "party":
-                                    if (array[1] == "kick")
-                                    {
-                                        if (array.Length > 2)
-                                        {
-                                            Output.Add("Kick from party : " + array[2]);
-                                        }
-                                        else
-                                        {
-                                            Output.Add("Kick from party");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Output.Add("Unknown action from server");
-                                    }
-                                    break;
-
-                                default:
-                                    Output.Add("Unknown action from server");
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            Output.Add(text);
-                        }
-                        break;
-
-                    case Common.dataType.data:
-                        Console.WriteLine("data");
-                        break;
+                        default:
+                            Output.Add("Wrong packet");
+                            break;
+                    }
+                }
+                else
+                {
+                    Output.Add("Wrong packet");
                 }
                 Thread.Sleep(200);
             }
             Output.Add("/*exit*/");
+        }
+
+        public int GetRequestId(bool indent = true)
+        {
+            if (indent) { RequestId++; }
+            return RequestId;
         }
     }
 }

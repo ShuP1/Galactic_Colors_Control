@@ -1,7 +1,7 @@
-﻿using System;
-using Galactic_Colors_Control;
-using System.Threading;
+﻿using Galactic_Colors_Control;
+using System;
 using System.Reflection;
+using System.Threading;
 
 namespace Galactic_Colors_Control_Console
 {
@@ -19,11 +19,11 @@ namespace Galactic_Colors_Control_Console
             Write("Galactic Colors Control Client");
             Write("Console " + Assembly.GetEntryAssembly().GetName().Version.ToString());
             bool hostSet = false;
-            while(!hostSet)
+            while (!hostSet)
             {
                 Write("Enter server host:");
                 string host = client.ValidateHost(Console.ReadLine());
-                if(host == null)
+                if (host == null)
                 {
                     foreach (string output in client.Output.ToArray())
                     {
@@ -36,11 +36,11 @@ namespace Galactic_Colors_Control_Console
                 {
                     Write("Use " + host + "? y/n");
                     ConsoleKeyInfo c = new ConsoleKeyInfo();
-                    while(c.Key != ConsoleKey.Y && c.Key != ConsoleKey.N)
+                    while (c.Key != ConsoleKey.Y && c.Key != ConsoleKey.N)
                     {
                         c = Console.ReadKey();
                     }
-                    if(c.Key == ConsoleKey.Y)
+                    if (c.Key == ConsoleKey.Y)
                     {
                         hostSet = true;
                     }
@@ -97,7 +97,7 @@ namespace Galactic_Colors_Control_Console
             }
         }
 
-        private static void Write( string text)
+        private static void Write(string text)
         {
             Console.Write("\b");
             Console.WriteLine(text);

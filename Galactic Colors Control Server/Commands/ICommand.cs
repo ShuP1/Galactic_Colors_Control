@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
 {
@@ -15,6 +16,6 @@ namespace Galactic_Colors_Control_Server.Commands
         int minArgs { get; }
         int maxArgs { get; }
 
-        void Execute(string[] args, Socket soc = null, bool server = false);
+        RequestResult Execute(string[] args, Socket soc = null, bool server = false);
     }
 }

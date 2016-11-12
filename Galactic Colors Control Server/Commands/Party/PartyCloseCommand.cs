@@ -1,4 +1,6 @@
-﻿using System.Net.Sockets;
+﻿using Galactic_Colors_Control_Common;
+using Galactic_Colors_Control_Common.Protocol;
+using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
 {
@@ -6,7 +8,7 @@ namespace Galactic_Colors_Control_Server.Commands
     {
         public string Name { get { return "close"; } }
         public string DescText { get { return "Closes party."; } }
-        public string HelpText { get { return "Use /party close to close party for join."; } }
+        public string HelpText { get { return "Use 'party close' to close party for join."; } }
         public Manager.CommandGroup Group { get { return Manager.CommandGroup.party; } }
         public bool IsServer { get { return true; } }
         public bool IsClient { get { return true; } }
@@ -15,21 +17,17 @@ namespace Galactic_Colors_Control_Server.Commands
         public int minArgs { get { return 0; } }
         public int maxArgs { get { return 0; } }
 
-        public void Execute(string[] args, Socket soc, bool server = false)
+        public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
             int partyId = -1;
-            if (Utilities.AccessParty(ref partyId, true,soc, server))
-            {
-                if (Program.parties[partyId].open)
-                {
-                    Program.parties[partyId].open = false;
-                    Utilities.Return("Party closed", soc, server);
-                }
-                else
-                {
-                    Utilities.Return("Party allready close", soc, server);
-                }
-            }
+            if (!Utilities.AccessParty(ref partyId, args, true, soc, server))
+                return new RequestResult(ResultTypes.Error, Common.Strings("Access"));
+
+            if (!Program.parties[partyId].open)
+                return new RequestResult(ResultTypes.Error, Common.Strings("Allready"));
+
+            Program.parties[partyId].open = false;
+            return new RequestResult(ResultTypes.OK);
         }
     }
 }

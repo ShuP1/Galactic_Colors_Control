@@ -21,7 +21,7 @@ sudo apt-get install libopenal-dev mono-runtime
 
 * Galactic_Colors_Control_Console.exe => Client without GUI
 * Galactic_Colors_Control_GUI.exe => Client
-* Galactic_Colors_Control_Server.exe => Server (Use --debug for DEBUG MODE)
+* Galactic_Colors_Control_Server.exe => Server (Use --debug for DEBUG MODE or --dev at your risks)
 
 Linux
 ```

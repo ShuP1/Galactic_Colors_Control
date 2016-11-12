@@ -1,15 +1,14 @@
-﻿using System;
-using MyMonoGame.GUI;
+﻿using Galactic_Colors_Control;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Audio;
-using Galactic_Colors_Control;
-using System.Threading;
-using System.IO;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MyMonoGame.GUI;
+using System;
+using System.IO;
 using System.Reflection;
-using System.Collections.Generic;
+using System.Threading;
 
 namespace Galactic_Colors_Control_GUI
 {
@@ -18,9 +17,9 @@ namespace Galactic_Colors_Control_GUI
     /// </summary>
     public class Game1 : Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        ContentManager content;
+        private GraphicsDeviceManager graphics;
+        private SpriteBatch spriteBatch;
+        private ContentManager content;
 
         private SoundEffect[] effects = new SoundEffect[4];
 
@@ -44,11 +43,14 @@ namespace Galactic_Colors_Control_GUI
         private string skinName;
         private bool isFullScren = false;
 
-        private enum GameStatus { Home, Connect, Options, Game, Pause, End, Thanks,
+        private enum GameStatus
+        {
+            Home, Connect, Options, Game, Pause, End, Thanks,
             Title,
             Indentification,
             Kick
         }
+
         private GameStatus gameStatus = GameStatus.Home;
 
         private int ScreenWidth = 1280;
@@ -56,7 +58,6 @@ namespace Galactic_Colors_Control_GUI
 
         private string username = null;
 
-        private static Thread Writer;
         private bool showOKMessage = false;
         private string messageTitle;
         private string messageText = string.Empty;
@@ -65,6 +66,8 @@ namespace Galactic_Colors_Control_GUI
         private bool showChat = false;
         private string chatText = string.Empty;
         private string chatInput = string.Empty;
+        private bool showParty = false;
+        private bool showOutput = true;
 
         public Game1()
         {
@@ -116,7 +119,8 @@ namespace Galactic_Colors_Control_GUI
             basicFont = content.Load<SpriteFont>("Fonts/basic");
             titleFont = content.Load<SpriteFont>("Fonts/title");
 
-            for (int i = 0; i < pointerSprites.Length; i++) {
+            for (int i = 0; i < pointerSprites.Length; i++)
+            {
                 pointerSprites[i] = content.Load<Texture2D>("Textures/Hub/pointer" + i);
             }
 
@@ -154,7 +158,7 @@ namespace Galactic_Colors_Control_GUI
                     Utilities.SpriteFromPng("Skin/" + skinName + "Textures/background1.png", ref backSprites[1], GraphicsDevice);
                     if (Directory.Exists("Skin/" + skinName + "/Textures/Hub/"))
                     {
-                        if(Directory.Exists("Skin/" + skinName + "/Textures/Hub/Buttons"))
+                        if (Directory.Exists("Skin/" + skinName + "/Textures/Hub/Buttons"))
                         {
                             for (int i = 0; i < buttonsSprites.Length; i++)
                             {
@@ -177,8 +181,6 @@ namespace Galactic_Colors_Control_GUI
                     }
                 }
             }
-
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -187,7 +189,7 @@ namespace Galactic_Colors_Control_GUI
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            // Unload any non ContentManager content here
         }
 
         /// <summary>
@@ -208,21 +210,22 @@ namespace Galactic_Colors_Control_GUI
                     break;
 
                 case GameStatus.Game:
-                    if (client.Output.Count > 0)
-                    {
-                        string text = client.Output[0];
-                        switch (text)
+                    if (showOutput)
+                        if (client.Output.Count > 0)
                         {
-                            case "/clear":
-                                chatText = string.Empty;
-                                break;
+                            string text = client.Output[0];
+                            switch (text)
+                            {
+                                case "/clear":
+                                    chatText = string.Empty;
+                                    break;
 
-                            default:
-                                ChatAdd(text);
-                                break;
+                                default:
+                                    ChatAdd(text);
+                                    break;
+                            }
+                            client.Output.Remove(text);
                         }
-                        client.Output.Remove(text);
-                    }
                     if (!client.isRunning) { gameStatus = GameStatus.Kick; }
                     break;
             }
@@ -257,11 +260,13 @@ namespace Galactic_Colors_Control_GUI
                     DrawBackground(1);
                     GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4), "Galactic Colors Control", titleFont, new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
                     GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4 + 40), "GUI " + Assembly.GetEntryAssembly().GetName().Version.ToString(), basicFont, new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
-                    if (GUI.Button(new Rectangle(ScreenWidth - 64, ScreenHeight - 74,64,64), logoSprite)) { System.Diagnostics.Process.Start("https://sheychen.shost.ca/"); }
-                    if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 - 30, 150, 40), buttonsSprites[0], "Play", basicFont, new MyMonoGame.Colors(Color.White, Color.Green))) {
+                    if (GUI.Button(new Rectangle(ScreenWidth - 64, ScreenHeight - 74, 64, 64), logoSprite)) { System.Diagnostics.Process.Start("https://sheychen.shost.ca/"); }
+                    if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 - 30, 150, 40), buttonsSprites[0], "Play", basicFont, new MyMonoGame.Colors(Color.White, Color.Green)))
+                    {
                         GUI.ResetFocus();
                         client = new Client();
-                        new Thread(() => {
+                        new Thread(() =>
+                        {
                             while (acceleratorX < 5)
                             {
                                 Thread.Sleep(20);
@@ -274,10 +279,12 @@ namespace Galactic_Colors_Control_GUI
                     //    GUI.ResetFocus();
                     //    gameStatus = GameStatus.Options;
                     //}
-                    if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 + 70, 150, 40), buttonsSprites[0], "Exit", basicFont, new MyMonoGame.Colors(Color.White, Color.Red))) {
+                    if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 + 70, 150, 40), buttonsSprites[0], "Exit", basicFont, new MyMonoGame.Colors(Color.White, Color.Red)))
+                    {
                         GUI.ResetFocus();
                         gameStatus = GameStatus.Title;
-                        new Thread(() => {
+                        new Thread(() =>
+                        {
                             while (acceleratorX > 0)
                             {
                                 Thread.Sleep(10);
@@ -306,7 +313,8 @@ namespace Galactic_Colors_Control_GUI
                             GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4 + 100), messageText, smallFont, null, Manager.textAlign.bottomCenter);
                             if (GUI.Button(new Rectangle(ScreenWidth / 2 - 140, ScreenHeight / 4 + 150, 280, 40), buttonsSprites[0], "Ok", basicFont)) { GUI.ResetFocus(); showOKMessage = false; }
                         }
-                        else {
+                        else
+                        {
                             if (showYNMessage)
                             {
                                 GUI.Box(new Rectangle(ScreenWidth / 2 - 150, ScreenHeight / 4 + 50, 300, 100), buttonsSprites[0]);
@@ -325,7 +333,8 @@ namespace Galactic_Colors_Control_GUI
                                     showYNMessage = false;
                                 }
                             }
-                            else {
+                            else
+                            {
                                 if (GUI.TextField(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 - 30, 150, 40), ref username, basicFont, new MyMonoGame.Colors(Color.LightGray, Color.White), Manager.textAlign.centerCenter, "Server address")) { new Thread(ValidateHost).Start(); }
                                 if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 + 20, 150, 40), buttonsSprites[0], "Connect", basicFont, new MyMonoGame.Colors(Color.LightGray, Color.White))) { new Thread(ValidateHost).Start(); }
                                 if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 + 70, 150, 40), buttonsSprites[0], "Back", basicFont, new MyMonoGame.Colors(Color.LightGray, Color.White)))
@@ -365,7 +374,8 @@ namespace Galactic_Colors_Control_GUI
                             GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4 + 100), messageText, smallFont, null, Manager.textAlign.bottomCenter);
                             if (GUI.Button(new Rectangle(ScreenWidth / 2 - 140, ScreenHeight / 4 + 150, 280, 40), buttonsSprites[0], "Ok", basicFont)) { GUI.ResetFocus(); showOKMessage = false; }
                         }
-                        else {
+                        else
+                        {
                             if (GUI.TextField(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 - 30, 150, 40), ref username, basicFont, new MyMonoGame.Colors(Color.LightGray, Color.White), Manager.textAlign.centerCenter, "Username")) { new Thread(IdentifiacateHost).Start(); }
                             if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 + 20, 150, 40), buttonsSprites[0], "Validate", basicFont, new MyMonoGame.Colors(Color.LightGray, Color.White))) { new Thread(IdentifiacateHost).Start(); }
                             if (GUI.Button(new Rectangle(ScreenWidth / 2 - 75, ScreenHeight / 2 + 70, 150, 40), buttonsSprites[0], "Back", basicFont, new MyMonoGame.Colors(Color.LightGray, Color.White)))
@@ -389,13 +399,31 @@ namespace Galactic_Colors_Control_GUI
                 case GameStatus.Game:
                     DrawBackground(0);
                     DrawBackground(1);
-                    GUI.Texture(new Rectangle(0,0,ScreenWidth, 30), nullSprite, new MyMonoGame.Colors(new Color(0.1f,0.1f,0.1f)));
-                    if(GUI.Button(new Rectangle(5, 5, 50, 20), (showChat ? "Hide" : "Show") + " chat", smallFont, new MyMonoGame.Colors(Color.White, Color.LightGray, Color.Gray))) { GUI.ResetFocus(); showChat = !showChat; }
+                    GUI.Texture(new Rectangle(0, 0, ScreenWidth, 30), nullSprite, new MyMonoGame.Colors(new Color(0.1f, 0.1f, 0.1f)));
+                    if (GUI.Button(new Rectangle(5, 5, 50, 20), (showChat ? "Hide" : "Show") + " chat", smallFont, new MyMonoGame.Colors(Color.White, Color.LightGray, Color.Gray))) { GUI.ResetFocus(); showChat = !showChat; }
+                    if (GUI.Button(new Rectangle(65, 5, 50, 20), (showParty ? "Leave" : "Join") + " party", smallFont, new MyMonoGame.Colors(Color.White, Color.LightGray, Color.Gray))) { new Thread(PartyClick).Start(); }
+
                     if (showChat)
                     {
                         GUI.Box(new Rectangle(0, 30, 310, 310), buttonsSprites[0]);
-                        if(GUI.TextField(new Rectangle(5,35,305,20), ref chatInput, basicFont, null, Manager.textAlign.centerLeft, "Enter message")) { if(chatInput != null) { ChatAdd(chatInput); client.SendRequest(chatInput); chatInput = null; } }
+                        if (GUI.TextField(new Rectangle(5, 35, 305, 20), ref chatInput, basicFont, null, Manager.textAlign.centerLeft, "Enter message")) { if (chatInput != null) { ChatAdd(chatInput); client.SendRequest(chatInput); chatInput = null; } }
                         GUI.Label(new Rectangle(5, 60, 305, 245), chatText, smallFont, null, Manager.textAlign.topLeft, true);
+                    }
+
+                    if (showLoading)
+                    {
+                        GUI.Box(new Rectangle(ScreenWidth / 2 - 150, ScreenHeight / 4 + 50, 300, 50), buttonsSprites[0]);
+                        GUI.Label(new Rectangle(ScreenWidth / 2 - 150, ScreenHeight / 4 + 50, 300, 50), "Loading", basicFont);
+                    }
+                    else
+                    {
+                        if (showOKMessage)
+                        {
+                            GUI.Box(new Rectangle(ScreenWidth / 2 - 150, ScreenHeight / 4 + 50, 300, 150), buttonsSprites[0]);
+                            GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4 + 60), messageTitle, basicFont, null, Manager.textAlign.bottomCenter);
+                            GUI.Label(new MyMonoGame.Vector(ScreenWidth / 2, ScreenHeight / 4 + 100), messageText, smallFont, null, Manager.textAlign.bottomCenter);
+                            if (GUI.Button(new Rectangle(ScreenWidth / 2 - 140, ScreenHeight / 4 + 150, 280, 40), buttonsSprites[0], "Ok", basicFont)) { GUI.ResetFocus(); showOKMessage = false; }
+                        }
                     }
                     break;
             }
@@ -412,16 +440,16 @@ namespace Galactic_Colors_Control_GUI
         private void ValidateHost()
         {
             showLoading = true;
-            if ( username == null) { username = ""; }
+            if (username == null) { username = ""; }
             string Host = client.ValidateHost(username);
             if (Host == null)
             {
                 messageTitle = "Error";
                 messageText = string.Empty;
-                foreach(string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
+                foreach (string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
                 showOKMessage = true;
                 client.Output.Clear();
-                client.ResetHost();;
+                client.ResetHost(); ;
             }
             else
             {
@@ -455,27 +483,43 @@ namespace Galactic_Colors_Control_GUI
             showLoading = true;
             if (username != null)
             {
-                if(username.Length > 3)
+                if (username.Length > 3)
                 {
                     client.Output.Clear();
                     client.SendRequest("/connect " + username);
-                    bool wait = true;
-                    while (wait)
+                    int wait = 0;
+                    while (wait < 20)
                     {
                         if (client.Output.Count > 0)
                         {
-                            wait = false;
+                            wait = 20;
+                        }
+                        else
+                        {
+                            wait++;
+                            Thread.Sleep(200);
                         }
                     }
-                    if(client.Output.Contains("Identifiaction succes"))
+                    if (client.Output.Count > 0)
                     {
-                        gameStatus = GameStatus.Game;
+                        if (client.Output.Contains("Identifiaction succes"))
+                        {
+                            gameStatus = GameStatus.Game;
+                        }
+                        else
+                        {
+                            messageTitle = "Error";
+                            messageText = string.Empty;
+                            foreach (string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
+                            showOKMessage = true;
+                            showLoading = false;
+                            client.Output.Clear();
+                        }
                     }
                     else
                     {
-                        messageTitle = "Error";
-                        messageText = string.Empty;
-                        foreach (string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
+                        messageTitle = "Timeout";
+                        messageText = "";
                         showOKMessage = true;
                         showLoading = false;
                         client.Output.Clear();
@@ -483,6 +527,64 @@ namespace Galactic_Colors_Control_GUI
                 }
             }
             showLoading = false;
+        }
+
+        private void PartyClick()
+        {
+            showLoading = true;
+            GUI.ResetFocus();
+            if (showParty)
+            {
+                client.SendRequest("/party leave");
+                showParty = false;
+                showLoading = false;
+            }
+            else
+            {
+                client.Output.Clear();
+                client.SendRequest("/party list");
+                int wait = 0;
+                while (wait < 20)
+                {
+                    if (client.Output.Count > 0)
+                    {
+                        wait = 20;
+                    }
+                    else
+                    {
+                        wait++;
+                        Thread.Sleep(200);
+                    }
+                }
+                if (client.Output.Count > 0)
+                {
+                    Thread.Sleep(500);
+                    if (client.Output.Count > 1)
+                    {
+                        messageTitle = "Party";
+                        messageText = string.Empty;
+                        foreach (string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
+                        showOKMessage = true;
+                        client.Output.Clear();
+                    }
+                    else
+                    {
+                        messageTitle = "Any party";
+                        messageText = string.Empty;
+                        foreach (string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
+                        showOKMessage = true;
+                        client.Output.Clear();
+                    }
+                }
+                else
+                {
+                    messageTitle = "Timeout";
+                    messageText = "";
+                    showOKMessage = true;
+                    showLoading = false;
+                    client.Output.Clear();
+                }
+            }
         }
 
         private void ChatAdd(string text)

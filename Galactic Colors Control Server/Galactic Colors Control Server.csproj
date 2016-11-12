@@ -59,6 +59,8 @@
     <Compile Include="Client.cs" />
     <Compile Include="Commands\ClearCommand.cs" />
     <Compile Include="Commands\Client\StatusCommand.cs" />
+    <Compile Include="Commands\BroadcastCommand.cs" />
+    <Compile Include="Commands\SayCommand.cs" />
     <Compile Include="Commands\Party\PartyLeaveCommand.cs" />
     <Compile Include="Commands\Party\PartyCreateCommand.cs" />
     <Compile Include="Commands\Party\PartyJoinCommand.cs" />

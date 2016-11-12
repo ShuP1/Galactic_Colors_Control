@@ -1,14 +1,11 @@
-﻿using Galactic_Colors_Control_Common;
+﻿using Galactic_Colors_Control_Common.Protocol;
 using System;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 
 namespace Galactic_Colors_Control_Server
 {
-    class Utilities
+    internal class Utilities
     {
         /// <summary>
         /// Check if socket is connect
@@ -16,22 +13,14 @@ namespace Galactic_Colors_Control_Server
         /// <param name="soc">Client socket</param>
         public static bool IsConnect(Socket soc)
         {
-            if(soc == null)
-            {
+            if (soc == null)
                 return true;
-            }
-            else
-            {
-                if (Program.clients.ContainsKey(soc))
-                {
-                    return Program.clients[soc].status != -1;
-                }
-                else
-                {
-                    Logger.Write("IsConnect : Unknown client", Logger.logType.error);
-                    return true;
-                }
-            }
+
+            if (Program.clients.ContainsKey(soc))
+                return Program.clients[soc].status != -1;
+
+            Logger.Write("IsConnect : Unknown client", Logger.logType.error);
+            return false;
         }
 
         /// <summary>
@@ -41,23 +30,23 @@ namespace Galactic_Colors_Control_Server
         /// <returns>Name</returns>
         public static string GetName(Socket soc)
         {
-            if (soc != null)
-            {
-                if (Program.clients.ContainsKey(soc))
-                {
-                    string res = Program.clients[soc].pseudo;
-                    if (res == "") { res = ((IPEndPoint)soc.LocalEndPoint).Address.ToString(); }
-                    return res;
-                }
-                else
-                {
-                    return "?";
-                }
-            }
-            else
-            {
+            if (soc == null)
                 return "Server";
-            }
+
+            if (!Program.clients.ContainsKey(soc))
+                return "?";
+
+            string res = Program.clients[soc].pseudo;
+            if (res == "") { res = ((IPEndPoint)soc.LocalEndPoint).Address.ToString(); }
+            return res;
+        }
+
+        public static int GetParty(Socket soc)
+        {
+            if (soc == null)
+                return Program.selectedParty;
+
+            return Program.clients[soc].partyID;
         }
 
         /// <summary>
@@ -91,40 +80,23 @@ namespace Galactic_Colors_Control_Server
         /// </summary>
         /// <param name="soc">Target socket</param>
         /// <param name="data">Data to send</param>
-        /// <param name="dtype">Type of data</param>
-        public static void Send(Socket soc, object data, Common.dataType dtype)
+        public static void Send(Socket soc, Data packet)
         {
-            /*
-            Format:
-            0-3: dataType
-            4-x: data
-            */
-            byte[] type = new byte[4];
-            type = BitConverter.GetBytes((int)dtype);
-            byte[] bytes = null;
-            switch (dtype)
+            if (soc.Connected)
             {
-                case Common.dataType.message:
-                    bytes = Encoding.ASCII.GetBytes((string)data);
-                    break;
-
-                case Common.dataType.data:
-                    BinaryFormatter bf = new BinaryFormatter();
-                    using (MemoryStream ms = new MemoryStream())
+                try
+                {
+                    soc.Send(packet.ToBytes());
+                    if (Program.config.logLevel == Logger.logType.dev)
                     {
-                        bf.Serialize(ms, data);
-                        bytes = ms.ToArray();
+                        Logger.Write("Send to " + GetName(soc) + " : " + packet.ToLongString(), Logger.logType.dev);
                     }
-                    break;
-
-                default:
-                    bytes = new byte[] { 1 };
-                    break;
+                }
+                catch (Exception e)
+                {
+                    Logger.Write("Send exception to " + GetName(soc) + " : " + e.Message, Logger.logType.error);
+                }
             }
-            byte[] final = new byte[type.Length + bytes.Length];
-            type.CopyTo(final, 0);
-            bytes.CopyTo(final, type.Length);
-            soc.Send(final);
         }
 
         /// <summary>
@@ -132,13 +104,14 @@ namespace Galactic_Colors_Control_Server
         /// </summary>
         /// <param name="data">Data to send</param>
         /// <param name="dtype">Type of data</param>
-        public static void Broadcast(object data, Common.dataType dtype)
+        /// <param name="message">Message to display for server</param>
+        public static void Broadcast(Data packet)
         {
             foreach (Socket soc in Program.clients.Keys)
             {
-                Send(soc, data, dtype);
+                Send(soc, packet);
             }
-            if (dtype == Common.dataType.message) { ConsoleWrite((string)data); }
+            ConsoleWrite(packet.ToSmallString());
         }
 
         /// <summary>
@@ -147,33 +120,38 @@ namespace Galactic_Colors_Control_Server
         /// <param name="data">Data to send</param>
         /// <param name="dtype">Type of data</param>
         /// <param name="party">Id of the party</param>
-        public static void BroadcastParty(object data, Common.dataType dtype, int party)
+        /// <param name="message">Message to display for server</param>
+        public static void BroadcastParty(Data data, int party)
         {
-            foreach(Socket soc in Program.clients.Keys)
+            foreach (Socket soc in Program.clients.Keys)
             {
                 if (Program.clients[soc].partyID == party)
                 {
-                    Send(soc, data, dtype);
+                    Send(soc, data);
                 }
             }
-            if (dtype == Common.dataType.message) { if (Program.selectedParty == party) { ConsoleWrite((string)data); } }
+            if (Program.selectedParty == party)
+            {
+                ConsoleWrite(data.ToSmallString());
+            }
         }
 
         /// <summary>
         /// Send or display if server
         /// </summary>
-        /// <param name="message">Text to send</param>
+        /// <param name="message">Text to display if server</param>
+        /// <param name="data">Data to send if client</param>
         /// <param name="soc">Target socket</param>
         /// <param name="server">Is server?</param>
-        public static void Return(string message, Socket soc = null, bool server = false)
+        public static void Return(Data data, Socket soc = null, bool server = false)
         {
             if (server)
             {
-                ConsoleWrite(message);
+                ConsoleWrite(data.ToSmallString());
             }
             else
             {
-                Send(soc, message, Common.dataType.message);
+                Send(soc, data);
             }
         }
 
@@ -185,59 +163,38 @@ namespace Galactic_Colors_Control_Server
         /// <param name="soc">Target socket</param>
         /// <param name="server">Is server?</param>
         /// <returns>Can access?</returns>
-        public static bool AccessParty(ref int partyId, bool needOwn,  Socket soc = null, bool server = false)
+        public static bool AccessParty(ref int partyId, string[] args, bool needOwn, Socket soc = null, bool server = false)
         {
             if (server)
             {
-                if(Program.selectedParty != -1)
+                if (Program.selectedParty == -1)
+                    return false;
+
+                if (Program.parties.ContainsKey(Program.selectedParty))
                 {
-                    if (Program.parties.ContainsKey(Program.selectedParty))
-                    {
-                        partyId = Program.selectedParty;
-                        return true;
-                    }
-                    else
-                    {
-                        Logger.Write("Can't find party " + Program.selectedParty, Logger.logType.error);
-                        Program.selectedParty = -1;
-                        return false;
-                    }
+                    partyId = Program.selectedParty;
+                    return true;
                 }
                 else
                 {
-                    ConsoleWrite("Join a party before");
+                    Program.selectedParty = -1;
                     return false;
                 }
             }
             else
             {
-                if(Program.clients[soc].partyID != -1)
-                {
-                    if (Program.parties.ContainsKey(Program.clients[soc].partyID))
-                    {
-                        if (Program.parties[Program.clients[soc].partyID].IsOwner(GetName(soc)) || !needOwn)
-                        {
-                            partyId = Program.clients[soc].partyID;
-                            return true;
-                        }
-                        else
-                        {
-                            Send(soc, "You are not owner", Common.dataType.message);
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        Send(soc, "Can't find party " + Program.clients[soc].partyID, Common.dataType.message);
-                        Program.clients[soc].partyID = -1;
-                        return false;
-                    }
-                }
-                else
-                {
-                    Send(soc, "Join a party before", Common.dataType.message);
+                if (Program.clients[soc].partyID == -1)
                     return false;
+
+                if (!Program.parties.ContainsKey(Program.clients[soc].partyID))
+                    return false;
+
+                if (Program.parties[Program.clients[soc].partyID].IsOwner(GetName(soc)) || !needOwn)
+                {
+                    partyId = Program.clients[soc].partyID;
+                    return true;
                 }
+                else { return false; }
             }
         }
     }

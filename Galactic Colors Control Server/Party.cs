@@ -28,7 +28,7 @@ namespace Galactic_Colors_Control_Server
         {
             if (isPrivate)
             {
-                return (password == pass) ;
+                return (password == pass);
             }
             else
             {
@@ -62,9 +62,9 @@ namespace Galactic_Colors_Control_Server
             get
             {
                 List<Socket> list = new List<Socket>();
-                foreach(Socket soc in Program.clients.Keys)
+                foreach (Socket soc in Program.clients.Keys)
                 {
-                    if(Program.clients[soc].party == this) { list.Add(soc); }
+                    if (Program.clients[soc].party == this) { list.Add(soc); }
                 }
                 return list;
             }

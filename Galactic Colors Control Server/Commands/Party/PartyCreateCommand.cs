@@ -1,4 +1,6 @@
-﻿using System.Net.Sockets;
+﻿using Galactic_Colors_Control_Common;
+using Galactic_Colors_Control_Common.Protocol;
+using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
 {
@@ -6,7 +8,7 @@ namespace Galactic_Colors_Control_Server.Commands
     {
         public string Name { get { return "create"; } }
         public string DescText { get { return "Create new party."; } }
-        public string HelpText { get { return "Use /party create [name] [size] to create new party."; } }
+        public string HelpText { get { return "Use 'party create [name] [size]' to create new party."; } }
         public Manager.CommandGroup Group { get { return Manager.CommandGroup.party; } }
         public bool IsServer { get { return true; } }
         public bool IsClient { get { return true; } }
@@ -15,48 +17,32 @@ namespace Galactic_Colors_Control_Server.Commands
         public int minArgs { get { return 2; } }
         public int maxArgs { get { return 2; } }
 
-        public void Execute(string[] args, Socket soc, bool server = false)
+        public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
-            if (server || (!server && Program.clients[soc].partyID == -1))
+            if (!server && Program.clients[soc].partyID != -1)
+                return new RequestResult(ResultTypes.Error, Common.Strings("Allready"));
+
+            int size;
+            if (!int.TryParse(args[3], out size))
+                return new RequestResult(ResultTypes.Error, Common.Strings("Format"));
+
+            if (size < 1)
+                return new RequestResult(ResultTypes.Error, Common.Strings("Too Small"));
+
+            if (size > Program.config.size)
+                return new RequestResult(ResultTypes.Error, Common.Strings("Too Big"));
+
+            Program.AddParty(new Party(args[2], size, Utilities.GetName(soc)));
+            Logger.Write("Party " + args[2] + " create with " + size + " slots as " + Program.GetPartyID(false), Logger.logType.info);
+            if (server)
             {
-                int size;
-                if (int.TryParse(args[3], out size))
-                {
-                    if (size > 0)
-                    {
-                        if (size <= Program.config.size)
-                        {
-                            Logger.Write("Party " + args[2] + " create with " + size + " slots as " + Program.partyID, Logger.logType.info);
-                            Program.AddParty(new Party(args[2], size, Utilities.GetName(soc)));
-                            if (server)
-                            {
-                                Program.selectedParty = Program.partyID-1;
-                            }
-                            else
-                            {
-                                Program.clients[soc].partyID = Program.partyID-1;
-                                Utilities.Return("Party " + args[2] + " create with " + size + " slots as " + (Program.partyID-1), soc, server);
-                            }
-                        }
-                        else
-                        {
-                            Utilities.Return("Too big size", soc, server);
-                        }
-                    }
-                    else
-                    {
-                        Utilities.Return("Too small size", soc, server);
-                    }
-                }
-                else
-                {
-                    Utilities.Return("Incorrect argument " + args[3], soc, server);
-                }
+                Program.selectedParty = Program.GetPartyID(false);
             }
             else
             {
-                Utilities.Return("Allready in a party.", soc, server);
+                Program.clients[soc].partyID = Program.GetPartyID(false);
             }
+            return new RequestResult(ResultTypes.OK, new string[3] { args[2], size.ToString(), (Program.GetPartyID(false)).ToString() });
         }
     }
 }

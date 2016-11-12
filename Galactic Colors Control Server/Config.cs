@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -16,8 +12,8 @@ namespace Galactic_Colors_Control_Server
         public Logger.logType logLevel = Logger.logType.info;
         public int port = 25001;
         public int size = 20;
-        public ConsoleColor[] logForeColor = new ConsoleColor[5] {ConsoleColor.Gray , ConsoleColor.White, ConsoleColor.Yellow, ConsoleColor.Red, ConsoleColor.White};
-        public ConsoleColor[] logBackColor = new ConsoleColor[5] { ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Red };
+        public ConsoleColor[] logForeColor = new ConsoleColor[6] { ConsoleColor.DarkGray, ConsoleColor.Gray, ConsoleColor.White, ConsoleColor.Yellow, ConsoleColor.Red, ConsoleColor.White };
+        public ConsoleColor[] logBackColor = new ConsoleColor[6] { ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Red };
 
         /// <summary>
         /// Load config from xml file
@@ -41,6 +37,7 @@ namespace Galactic_Colors_Control_Server
                 else
                 {
                     Logger.Write("Old config in Config.xml.old", Logger.logType.warm);
+                    File.Delete(AppDomain.CurrentDomain.BaseDirectory + "Config.xml.old");
                     File.Move(AppDomain.CurrentDomain.BaseDirectory + "Config.xml", AppDomain.CurrentDomain.BaseDirectory + "Config.xml.old");
                     config.Save();
                 }
@@ -51,6 +48,7 @@ namespace Galactic_Colors_Control_Server
                 config.Save();
             }
             if (Program._debug) { config.logLevel = Logger.logType.debug; }
+            if (Program._dev) { config.logLevel = Logger.logType.dev; }
             return config;
         }
 
@@ -60,12 +58,13 @@ namespace Galactic_Colors_Control_Server
         public void Save()
         {
             XmlSerializer xs = new XmlSerializer(typeof(Config));
-            if (Program._debug) { logLevel = Logger.logType.info; }
+            if (Program._debug || Program._dev) { logLevel = Logger.logType.info; }
             using (StreamWriter st = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "Config.xml"))
             {
-                xs.Serialize(st,this);
+                xs.Serialize(st, this);
             };
             if (Program._debug) { logLevel = Logger.logType.debug; }
+            if (Program._dev) { logLevel = Logger.logType.dev; }
         }
 
         /// <summary>

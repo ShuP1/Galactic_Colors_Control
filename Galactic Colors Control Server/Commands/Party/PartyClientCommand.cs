@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Galactic_Colors_Control_Common;
+using Galactic_Colors_Control_Common.Protocol;
 using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
@@ -7,7 +8,7 @@ namespace Galactic_Colors_Control_Server.Commands
     {
         public string Name { get { return "client"; } }
         public string DescText { get { return "Lists party clients."; } }
-        public string HelpText { get { return "Use /party client to show party clients list."; } }
+        public string HelpText { get { return "Use 'party client' to show party clients list."; } }
         public Manager.CommandGroup Group { get { return Manager.CommandGroup.party; } }
         public bool IsServer { get { return true; } }
         public bool IsClient { get { return true; } }
@@ -16,18 +17,20 @@ namespace Galactic_Colors_Control_Server.Commands
         public int minArgs { get { return 0; } }
         public int maxArgs { get { return 0; } }
 
-        public void Execute(string[] args, Socket soc, bool server = false)
+        public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
             int partyId = -1;
-            if (Utilities.AccessParty(ref partyId, false, soc, server))
+            if (!Utilities.AccessParty(ref partyId, args, false, soc, server))
+                return new RequestResult(ResultTypes.Error, Common.Strings("Access"));
+
+            string[] data = new string[Program.parties[partyId].clients.Count];
+            int i = 0;
+            foreach (Socket client in Program.parties[partyId].clients)
             {
-                string text = "  ";
-                foreach(Socket client in Program.parties[partyId].clients)
-                {
-                    text += (Utilities.GetName(client) + Environment.NewLine + "  ");
-                }
-                Utilities.Return(text, soc, server);
+                data[i] = Utilities.GetName(client);
+                i++;
             }
+            return new RequestResult(ResultTypes.OK, data);
         }
     }
 }
