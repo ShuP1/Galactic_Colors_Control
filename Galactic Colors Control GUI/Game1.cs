@@ -1,4 +1,5 @@
-﻿using Galactic_Colors_Control;
+﻿//TODO comment and update for new clientcore
+using Galactic_Colors_Control;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -211,7 +212,8 @@ namespace Galactic_Colors_Control_GUI
 
                 case GameStatus.Game:
                     if (showOutput)
-                        if (client.Output.Count > 0)
+                        //TODO
+                        /*if (client.Output.Count > 0)
                         {
                             string text = client.Output[0];
                             switch (text)
@@ -225,7 +227,7 @@ namespace Galactic_Colors_Control_GUI
                                     break;
                             }
                             client.Output.Remove(text);
-                        }
+                        }*/
                     if (!client.isRunning) { gameStatus = GameStatus.Kick; }
                     break;
             }
@@ -327,7 +329,7 @@ namespace Galactic_Colors_Control_GUI
                                 }
                                 if (GUI.Button(new Rectangle(ScreenWidth / 2 + 5, ScreenHeight / 4 + 100, 135, 40), buttonsSprites[0], "No", basicFont))
                                 {
-                                    client.Output.Clear();
+                                    //TODO client.Output.Clear();
                                     client.ResetHost();
                                     GUI.ResetFocus();
                                     showYNMessage = false;
@@ -406,7 +408,7 @@ namespace Galactic_Colors_Control_GUI
                     if (showChat)
                     {
                         GUI.Box(new Rectangle(0, 30, 310, 310), buttonsSprites[0]);
-                        if (GUI.TextField(new Rectangle(5, 35, 305, 20), ref chatInput, basicFont, null, Manager.textAlign.centerLeft, "Enter message")) { if (chatInput != null) { ChatAdd(chatInput); client.SendRequest(chatInput); chatInput = null; } }
+                        //TODO if (GUI.TextField(new Rectangle(5, 35, 305, 20), ref chatInput, basicFont, null, Manager.textAlign.centerLeft, "Enter message")) { if (chatInput != null) { ChatAdd(chatInput); client.SendRequest(chatInput); chatInput = null; } }
                         GUI.Label(new Rectangle(5, 60, 305, 245), chatText, smallFont, null, Manager.textAlign.topLeft, true);
                     }
 
@@ -446,9 +448,9 @@ namespace Galactic_Colors_Control_GUI
             {
                 messageTitle = "Error";
                 messageText = string.Empty;
-                foreach (string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
+                //TODO foreach (string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
                 showOKMessage = true;
-                client.Output.Clear();
+                //TODO client.Output.Clear();
                 client.ResetHost(); ;
             }
             else
@@ -470,9 +472,9 @@ namespace Galactic_Colors_Control_GUI
             {
                 messageTitle = "Error";
                 messageText = string.Empty;
-                foreach (string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
+                //TODO foreach (string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
                 showOKMessage = true;
-                client.Output.Clear();
+                //TODO client.Output.Clear();
                 client.ResetHost();
             }
             showLoading = false;
@@ -485,9 +487,9 @@ namespace Galactic_Colors_Control_GUI
             {
                 if (username.Length > 3)
                 {
-                    client.Output.Clear();
-                    client.SendRequest("/connect " + username);
-                    int wait = 0;
+                    //TODO client.Output.Clear();
+                    //TODO client.SendRequest("/connect " + username);
+                    /*int wait = 0;
                     while (wait < 20)
                     {
                         if (client.Output.Count > 0)
@@ -523,7 +525,7 @@ namespace Galactic_Colors_Control_GUI
                         showOKMessage = true;
                         showLoading = false;
                         client.Output.Clear();
-                    }
+                    }*/
                 }
             }
             showLoading = false;
@@ -533,6 +535,8 @@ namespace Galactic_Colors_Control_GUI
         {
             showLoading = true;
             GUI.ResetFocus();
+            //TODO
+            /*
             if (showParty)
             {
                 client.SendRequest("/party leave");
@@ -584,7 +588,7 @@ namespace Galactic_Colors_Control_GUI
                     showLoading = false;
                     client.Output.Clear();
                 }
-            }
+            }*/
         }
 
         private void ChatAdd(string text)

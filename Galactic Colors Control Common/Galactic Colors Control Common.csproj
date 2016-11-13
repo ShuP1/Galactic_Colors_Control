@@ -52,6 +52,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\Data.cs" />
     <Compile Include="Protocol\EventData.cs" />
+    <Compile Include="Protocol\EventDataArgs.cs" />
     <Compile Include="Protocol\RequestData.cs" />
     <Compile Include="Protocol\RequestResult.cs" />
     <Compile Include="Protocol\ResultData.cs" />

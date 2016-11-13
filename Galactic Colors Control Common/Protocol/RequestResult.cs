@@ -1,5 +1,9 @@
 ﻿namespace Galactic_Colors_Control_Common.Protocol
 {
+    /// <summary>
+    /// Part of RequestData
+    /// Commands return
+    /// </summary>
     public class RequestResult
     {
         public ResultTypes type;

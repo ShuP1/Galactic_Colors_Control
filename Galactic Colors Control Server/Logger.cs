@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Galactic_Colors_Control_Common;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -125,7 +126,7 @@ namespace Galactic_Colors_Control_Server
                             Console.ForegroundColor = Program.config.logForeColor[(int)log.type];
                             Console.Write("\b");
                             Console.WriteLine(DateTime.UtcNow.ToString("[yyyy-MM-dd]", CultureInfo.InvariantCulture) + ": " + log.text);
-                            Utilities.ConsoleResetColor();
+                            Common.ConsoleResetColor();
                             Console.Write(">");
                         }
                     }

@@ -1,40 +1,43 @@
 ﻿using Galactic_Colors_Control;
+using Galactic_Colors_Control_Common;
+using Galactic_Colors_Control_Common.Protocol;
 using System;
 using System.Reflection;
 using System.Threading;
 
 namespace Galactic_Colors_Control_Console
 {
+    /// <summary>
+    /// Console Client
+    /// </summary>
     internal class Program
     {
         private static Client client;
         private static bool run = true;
-        private static Thread Writer;
+        private static char commandChar = '/';
 
         private static void Main()
         {
             client = new Client();
-            Console.Title = "Galactic Colors Control Client";
+            client.OnEvent += new EventHandler(OnEvent); //Set OnEvent function
+            Console.Title = "Galactic Colors Control Client"; //Start display
             Console.Write(">");
-            Write("Galactic Colors Control Client");
-            Write("Console " + Assembly.GetEntryAssembly().GetName().Version.ToString());
+            Common.ConsoleWrite("Galactic Colors Control Client", ConsoleColor.Red);
+            Common.ConsoleWrite("Console " + Assembly.GetEntryAssembly().GetName().Version.ToString(), ConsoleColor.DarkYellow);
             bool hostSet = false;
-            while (!hostSet)
+            while (!hostSet) //Request hostname
             {
-                Write("Enter server host:");
+                Common.ConsoleWrite("Enter server host:");
                 string host = client.ValidateHost(Console.ReadLine());
-                if (host == null)
+                if (host[0] == '*')
                 {
-                    foreach (string output in client.Output.ToArray())
-                    {
-                        Write(output);
-                    }
-                    client.Output.Clear();
+                    host = host.Substring(1);
+                    Common.ConsoleWrite(host, ConsoleColor.Red);
                     client.ResetHost();
                 }
                 else
                 {
-                    Write("Use " + host + "? y/n");
+                    Common.ConsoleWrite("Use " + host + "? y/n");
                     ConsoleKeyInfo c = new ConsoleKeyInfo();
                     while (c.Key != ConsoleKey.Y && c.Key != ConsoleKey.N)
                     {
@@ -50,58 +53,48 @@ namespace Galactic_Colors_Control_Console
                     }
                 }
             }
-            if (client.ConnectHost())
+            if (client.ConnectHost()) //Try connection
             {
                 run = true;
-                Writer = new Thread(OutputWriter);
-                Writer.Start();
                 while (run)
                 {
-                    client.SendRequest(Console.ReadLine());
+                    Execute(Console.ReadLine()); //Process console input
                     if (!client.isRunning) { run = false; }
                 }
-                Writer.Join();
                 Console.Read();
             }
             else
             {
-                foreach (string output in client.Output.ToArray())
-                {
-                    Write(output);
-                }
-                client.Output.Clear();
+                Common.ConsoleWrite("Can't connect sorry. Bye", ConsoleColor.Red);
                 Console.Read();
             }
         }
 
-        private static void OutputWriter()
+        private static void Execute(string input)
         {
-            while (run || client.Output.Count > 0)
-            {
-                if (client.Output.Count > 0)
-                {
-                    string text = client.Output[0];
-                    switch (text)
-                    {
-                        case "/clear":
-                            Console.Clear();
-                            break;
+            if (input == null)
+                return;
 
-                        default:
-                            Write(text);
-                            break;
-                    }
-                    client.Output.Remove(text);
-                }
-                Thread.Sleep(200);
+            if (input.Length == 0)
+                return;
+
+            string[] req;
+            if(input[0] == commandChar)
+            {
+                input = input.Substring(1);
+                req = Common.SplitArgs(input);
             }
+            else
+            {
+                req = Common.Strings("say", input);
+            }
+            Common.ConsoleWrite(client.Request(req).ToSmallString()); //Add processing (common)
         }
 
-        private static void Write(string text)
+        private static void OnEvent(object sender, EventArgs e)
         {
-            Console.Write("\b");
-            Console.WriteLine(text);
-            Console.Write(">");
+            EventData eve = ((EventDataArgs)e).Data;
+            Common.ConsoleWrite(eve.ToSmallString()); //TODO add processing (common)
         }
     }
 }

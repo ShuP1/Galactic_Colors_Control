@@ -1,4 +1,5 @@
-﻿using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common;
+using Galactic_Colors_Control_Common.Protocol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,34 +10,62 @@ using System.Threading;
 
 namespace Galactic_Colors_Control
 {
+    /// <summary>
+    /// Client CrossPlatform Core
+    /// </summary>
     public class Client
     {
         private Socket ClientSocket = new Socket
             (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-        public int PORT = 0;
-        private int _errorCount = 0;
-        private bool _run = true;
-        public string IP = null;
+        public string IP = null; //Server IP
+        public int PORT = 0; //Server Port
 
+        public struct CoreConfig
+        {
+            public int resultsBuffer; //Max amount of waiting results
+            public int timeout; //Request timeout in ms
+            public int refresh; //Threads sleep in ms
+
+            public CoreConfig(int buffer, int time, int speed)
+            {
+                resultsBuffer = buffer;
+                timeout = time;
+                refresh = speed;
+            }
+        }
+
+        public CoreConfig config = new CoreConfig(20, 2000, 200); //Set default config
+
+        private int _errorCount = 0; //Leave if > 5
+
+        private bool _run = true; //Thread Stop
         public bool isRunning { get { return _run; } }
 
-        public List<string> Output = new List<string>();
         private int RequestId = 0;
+        private List<ResultData> Results = new List<ResultData>();
+        private Thread RecieveThread; //Main Thread
+        public EventHandler OnEvent; //Execute on EventData reception (must be short or async)
 
-        private Thread RecieveThread;
-
+        /// <summary>
+        /// Soft Server Reset
+        /// </summary>
         public void ResetHost()
         {
             IP = null;
             PORT = 0;
         }
 
+        /// <summary>
+        /// Test and Convert Hostname to Address
+        /// </summary>
+        /// <param name="text">Hostname</param>
+        /// <returns>Address(IP:PORT) or Error(*'text')</returns>
         public string ValidateHost(string text)
         {
-            if (text == null) { text = ""; }
-            string[] parts = text.Split(new char[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length == 0)
+            if (text == null) { text = ""; } //Prevent NullException
+            string[] parts = text.Split(new char[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries); //Split IP and Port
+            if (parts.Length == 0) //Default config (localhost)
             {
                 parts = new string[] { "" };
                 PORT = 25001;
@@ -45,7 +74,7 @@ namespace Galactic_Colors_Control
             {
                 if (parts.Length > 1)
                 {
-                    if (!int.TryParse(parts[1], out PORT)) { PORT = 0; }
+                    if (!int.TryParse(parts[1], out PORT)) { PORT = 0; } //Check Port
                     if (PORT < 0 || PORT > 65535) { PORT = 0; }
                 }
                 else
@@ -57,29 +86,28 @@ namespace Galactic_Colors_Control
             {
                 try
                 {
-                    IPHostEntry ipHostEntry = Dns.GetHostEntry(parts[0]);
-                    IPAddress host = ipHostEntry.AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
+                    IPHostEntry ipHostEntry = Dns.GetHostEntry(parts[0]);//Resolve Hostname
+                    IPAddress host = ipHostEntry.AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);//Get IPv4
                     IP = host.ToString();
                     return IP + ":" + PORT;
                 }
                 catch (Exception e)
                 {
                     PORT = 0;
-                    Output.Add(e.Message);
-                    return null;
+                    return "*" + e.Message;
                 }
             }
             else
             {
-                Output.Add("Incorrect Port");
-                return null;
+                return "*Port Format";
             }
         }
 
         /// <summary>
-        /// Set IP and PORT before
+        /// Start Server connection
         /// </summary>
-        /// <returns>Connection succes</returns>
+        /// <remarks>Setup IP and Port before</remarks>
+        /// <returns>connection success</returns>
         public bool ConnectHost()
         {
             int attempts = 0;
@@ -89,32 +117,27 @@ namespace Galactic_Colors_Control
                 try
                 {
                     attempts++;
-                    Output.Add("Connection attempt " + attempts);
                     ClientSocket.Connect(IP, PORT);
                 }
-                catch (SocketException)
-                {
-                    Output.Clear();
-                }
+                catch (SocketException) { }
             }
-            if (attempts < 5)
+            if (attempts < 5) //Connection success
             {
-                Output.Clear();
-                Output.Add("Connected to " + IP.ToString());
                 _run = true;
-                RecieveThread = new Thread(ReceiveLoop);
+                RecieveThread = new Thread(ReceiveLoop); //Starting Main Thread
                 RecieveThread.Start();
                 return true;
             }
             else
             {
-                Output.Clear();
-                Output.Add("Can't connected to " + IP.ToString());
                 ResetSocket();
                 return false;
             }
         }
 
+        /// <summary>
+        /// Hard Reset (unsafe)
+        /// </summary>
         private void ResetSocket()
         {
             ClientSocket.Close();
@@ -128,91 +151,78 @@ namespace Galactic_Colors_Control
         public void ExitHost()
         {
             Send(new RequestData(GetRequestId(), new string[1] { "exit" }));// Tell the server we are exiting
-            _run = false;
+            _run = false; //Stopping Thread
             RecieveThread.Join(2000);
             ClientSocket.Shutdown(SocketShutdown.Both);
             ClientSocket.Close();
-            Output.Add("Bye");
             ResetHost();
         }
 
-        public void SendRequest(string request)
+        /// <summary>
+        /// Send RequestData to server
+        /// </summary>
+        /// <param name="args">Request args</param>
+        /// <returns>ResultData or Timeout</returns>
+        public ResultData Request(string[] args)
         {
-            switch (request.ToLower())
+            // TODO filter Client Side Requests
+            RequestData req = new RequestData(GetRequestId(), args);
+            if (!Send(req))
+                return new ResultData(req.id, ResultTypes.Error, Common.Strings("Send Exception"));
+
+            DateTime timeoutDate = DateTime.Now.AddMilliseconds(config.timeout); //Create timeout DataTime
+            while (timeoutDate > DateTime.Now)
             {
-                case "/exit":
-                    ExitHost();
-                    break;
-
-                case "/ping":
-                    PingHost();
-                    break;
-
-                case "/clear":
-                    Output.Add("/clear");
-                    break;
-
-                default:
-                    //TODO add key and send error here
-                    if (request.Length > 0)
+                foreach (ResultData res in Results.ToArray()) //Check all results
+                {
+                    if (res.id == req.id)
                     {
-                        if (request[0] == '/')
-                        {
-                            request = request.Substring(1);
-                            string[] array = request.Split(new char[1] { ' ' }, 4, StringSplitOptions.RemoveEmptyEntries);
-                            if (array.Length > 0)
-                            {
-                                Send(new RequestData(GetRequestId(), array));
-                            }
-                            else
-                            {
-                                Output.Add("Any Command");
-                            }
-                        }
-                        else
-                        {
-                            Send(new RequestData(GetRequestId(), new string[2] { "say", request }));
-                        }
+                        Results.Remove(res);
+                        return res;
                     }
-                    break;
+                }
+                Thread.Sleep(config.refresh);
             }
+            return new ResultData(req.id, ResultTypes.Error, Common.Strings("Timeout"));
         }
 
-        private void PingHost()
+        /// <summary>
+        /// Ping Current Server IP
+        /// </summary>
+        /// <returns>Time in ms or 'Timeout'</returns>
+        private string PingHost()
         {
-            Ping p = new Ping();
-            PingReply r;
+            Ping ping = new Ping();
+            PingReply reply;
 
-            r = p.Send(IP);
+            reply = ping.Send(IP);
+            if (reply.Status == IPStatus.Success)
+                return reply.RoundtripTime.ToString();
 
-            if (r.Status == IPStatus.Success)
-            {
-                Output.Add(r.RoundtripTime.ToString() + " ms.");
-            }
-            else
-            {
-                Output.Add("Time out");
-            }
+            return "Timeout";
         }
 
-        private void Send(Data packet)
+        /// <summary>
+        /// Send Data object to server
+        /// </summary>
+        /// <returns>Send success</returns>
+        private bool Send(Data packet)
         {
             try
             {
                 ClientSocket.Send(packet.ToBytes());
+                return true;
             }
-            catch
+            catch //Can't contact server
             {
-                Output.Add("Can't contact server : " + _errorCount);
                 _errorCount++;
             }
-            if (_errorCount >= 5)
-            {
-                Output.Add("Kick : too_much_errors");
-                _run = false;
-            }
+            return false;
         }
 
+        /// <summary>
+        /// Main Thread
+        /// </summary>
         private void ReceiveLoop()
         {
             while (_run)
@@ -225,46 +235,55 @@ namespace Galactic_Colors_Control
                 }
                 catch
                 {
-                    Output.Add("Server timeout");
+                    _errorCount++;
+                }
+                if (_errorCount >= 5)
+                {
+                    _run = false;
                 }
                 if (received == 0) return;
                 _errorCount = 0;
                 var data = new byte[received];
                 Array.Copy(buffer, data, received);
 
-                Data packet = Data.FromBytes(ref data);
+                Data packet = Data.FromBytes(ref data); //Create Data object from recieve bytes
                 if (packet != null)
                 {
                     switch (packet.GetType().Name)
                     {
                         case "EventData":
                             EventData eve = (EventData)packet;
-                            Output.Add(eve.ToSmallString());
+                            if (OnEvent != null)
+                                OnEvent.Invoke(this, new EventDataArgs(eve));
                             break;
 
                         case "ResultData":
                             ResultData res = (ResultData)packet;
-                            Output.Add(res.ToSmallString());
+                            ResultAdd(res);
                             break;
 
-                        default:
-                            Output.Add("Wrong packet");
+                        default: //Ignore others Packets
                             break;
                     }
                 }
-                else
-                {
-                    Output.Add("Wrong packet");
-                }
-                Thread.Sleep(200);
+                Thread.Sleep(config.refresh);
             }
-            Output.Add("/*exit*/");
+            //TODOOutput.Add("/*exit*/");
         }
 
         public int GetRequestId(bool indent = true)
         {
             if (indent) { RequestId++; }
             return RequestId;
+        }
+
+        /// <summary>
+        /// Add to Results
+        /// </summary>
+        public void ResultAdd(ResultData res)
+        {
+            while (Results.Count + 1 > config.resultsBuffer) { Results.RemoveAt(0); } //Removes firsts
+            Results.Add(res);
         }
     }
 }

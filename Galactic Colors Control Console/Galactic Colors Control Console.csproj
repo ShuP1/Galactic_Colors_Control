@@ -51,6 +51,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Galactic Colors Control Common\Galactic Colors Control Common.csproj">
+      <Project>{022A69CE-22B5-4934-BE9F-A9C6DF9557ED}</Project>
+      <Name>Galactic Colors Control Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Galactic Colors Control\Galactic Colors Control.csproj">
       <Project>{93582ce8-c8c8-4e19-908b-d671ecbade25}</Project>
       <Name>Galactic Colors Control</Name>

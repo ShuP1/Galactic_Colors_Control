@@ -1,14 +1,17 @@
 ﻿namespace Galactic_Colors_Control_Common.Protocol
 {
+    /// <summary>
+    /// Client to Server Data request packet 'allways' return ResultData
+    /// </summary>
     public class RequestData : Data
     {
-        public int id;
+        public int id; //Client Size autoindent id
         public string[] args;
 
-        public RequestData(int p1, string[] p2)
+        public RequestData(int Id, string[] Args)
         {
-            id = p1;
-            args = p2;
+            id = Id;
+            args = Args;
         }
 
         public RequestData(ref byte[] bytes)

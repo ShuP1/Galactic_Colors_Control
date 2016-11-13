@@ -2,24 +2,27 @@
 {
     public enum ResultTypes { Error, OK }
 
+    /// <summary>
+    /// Server to Client Result from RequestData
+    /// </summary>
     public class ResultData : Data
     {
-        public int id;
+        public int id; //Client Side Autoindent
         public ResultTypes type;
         public string[] result;
 
-        public ResultData(int p1, ResultTypes p2, string[] p3 = null)
+        public ResultData(int Id, ResultTypes Type, string[] Result = null)
         {
-            id = p1;
-            type = p2;
-            result = p3;
+            id = Id;
+            type = Type;
+            result = Result;
         }
 
-        public ResultData(int p1, RequestResult p2)
+        public ResultData(int Id, RequestResult Result)
         {
-            id = p1;
-            type = p2.type;
-            result = p2.result;
+            id = Id;
+            type = Result.type;
+            result = Result.result;
         }
 
         public ResultData(ref byte[] bytes)

@@ -1,16 +1,28 @@
 ﻿namespace Galactic_Colors_Control_Common.Protocol
 {
-    public enum EventTypes { ChatMessage, ServerJoin, ServerLeave, ServerKick, PartyJoin, PartyLeave, PartyKick }
+    public enum EventTypes
+    {
+        ChatMessage, //To displat in chatbox
+        ServerJoin, //A player join server
+        ServerLeave, //A player leave server
+        ServerKick, //You are kick from server
+        PartyJoin, //A player join your party
+        PartyLeave, //A player leave your party
+        PartyKick //Tou are jick from your party
+    }
 
+    /// <summary>
+    /// Server to Client Packet
+    /// </summary>
     public class EventData : Data
     {
         public EventTypes type;
-        public string[] data;
+        public string[] data; //EventArgs like
 
-        public EventData(EventTypes p1, string[] p2 = null)
+        public EventData(EventTypes Type, string[] Data = null)
         {
-            type = p1;
-            data = p2;
+            type = Type;
+            data = Data;
         }
 
         public EventData(ref byte[] bytes)

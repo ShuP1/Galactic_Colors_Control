@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Galactic_Colors_Control_Common
 {
+    /// <summary>
+    /// All used types - byte[] convertions
+    /// </summary>
     public static class Binary
     {
         public static bool ToBool(ref byte[] bytes)
@@ -14,6 +17,7 @@ namespace Galactic_Colors_Control_Common
             return data[1] == 1 ? true : false;
         }
 
+        ///<remarks>1 byte</remarks>
         public static byte[] FromBool(bool x)
         {
             return x ? new byte[1] { 1 } : new byte[1] { 0 };
@@ -27,6 +31,7 @@ namespace Galactic_Colors_Control_Common
             return text;
         }
 
+        ///<remarks>len(in bytes) + string</remarks>
         public static byte[] FromString(string text)
         {
             byte[] data = Encoding.ASCII.GetBytes(text);
@@ -48,6 +53,7 @@ namespace Galactic_Colors_Control_Common
             return BitConverter.ToInt32(data, 0);
         }
 
+        ///<remarks>4 bytes</remarks>
         public static byte[] FromInt(int x)
         {
             byte[] data = new byte[4];

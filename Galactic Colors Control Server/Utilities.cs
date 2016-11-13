@@ -1,4 +1,5 @@
-﻿using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common;
+using Galactic_Colors_Control_Common.Protocol;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -50,32 +51,6 @@ namespace Galactic_Colors_Control_Server
         }
 
         /// <summary>
-        /// Write line in console with correct colors
-        /// </summary>
-        /// <param name="v">Text to write</param>
-        /// <param name="Fore">Foreground color</param>
-        /// <param name="Back">Background color</param>
-        public static void ConsoleWrite(string v, ConsoleColor Fore = ConsoleColor.White, ConsoleColor Back = ConsoleColor.Black)
-        {
-            Console.Write("\b");
-            Console.ForegroundColor = Fore;
-            Console.BackgroundColor = Back;
-            Console.WriteLine(v);
-            ConsoleResetColor();
-            Console.Write(">");
-        }
-
-        /// <summary>
-        /// Reset Console Colors
-        /// For non black background console as Ubuntu
-        /// </summary>
-        public static void ConsoleResetColor()
-        {
-            Console.ResetColor();
-            Console.BackgroundColor = ConsoleColor.Black;
-        }
-
-        /// <summary>
         /// Send data to specified socket
         /// </summary>
         /// <param name="soc">Target socket</param>
@@ -111,7 +86,7 @@ namespace Galactic_Colors_Control_Server
             {
                 Send(soc, packet);
             }
-            ConsoleWrite(packet.ToSmallString());
+            Common.ConsoleWrite(packet.ToSmallString());
         }
 
         /// <summary>
@@ -132,7 +107,7 @@ namespace Galactic_Colors_Control_Server
             }
             if (Program.selectedParty == party)
             {
-                ConsoleWrite(data.ToSmallString());
+                Common.ConsoleWrite(data.ToSmallString());
             }
         }
 
@@ -147,7 +122,7 @@ namespace Galactic_Colors_Control_Server
         {
             if (server)
             {
-                ConsoleWrite(data.ToSmallString());
+                Common.ConsoleWrite(data.ToSmallString());
             }
             else
             {

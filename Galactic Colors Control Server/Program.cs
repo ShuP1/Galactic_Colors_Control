@@ -54,7 +54,7 @@ namespace Galactic_Colors_Control_Server
                         break;
 
                     default:
-                        Utilities.ConsoleWrite("Use --debug or --dev");
+                        Common.ConsoleWrite("Use --debug or --dev");
                         break;
                 }
             }
@@ -92,7 +92,7 @@ namespace Galactic_Colors_Control_Server
                 string ConsoleInput = Console.ReadLine();
                 Console.Write(">");
                 string[] args = Common.SplitArgs(ConsoleInput);
-                Utilities.ConsoleWrite(new ResultData(-1, Commands.Manager.Execute(args, null, true)).ToSmallString());
+                Common.ConsoleWrite(new ResultData(-1, Commands.Manager.Execute(args, null, true)).ToSmallString());
                 ConsoleInput = null;
             }
         }
