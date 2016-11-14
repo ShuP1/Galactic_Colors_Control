@@ -1,9 +1,17 @@
 ﻿using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.IO;
 
 namespace Galactic_Colors_Control_GUI
 {
+    public struct Fonts
+    {
+        public SpriteFont small; //Text fonts
+        public SpriteFont basic;
+        public SpriteFont title;
+    }
+
     internal static class Utilities
     {
         /// <summary>
@@ -36,6 +44,19 @@ namespace Galactic_Colors_Control_GUI
                     sound = SoundEffect.FromStream(fileStream);
                 }
             }
+        }
+
+        public static bool DoubleTo(ref double value, double target, double speed)
+        {
+            speed = Math.Abs(speed);
+            bool up = value < target;
+            value += (up ? 1 : -1) * speed;
+            if ((up && value >= target) || (!up && value <= target))
+            {
+                value = target;
+                return true;
+            }
+            return false;
         }
     }
 }

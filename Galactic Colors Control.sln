@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Galactic Colors Control Server", "Galactic Colors Control Server\Galactic Colors Control Server.csproj", "{9E3AF4E1-88C6-4139-A15C-B4F633E80612}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -15,6 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Galactic Colors Control", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Galactic Colors Control GUI", "Galactic Colors Control GUI\Galactic Colors Control GUI.csproj", "{F6CDDF1B-5A57-4A84-B57C-749FFF9AE031}"
 	ProjectSection(ProjectDependencies) = postProject
+		{022A69CE-22B5-4934-BE9F-A9C6DF9557ED} = {022A69CE-22B5-4934-BE9F-A9C6DF9557ED}
 		{93582CE8-C8C8-4E19-908B-D671ECBADE25} = {93582CE8-C8C8-4E19-908B-D671ECBADE25}
 	EndProjectSection
 EndProject

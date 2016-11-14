@@ -3,7 +3,6 @@ using Galactic_Colors_Control_Common;
 using Galactic_Colors_Control_Common.Protocol;
 using System;
 using System.Reflection;
-using System.Threading;
 
 namespace Galactic_Colors_Control_Console
 {
@@ -23,7 +22,7 @@ namespace Galactic_Colors_Control_Console
             Console.Title = "Galactic Colors Control Client"; //Start display
             Console.Write(">");
             Common.ConsoleWrite("Galactic Colors Control Client", ConsoleColor.Red);
-            Common.ConsoleWrite("Console " + Assembly.GetEntryAssembly().GetName().Version.ToString(), ConsoleColor.DarkYellow);
+            Common.ConsoleWrite("Console " + Assembly.GetEntryAssembly().GetName().Version.ToString(), ConsoleColor.Yellow);
             bool hostSet = false;
             while (!hostSet) //Request hostname
             {
@@ -79,7 +78,7 @@ namespace Galactic_Colors_Control_Console
                 return;
 
             string[] req;
-            if(input[0] == commandChar)
+            if (input[0] == commandChar)
             {
                 input = input.Substring(1);
                 req = Common.SplitArgs(input);

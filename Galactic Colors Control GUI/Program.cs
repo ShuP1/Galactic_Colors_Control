@@ -13,7 +13,8 @@ namespace Galactic_Colors_Control_GUI
         [STAThread]
         private static void Main()
         {
-            using (var game = new Game1())
+            //TODO add debug and more
+            using (var game = new Game())
                 game.Run();
         }
     }
