@@ -5,8 +5,12 @@ GCC is a cross plateforme C# minimal RTS.
 ### Prerequisities
 
 * .NET/[Mono](https://github.com/mono/mono)
+
+For GUI
+```
 * OpenGL
 * [OpenAL](https://www.openal.org/) => :warning: Not included in Windows :warning:
+```
 
 ### Installing
 
@@ -47,4 +51,4 @@ See also the list of [contributors](https://github.com/sheychen290/Galactic_Colo
 
 ## License
 
-This project is licensed under the MIT License - see the [License.md](License.md) file for details
+This software comes under the terms of the GPLv3+. Previously under MIT license. See the [License.md](License.md) file for the complete text of the license.
