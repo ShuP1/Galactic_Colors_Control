@@ -29,7 +29,9 @@ namespace Galactic_Colors_Control_Server
         public static Dictionary<int, Party> parties { get; private set; } = new Dictionary<int, Party>();
         public static int selectedParty = -1;
 
+        //TODO add multilang
         public static Config config = new Config();
+        public static Logger logger = new Logger();
         public static Thread CheckConnected = new Thread(CheckConnectedLoop);
 
         /// <summary>
@@ -38,19 +40,19 @@ namespace Galactic_Colors_Control_Server
         private static void Main(string[] args)
         {
             Console.Title = "Galactic Colors Control Server";
-            Logger.Write("Galactic Colors Control Server " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Logger.logType.fatal);
+            logger.Write("Galactic Colors Control Server " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Logger.logType.fatal);
             if (args.Length > 0)
             {
                 switch (args[0])
                 {
                     case "--debug":
                         _debug = true;
-                        Logger.Write("SERVER IS IN DEBUG MODE !", Logger.logType.error, Logger.logConsole.show);
+                        logger.Write("SERVER IS IN DEBUG MODE !", Logger.logType.error, Logger.logConsole.show);
                         break;
 
                     case "--dev":
                         _dev = true;
-                        Logger.Write("SERVER IS IN DEV MODE !", Logger.logType.error, Logger.logConsole.show);
+                        logger.Write("SERVER IS IN DEV MODE !", Logger.logType.error, Logger.logConsole.show);
                         break;
 
                     default:
@@ -58,7 +60,7 @@ namespace Galactic_Colors_Control_Server
                         break;
                 }
             }
-            if (Type.GetType("Mono.Runtime") != null) { Logger.Write("Using Mono", Logger.logType.warm); }
+            if (Type.GetType("Mono.Runtime") != null) { logger.Write("Using Mono", Logger.logType.warm, Logger.logConsole.show); }
             Console.Write(">");
             SetupServer();
             ConsoleLoop();
@@ -71,15 +73,15 @@ namespace Galactic_Colors_Control_Server
         private static void SetupServer()
         {
             config = config.Load();
-            Logger.Initialise();
+            logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel);
             Commands.Manager.Load();
-            Logger.Write("Setting up server on *:" + config.port, Logger.logType.warm);
-            Logger.Write("Size:" + config.size, Logger.logType.debug);
+            logger.Write("Setting up server on *:" + config.port, Logger.logType.warm);
+            logger.Write("Size:" + config.size, Logger.logType.debug);
             serverSocket.Bind(new IPEndPoint(IPAddress.Any, config.port));
             serverSocket.Listen(0);
             serverSocket.BeginAccept(AcceptCallback, null);
             CheckConnected.Start();
-            Logger.Write("Server setup complete", Logger.logType.info);
+            logger.Write("Server setup complete", Logger.logType.info);
         }
 
         /// <summary>
@@ -102,19 +104,18 @@ namespace Galactic_Colors_Control_Server
         /// </summary>
         private static void CloseAllSockets()
         {
-            Logger.Write("Stoping server", Logger.logType.warm, Logger.logConsole.show);
+            logger.Write("Stoping server", Logger.logType.warm, Logger.logConsole.show);
             Utilities.Broadcast(new EventData(EventTypes.ServerKick, Common.Strings("Close")));
             config.Save();
             foreach (Socket socket in clients.Keys)
             {
                 socket.Shutdown(SocketShutdown.Both);
-                Logger.Write("Shutdown " + Utilities.GetName(socket), Logger.logType.debug);
+                logger.Write("Shutdown " + Utilities.GetName(socket), Logger.logType.debug);
             }
             serverSocket.Close();
             CheckConnected.Join(2000);
-            Logger.Write("Server stoped", Logger.logType.info);
-            Logger._run = false;
-            Logger.Updater.Join();
+            logger.Write("Server stoped", Logger.logType.info);
+            logger.Join();
         }
 
         /// <summary>
@@ -139,14 +140,14 @@ namespace Galactic_Colors_Control_Server
                 }
                 else
                 {
-                    Logger.Write("Client can't join from " + ((IPEndPoint)socket.LocalEndPoint).Address.ToString() + " no more space", Logger.logType.warm);
+                    logger.Write("Client can't join from " + ((IPEndPoint)socket.LocalEndPoint).Address.ToString() + " no more space", Logger.logType.warm);
                     Utilities.Send(socket, new EventData(EventTypes.ServerKick, Common.Strings("Space")));
                     socket.Close();
                 }
             }
             else
             {
-                Logger.Write("Client can't join from " + ((IPEndPoint)socket.LocalEndPoint).Address.ToString() + " server closed", Logger.logType.info);
+                logger.Write("Client can't join from " + ((IPEndPoint)socket.LocalEndPoint).Address.ToString() + " server closed", Logger.logType.info);
                 Utilities.Send(socket, new EventData(EventTypes.ServerKick, Common.Strings("Close")));
                 socket.Close();
             }
@@ -161,11 +162,11 @@ namespace Galactic_Colors_Control_Server
             Client client = new Client();
             clients.Add(socket, client);
             socket.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
-            Logger.Write("Client connection from " + Utilities.GetName(socket), Logger.logType.info);
-            Logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.dev);
+            logger.Write("Client connection from " + Utilities.GetName(socket), Logger.logType.info);
+            logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.dev);
             if (clients.Count >= config.size)
             {
-                Logger.Write("Server full", Logger.logType.warm, Logger.logConsole.show);
+                logger.Write("Server full", Logger.logType.warm, Logger.logConsole.show);
             }
         }
 
@@ -183,10 +184,10 @@ namespace Galactic_Colors_Control_Server
             }
             catch (SocketException)
             {
-                Logger.Write("Client forcefully disconnected from " + Utilities.GetName(current) + " : SocketException", Logger.logType.info);
+                logger.Write("Client forcefully disconnected from " + Utilities.GetName(current) + " : SocketException", Logger.logType.info);
                 string username = Utilities.GetName(current);
                 bool connected = clients[current].status != -1;
-                Logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.debug);
+                logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.debug);
                 current.Close(); // Don't shutdown because the socket may be disposed and its disconnected anyway.
                 clients.Remove(current);
                 if (connected) { Utilities.Broadcast(new EventData(EventTypes.ServerLeave, Common.Strings(username))); }
@@ -207,13 +208,13 @@ namespace Galactic_Colors_Control_Server
                         break;
 
                     default:
-                        Logger.Write("Wrong packet from " + Utilities.GetName(current), Logger.logType.error);
+                        logger.Write("Wrong packet from " + Utilities.GetName(current), Logger.logType.error);
                         break;
                 }
             }
             else
             {
-                Logger.Write("Wrong packet from " + Utilities.GetName(current), Logger.logType.error);
+                logger.Write("Wrong packet from " + Utilities.GetName(current), Logger.logType.error);
             }
 
             if (clients.ContainsKey(current)) { current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current); }
@@ -228,9 +229,9 @@ namespace Galactic_Colors_Control_Server
                     if ((current.Poll(10, SelectMode.SelectRead) && current.Available == 0) || !current.Connected)
                     {
                         string username = Utilities.GetName(current);
-                        Logger.Write("Client forcefully disconnected from " + username + " : NotConnected", Logger.logType.info);
+                        logger.Write("Client forcefully disconnected from " + username + " : NotConnected", Logger.logType.info);
                         bool connected = clients[current].status != -1;
-                        Logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.debug);
+                        logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.debug);
                         current.Close(); // Don't shutdown because the socket may be disposed and its disconnected anyway.
                         clients.Remove(current);
                         if (connected) { Utilities.Broadcast(new EventData(EventTypes.ServerLeave, Common.Strings(username))); }

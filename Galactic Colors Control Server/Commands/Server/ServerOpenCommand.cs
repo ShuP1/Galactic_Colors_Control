@@ -23,7 +23,7 @@ namespace Galactic_Colors_Control_Server.Commands
                 return new RequestResult(ResultTypes.Error, Common.Strings("Allready"));
 
             Program._open = true;
-            Logger.Write("Server opened", Logger.logType.warm, Logger.logConsole.show);
+            Program.logger.Write("Server opened", Logger.logType.warm, Logger.logConsole.show);
             return new RequestResult(ResultTypes.OK);
         }
     }

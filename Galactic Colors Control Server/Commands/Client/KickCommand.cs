@@ -27,11 +27,11 @@ namespace Galactic_Colors_Control_Server.Commands
             if (target == null)
                 return new RequestResult(ResultTypes.Error, Common.Strings("Can't find"));
 
-            Logger.Write(args[2] + " was kick by server.", Logger.logType.info, Logger.logConsole.show);
+            Program.logger.Write(args[2] + " was kick by server.", Logger.logType.info, Logger.logConsole.show);
             if (args.Length > 2)
             {
                 Utilities.Send(target, new EventData(EventTypes.ServerKick, Common.Strings(args[3])));
-                Logger.Write("because" + args[3], Logger.logType.debug);
+                Program.logger.Write("because" + args[3], Logger.logType.debug);
             }
             else
             {

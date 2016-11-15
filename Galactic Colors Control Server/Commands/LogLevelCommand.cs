@@ -22,6 +22,7 @@ namespace Galactic_Colors_Control_Server.Commands
         {
             if (Enum.TryParse(args[1], true, out Program.config.logLevel))
             {
+                Program.logger.ChangeLevel(Program.config.logLevel);
                 return new RequestResult(ResultTypes.OK, Common.Strings(Program.config.logLevel.ToString()));
             }
             else

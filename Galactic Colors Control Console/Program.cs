@@ -11,18 +11,44 @@ namespace Galactic_Colors_Control_Console
     /// </summary>
     internal class Program
     {
-        private static Client client;
-        private static bool run = true;
-        private static char commandChar = '/';
+        public static bool _debug = false;
+        public static bool _dev = false;
 
-        private static void Main()
+        private static Client client = new Client();
+        private static MultiLang multilang = new MultiLang(); //TODO use multilang
+        public static Config config = new Config();
+        public static Logger logger = new Logger();
+        private static bool run = true;
+
+        private static void Main(string[] args)
         {
-            client = new Client();
+            config = config.Load();
+            logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel);
+            multilang.Load();
             client.OnEvent += new EventHandler(OnEvent); //Set OnEvent function
             Console.Title = "Galactic Colors Control Client"; //Start display
             Console.Write(">");
             Common.ConsoleWrite("Galactic Colors Control Client", ConsoleColor.Red);
             Common.ConsoleWrite("Console " + Assembly.GetEntryAssembly().GetName().Version.ToString(), ConsoleColor.Yellow);
+            if (args.Length > 0)
+            {
+                switch (args[0])
+                {
+                    case "--debug":
+                        _debug = true;
+                        logger.Write("CLIENT IS IN DEBUG MODE !", Logger.logType.error, Logger.logConsole.show);
+                        break;
+
+                    case "--dev":
+                        _dev = true;
+                        logger.Write("CLIENT IS IN DEV MODE !", Logger.logType.error, Logger.logConsole.show);
+                        break;
+
+                    default:
+                        Common.ConsoleWrite("Use --debug or --dev");
+                        break;
+                }
+            }
             bool hostSet = false;
             while (!hostSet) //Request hostname
             {
@@ -78,7 +104,7 @@ namespace Galactic_Colors_Control_Console
                 return;
 
             string[] req;
-            if (input[0] == commandChar)
+            if (input[0] == config.commandChar)
             {
                 input = input.Substring(1);
                 req = Common.SplitArgs(input);
@@ -93,7 +119,7 @@ namespace Galactic_Colors_Control_Console
         private static void OnEvent(object sender, EventArgs e)
         {
             EventData eve = ((EventDataArgs)e).Data;
-            Common.ConsoleWrite(eve.ToSmallString()); //TODO add processing (common)
+            Common.ConsoleWrite(multilang.GetEventText(eve, config.lang));
         }
     }
 }

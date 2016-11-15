@@ -1,4 +1,5 @@
 ﻿using Galactic_Colors_Control;
+using Galactic_Colors_Control_Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -7,8 +8,6 @@ using Microsoft.Xna.Framework.Input;
 using MyMonoGame.GUI;
 using System;
 using System.IO;
-using System.Reflection;
-using System.Threading;
 
 namespace Galactic_Colors_Control_GUI
 {
@@ -33,6 +32,9 @@ namespace Galactic_Colors_Control_GUI
         public boxSprites[] buttonsSprites = new boxSprites[1];
         public Background background;
 
+        public MultiLang multilang = new MultiLang();
+        public Config config = new Config();
+        public Logger logger = new Logger();
         public Client client; //Client Core
         public Manager GUI = new Manager(); //MyMonogameGUI
 
@@ -72,6 +74,11 @@ namespace Galactic_Colors_Control_GUI
         /// </summary>
         protected override void Initialize()
         {
+            config = config.Load();
+            logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel);
+            multilang.Load();
+            if (Program._debug) { logger.Write("CLIENT IS IN DEBUG MODE !", Logger.logType.error, Logger.logConsole.show); }
+            if (Program._dev) { logger.Write("CLIENT IS IN DEV MODE !", Logger.logType.error, Logger.logConsole.show); }
             nullSprite = new Texture2D(GraphicsDevice, 1, 1);
             nullSprite.SetData(new Color[1 * 1] { Color.White });
 

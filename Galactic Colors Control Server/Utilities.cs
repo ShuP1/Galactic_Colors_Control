@@ -20,7 +20,7 @@ namespace Galactic_Colors_Control_Server
             if (Program.clients.ContainsKey(soc))
                 return Program.clients[soc].status != -1;
 
-            Logger.Write("IsConnect : Unknown client", Logger.logType.error);
+            Program.logger.Write("IsConnect : Unknown client", Logger.logType.error);
             return false;
         }
 
@@ -64,12 +64,12 @@ namespace Galactic_Colors_Control_Server
                     soc.Send(packet.ToBytes());
                     if (Program.config.logLevel == Logger.logType.dev)
                     {
-                        Logger.Write("Send to " + GetName(soc) + " : " + packet.ToLongString(), Logger.logType.dev);
+                        Program.logger.Write("Send to " + GetName(soc) + " : " + packet.ToLongString(), Logger.logType.dev);
                     }
                 }
                 catch (Exception e)
                 {
-                    Logger.Write("Send exception to " + GetName(soc) + " : " + e.Message, Logger.logType.error);
+                    Program.logger.Write("Send exception to " + GetName(soc) + " : " + e.Message, Logger.logType.error);
                 }
             }
         }

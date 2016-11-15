@@ -165,7 +165,26 @@ namespace Galactic_Colors_Control
         /// <returns>ResultData or Timeout</returns>
         public ResultData Request(string[] args)
         {
-            // TODO filter Client Side Requests
+            switch(args[0])
+            {
+                case "exit":
+                    ExitHost();
+                    return new ResultData(GetRequestId(), ResultTypes.OK);
+
+                case "ping":
+                    return PingHost();
+
+                default:
+                    return Execute(args);
+            }
+           
+        }
+
+        /// <summary>
+        /// Send row command to server
+        /// </summary>
+        private ResultData Execute(string[] args)
+        {
             RequestData req = new RequestData(GetRequestId(), args);
             if (!Send(req))
                 return new ResultData(req.id, ResultTypes.Error, Common.Strings("Send Exception"));
@@ -190,16 +209,16 @@ namespace Galactic_Colors_Control
         /// Ping Current Server IP
         /// </summary>
         /// <returns>Time in ms or 'Timeout'</returns>
-        private string PingHost()
+        private ResultData PingHost()
         {
             Ping ping = new Ping();
             PingReply reply;
 
             reply = ping.Send(IP);
             if (reply.Status == IPStatus.Success)
-                return reply.RoundtripTime.ToString();
+                return new ResultData(GetRequestId(), ResultTypes.OK, Common.SplitArgs(reply.RoundtripTime.ToString() + "ms"));
 
-            return "Timeout";
+            return new ResultData(GetRequestId(), ResultTypes.Error, Common.SplitArgs("Timeout"));
         }
 
         /// <summary>

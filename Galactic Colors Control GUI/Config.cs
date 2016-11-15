@@ -4,15 +4,14 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace Galactic_Colors_Control_Server
+namespace Galactic_Colors_Control_GUI
 {
     [XmlRoot("config")]
     public class Config
     {
         public string logPath = AppDomain.CurrentDomain.BaseDirectory + "Logs";
         public Logger.logType logLevel = Logger.logType.info;
-        public int port = 25001;
-        public int size = 20;
+        public char commandChar = '/';
         public ConsoleColor[] logForeColor = new ConsoleColor[6] { ConsoleColor.DarkGray, ConsoleColor.Gray, ConsoleColor.White, ConsoleColor.Yellow, ConsoleColor.Red, ConsoleColor.White };
         public ConsoleColor[] logBackColor = new ConsoleColor[6] { ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Red };
         public int lang = 0;
@@ -24,7 +23,7 @@ namespace Galactic_Colors_Control_Server
         /// <returns>Loaded config</returns>
         public Config Load()
         {
-            Program.logger.Write("Loading config", Logger.logType.info);
+            Game.singleton.logger.Write("Loading config", Logger.logType.info);
             Config config = new Config();
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Config.xml"))
             {
@@ -38,7 +37,7 @@ namespace Galactic_Colors_Control_Server
                 }
                 else
                 {
-                    Program.logger.Write("Old config in Config.xml.old", Logger.logType.warm);
+                    Game.singleton.logger.Write("Old config in Config.xml.old", Logger.logType.warm);
                     File.Delete(AppDomain.CurrentDomain.BaseDirectory + "Config.xml.old");
                     File.Move(AppDomain.CurrentDomain.BaseDirectory + "Config.xml", AppDomain.CurrentDomain.BaseDirectory + "Config.xml.old");
                     config.Save();
@@ -46,7 +45,7 @@ namespace Galactic_Colors_Control_Server
             }
             else
             {
-                Program.logger.Write("Any config file", Logger.logType.error);
+                Game.singleton.logger.Write("Any config file", Logger.logType.error);
                 config.Save();
             }
             if (Program._debug) { config.logLevel = Logger.logType.debug; }
@@ -87,7 +86,7 @@ namespace Galactic_Colors_Control_Server
                 catch (XmlException e)
                 {
                     isCorrect = false;
-                    Program.logger.Write("Error: " + e.Message, Logger.logType.error);
+                    Game.singleton.logger.Write("Error: " + e.Message, Logger.logType.error);
                 }
             }
 
@@ -101,14 +100,14 @@ namespace Galactic_Colors_Control_Server
 
                     d.Validate((o, e) =>
                     {
-                        Program.logger.Write("Error: " + e.Message, Logger.logType.error);
+                        Game.singleton.logger.Write("Error: " + e.Message, Logger.logType.error);
                         isCorrect = false;
                     });
                 }
                 catch (XmlException e)
                 {
                     isCorrect = false;
-                    Program.logger.Write("Error: " + e.Message, Logger.logType.error);
+                    Game.singleton.logger.Write("Error: " + e.Message, Logger.logType.error);
                 }
             }
 

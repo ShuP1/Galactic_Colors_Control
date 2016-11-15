@@ -33,7 +33,7 @@ namespace Galactic_Colors_Control_Server.Commands
                 return new RequestResult(ResultTypes.Error, Common.Strings("Too Big"));
 
             Program.AddParty(new Party(args[2], size, Utilities.GetName(soc)));
-            Logger.Write("Party " + args[2] + " create with " + size + " slots as " + Program.GetPartyID(false), Logger.logType.info);
+            Program.logger.Write("Party " + args[2] + " create with " + size + " slots as " + Program.GetPartyID(false), Logger.logType.info);
             if (server)
             {
                 Program.selectedParty = Program.GetPartyID(false);

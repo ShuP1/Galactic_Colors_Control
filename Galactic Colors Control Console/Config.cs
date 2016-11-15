@@ -4,15 +4,14 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace Galactic_Colors_Control_Server
+namespace Galactic_Colors_Control_Console
 {
     [XmlRoot("config")]
     public class Config
     {
         public string logPath = AppDomain.CurrentDomain.BaseDirectory + "Logs";
         public Logger.logType logLevel = Logger.logType.info;
-        public int port = 25001;
-        public int size = 20;
+        public char commandChar = '/';
         public ConsoleColor[] logForeColor = new ConsoleColor[6] { ConsoleColor.DarkGray, ConsoleColor.Gray, ConsoleColor.White, ConsoleColor.Yellow, ConsoleColor.Red, ConsoleColor.White };
         public ConsoleColor[] logBackColor = new ConsoleColor[6] { ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Red };
         public int lang = 0;

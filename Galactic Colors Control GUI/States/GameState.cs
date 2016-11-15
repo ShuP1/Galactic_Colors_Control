@@ -53,50 +53,57 @@ namespace Galactic_Colors_Control_GUI.States
                     Game.singleton.GUI.Box(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 4 + 50, 300, 150), Game.singleton.buttonsSprites[0]);
                     Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 60), message.title, Game.singleton.fonts.basic, null, Manager.textAlign.bottomCenter);
                     Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 100), message.text, Game.singleton.fonts.small, null, Manager.textAlign.bottomCenter);
-                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 140, Game.singleton.ScreenHeight / 4 + 150, 280, 40), Game.singleton.buttonsSprites[0], "Ok", Game.singleton.fonts.basic)) { Game.singleton.GUI.ResetFocus(); showOKMessage = false; Game.singleton.client.ExitHost(); Game.singleton.gameState = new MainMenuState(); }
+                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 140, Game.singleton.ScreenHeight / 4 + 150, 280, 40), Game.singleton.buttonsSprites[0], "Ok", Game.singleton.fonts.basic)) { Game.singleton.GUI.ResetFocus(); showOKMessage = false; Game.singleton.client.ExitHost(); }
                 }
             }
         }
 
         public override void Update()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape)) { Game.singleton.GUI.ResetFocus(); Game.singleton.client.ExitHost(); Game.singleton.gameState = new MainMenuState(); }
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape) || (!Game.singleton.client.isRunning)) { Game.singleton.GUI.ResetFocus(); Game.singleton.client.ExitHost(); }
         }
 
         private void ChatEnter()
         {
             string request = chatInput;
             chatInput = null;
-            ResultData res = Game.singleton.client.Request(new string[2] { "say", request });
-            if(res.type != ResultTypes.OK)
+
+            if (request == null)
+                return;
+
+            if (request.Length == 0)
+                return;
+
+            ResultData res;
+            if (request[0] == Game.singleton.config.commandChar)
             {
-                //TODO Mutlilang
-                ChatText("Error :" + Common.ArrayToString(res.result));
+                request = request.Substring(1);
+                res = Game.singleton.client.Request(Common.SplitArgs(request));
+                ChatText(res.ToSmallString()); //TODO multilang
+            }
+            else
+            {
+                res = Game.singleton.client.Request(Common.Strings("say", request));
+                if (res.type != ResultTypes.OK)
+                {
+                    //TODO Mutlilang
+                    ChatText("Error :" + Common.ArrayToString(res.result));
+                }
             }
         }
 
         private void OnEvent(object sender, EventArgs e)
         {
+            //TODO add PartyKick
             EventData eve = ((EventDataArgs)e).Data;
-            switch (eve.type)
+            if (eve.type == EventTypes.ServerKick)
             {
-                case EventTypes.ChatMessage:
-                    ChatText(Common.ArrayToString(eve.data));
-                    break;
-
-                case EventTypes.ServerJoin:
-                    ChatText(Common.ArrayToString(eve.data) + "join the server");
-                    break;
-
-                case EventTypes.ServerLeave:
-                    ChatText(Common.ArrayToString(eve.data) + "leave the server");
-                    break;
-
-                case EventTypes.ServerKick:
-                    message.title = "Kick from server";
-                    message.text = Common.ArrayToString(eve.data);
-                    showOKMessage = true;
-                    break;
+                message.title = "Kick from server";
+                message.text = Common.ArrayToString(eve.data);
+                showOKMessage = true;
+            }else
+            {
+                ChatText(Game.singleton.multilang.GetEventText(eve, Game.singleton.config.lang));
             }
         }
 

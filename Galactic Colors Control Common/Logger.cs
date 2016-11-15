@@ -1,24 +1,19 @@
-﻿using Galactic_Colors_Control_Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace Galactic_Colors_Control_Server
+namespace Galactic_Colors_Control_Common
 {
     public class Logger
     {
         public enum logType { dev, debug, info, warm, error, fatal }
-
         public enum logConsole { normal, show, hide }
-
-        private static List<Log> toWriteLogs = new List<Log>();
-        private static string logPath;
-        public static Thread Updater;
-        public static bool _run = true;
 
         public struct Log
         {
@@ -34,20 +29,34 @@ namespace Galactic_Colors_Control_Server
             }
         }
 
+        private List<Log> toWriteLogs = new List<Log>();
+        private string logPath;
+        private ConsoleColor[] logBackColor;
+        private ConsoleColor[] logForeColor;
+        private Thread Updater;
+        private logType logLevel;
+        private bool _run = true;
+        public bool run { get { return _run; } } 
+
         /// <summary>
         /// Create log file and start logger thread
         /// </summary>
-        public static void Initialise()
+        /// <param name="LogPath">Absolute path to logs directory</param>
+        public void Initialise(string LogPath, ConsoleColor[] backColor, ConsoleColor[] foreColor, logType LogLevel)
         {
-            if (!Directory.Exists(Program.config.logPath))
+            logPath = LogPath;
+            logBackColor = backColor;
+            logForeColor = foreColor;
+            logLevel = LogLevel;
+            if (!Directory.Exists(logPath))
             {
-                Directory.CreateDirectory(Program.config.logPath);
+                Directory.CreateDirectory(logPath);
                 Write("Log Directory Created", logType.info);
             }
             else
             {
                 //Sort old logs
-                string[] files = Directory.GetFiles(Program.config.logPath);
+                string[] files = Directory.GetFiles(logPath);
                 foreach (string file in files)
                 {
                     if (Path.GetExtension(file) == ".log")
@@ -63,11 +72,11 @@ namespace Galactic_Colors_Control_Server
                                 int d;
                                 if (int.TryParse(new string(name.Take(4).ToArray()), out y) && int.TryParse(new string(name.Skip(5).Take(2).ToArray()), out m) && int.TryParse(new string(name.Skip(8).Take(2).ToArray()), out d))
                                 {
-                                    if (!Directory.Exists(Program.config.logPath + "/" + y + "/" + m + "/" + d))
+                                    if (!Directory.Exists(logPath + "/" + y + "/" + m + "/" + d))
                                     {
-                                        Directory.CreateDirectory(Program.config.logPath + "/" + y + "/" + m + "/" + d);
+                                        Directory.CreateDirectory(logPath + "/" + y + "/" + m + "/" + d);
                                     }
-                                    File.Move(file, Program.config.logPath + "/" + y + "/" + m + "/" + d + "/" + Path.GetFileName(file));
+                                    File.Move(file, logPath + "/" + y + "/" + m + "/" + d + "/" + Path.GetFileName(file));
                                 }
                             }
                         }
@@ -75,11 +84,23 @@ namespace Galactic_Colors_Control_Server
                 }
             }
             int i = 0;
-            while (File.Exists(Program.config.logPath + "/" + DateTime.UtcNow.ToString("yyyy-MM-dd-", CultureInfo.InvariantCulture) + i + ".log")) { i++; }
-            logPath = Program.config.logPath + "/" + DateTime.UtcNow.ToString("yyyy-MM-dd-", CultureInfo.InvariantCulture) + i + ".log";
+            while (File.Exists(logPath + "/" + DateTime.UtcNow.ToString("yyyy-MM-dd-", CultureInfo.InvariantCulture) + i + ".log")) { i++; }
+            logPath = logPath + "/" + DateTime.UtcNow.ToString("yyyy-MM-dd-", CultureInfo.InvariantCulture) + i + ".log";
             Write("Log path:" + logPath, logType.debug);
             Updater = new Thread(new ThreadStart(UpdaterLoop));
             Updater.Start();
+        }
+
+        public void Join()
+        {
+            _run = false;
+            Updater.Join();
+        }
+
+        public void ChangeLevel(logType level)
+        {
+            logLevel = level;
+            Write("Change to " + logLevel.ToString(), logType.info, logConsole.show);
         }
 
         /// <summary>
@@ -88,7 +109,7 @@ namespace Galactic_Colors_Control_Server
         /// <param name="text">Log text</param>
         /// <param name="type">Log status</param>
         /// <param name="console">Server display modifier</param>
-        public static void Write(string text, logType type, logConsole console = logConsole.normal)
+        public void Write(string text, logType type, logConsole console = logConsole.normal)
         {
             Write(new Log(text, type, console));
         }
@@ -97,9 +118,9 @@ namespace Galactic_Colors_Control_Server
         /// Add log to log pile
         /// </summary>
         /// <param name="log">Log struct</param>
-        public static void Write(Log log)
+        private void Write(Log log)
         {
-            if (Program.config.logLevel == logType.debug || Program.config.logLevel == logType.dev)
+            if (logLevel == logType.debug || logLevel == logType.dev)
             {
                 //Add Source Method
                 log.text = "[" + new StackTrace().GetFrame(2).GetMethod().Name + "]: " + log.text;
@@ -110,44 +131,42 @@ namespace Galactic_Colors_Control_Server
         /// <summary>
         /// Write log pile to logfile and console
         /// </summary>
-        public static void UpdaterLoop()
+        public void UpdaterLoop()
         {
             while (_run || toWriteLogs.Count > 0)
             {
                 while (toWriteLogs.Count > 0)
                 {
                     Log log = toWriteLogs[0];
-                    if (log.type >= Program.config.logLevel)
+                    if (log.type >= logLevel)
                     {
                         File.AppendAllText(logPath, DateTime.UtcNow.ToString("[yyyy-MM-dd]", CultureInfo.InvariantCulture) + " [" + log.type.ToString().ToUpper() + "]: " + log.text + Environment.NewLine);
                         if (log.console != logConsole.hide)
                         {
-                            Console.BackgroundColor = Program.config.logBackColor[(int)log.type];
-                            Console.ForegroundColor = Program.config.logForeColor[(int)log.type];
-                            Console.Write("\b");
-                            Console.WriteLine(DateTime.UtcNow.ToString("[yyyy-MM-dd]", CultureInfo.InvariantCulture) + ": " + log.text);
-                            Common.ConsoleResetColor();
-                            Console.Write(">");
+                            ConsoleWrite(log);
                         }
                     }
-                    //TODO reactive show logger
-                    /*
                     else
                     {
-                        if(log.console == logConsole.show)
+                        if (log.console == logConsole.show)
                         {
-                            Console.BackgroundColor = Program.config.logBackColor[(int)log.type];
-                            Console.ForegroundColor = Program.config.logForeColor[(int)log.type];
-                            Console.Write("\b");
-                            Console.WriteLine(DateTime.UtcNow.ToString("[yyyy-MM-dd]", CultureInfo.InvariantCulture) + ": " + log.text);
-                            Utilities.ConsoleResetColor();
-                            Console.Write(">");
+                            ConsoleWrite(log);
                         }
-                    }*/
+                    }
                     toWriteLogs.Remove(log);
                 }
                 Thread.Sleep(200);
             }
+        }
+
+        private void ConsoleWrite(Log log)
+        {
+            Console.BackgroundColor = logBackColor[(int)log.type];
+            Console.ForegroundColor = logForeColor[(int)log.type];
+            Console.Write("\b");
+            Console.WriteLine(DateTime.UtcNow.ToString("[yyyy-MM-dd]", CultureInfo.InvariantCulture) + ": " + log.text);
+            Common.ConsoleResetColor();
+            Console.Write(">");
         }
     }
 }

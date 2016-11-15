@@ -27,7 +27,7 @@ namespace Galactic_Colors_Control_Server.Commands
             {
                 Manager.Execute(new string[4] { "party", "kick", Utilities.GetName(client), "stop_party" }, soc, server);
             }
-            Logger.Write("Party " + Program.parties[partyId].name + " closed", Logger.logType.info, server ? Logger.logConsole.show : Logger.logConsole.normal);
+            Program.logger.Write("Party " + Program.parties[partyId].name + " closed", Logger.logType.info, server ? Logger.logConsole.show : Logger.logConsole.normal);
             if (Program.selectedParty == partyId) { Program.selectedParty = -1; }
             Program.parties.Remove(partyId);
             return new RequestResult(ResultTypes.OK);

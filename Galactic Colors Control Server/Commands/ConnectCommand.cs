@@ -26,7 +26,7 @@ namespace Galactic_Colors_Control_Server.Commands
             if (args[1].Length < 3)
                 return new RequestResult(ResultTypes.Error, Common.Strings("Too Short"));
 
-            Logger.Write("Identifiaction request from " + Utilities.GetName(soc), Logger.logType.debug);
+            Program.logger.Write("Identifiaction request from " + Utilities.GetName(soc), Logger.logType.debug);
             bool allreadyconnected = false;
             args[1] = args[1][0].ToString().ToUpper()[0] + args[1].Substring(1);
             foreach (Client client in Program.clients.Values)
@@ -39,7 +39,7 @@ namespace Galactic_Colors_Control_Server.Commands
             Program.clients[soc].status = 0;
             Program.clients[soc].pseudo = args[1];
             Utilities.Broadcast(new EventData(EventTypes.ServerJoin, Common.Strings(args[1])));
-            Logger.Write("Identified as " + Utilities.GetName(soc) + " form " + ((IPEndPoint)soc.LocalEndPoint).Address.ToString(), Logger.logType.info);
+            Program.logger.Write("Identified as " + Utilities.GetName(soc) + " form " + ((IPEndPoint)soc.LocalEndPoint).Address.ToString(), Logger.logType.info);
             return new RequestResult(ResultTypes.OK, Common.Strings(args[1]));
         }
     }

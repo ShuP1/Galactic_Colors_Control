@@ -88,7 +88,6 @@
     <Compile Include="Commands\Server\ServerStatusCommand.cs" />
     <Compile Include="Commands\TimeCommand.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="Logger.cs" />
     <Compile Include="Party.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
