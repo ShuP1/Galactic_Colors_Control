@@ -38,7 +38,6 @@ namespace Galactic_Colors_Control_GUI
         public Client client; //Client Core
         public Manager GUI = new Manager(); //MyMonogameGUI
 
-        private string skinName;
         private bool isFullScreen = false;
 
         public States.State gameState = new States.TitleState(new States.MainMenuState(), new TimeSpan(0,0,5));
@@ -75,7 +74,7 @@ namespace Galactic_Colors_Control_GUI
         protected override void Initialize()
         {
             config = config.Load();
-            logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel);
+            logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel, Program._debug, Program._dev);
             multilang.Load();
             if (Program._debug) { logger.Write("CLIENT IS IN DEBUG MODE !", Logger.logType.error, Logger.logConsole.show); }
             if (Program._dev) { logger.Write("CLIENT IS IN DEV MODE !", Logger.logType.error, Logger.logConsole.show); }
@@ -130,41 +129,41 @@ namespace Galactic_Colors_Control_GUI
             }
 
             //Load from files
-            if (Directory.Exists("Skin/" + skinName))
+            if (Directory.Exists("Skin/" + config.skin))
             {
-                if (Directory.Exists("Skin/" + skinName + "/Sounds"))
+                if (Directory.Exists("Skin/" + config.skin + "/Sounds"))
                 {
-                    Utilities.SoundFromMp3("Skin/" + skinName + "/Sounds/alert.mp3", ref effects[0]);
-                    Utilities.SoundFromMp3("Skin/" + skinName + "/Sounds/bip.mp3", ref effects[1]);
-                    Utilities.SoundFromMp3("Skin/" + skinName + "/Sounds/change.mp3", ref effects[2]);
-                    Utilities.SoundFromMp3("Skin/" + skinName + "/Sounds/valid.mp3", ref effects[3]);
+                    Utilities.SoundFromMp3("Skin/" + config.skin + "/Sounds/alert.mp3", ref effects[0]);
+                    Utilities.SoundFromMp3("Skin/" + config.skin + "/Sounds/bip.mp3", ref effects[1]);
+                    Utilities.SoundFromMp3("Skin/" + config.skin + "/Sounds/change.mp3", ref effects[2]);
+                    Utilities.SoundFromMp3("Skin/" + config.skin + "/Sounds/valid.mp3", ref effects[3]);
                 }
 
-                if (Directory.Exists("Skin/" + skinName + "/Textures"))
+                if (Directory.Exists("Skin/" + config.skin + "/Textures"))
                 {
-                    Utilities.SpriteFromPng("Skin/" + skinName + "Textures/background0.png", ref backSprites[0], GraphicsDevice);
-                    Utilities.SpriteFromPng("Skin/" + skinName + "Textures/background1.png", ref backSprites[1], GraphicsDevice);
-                    if (Directory.Exists("Skin/" + skinName + "/Textures/Hub/"))
+                    Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/background0.png", ref backSprites[0], GraphicsDevice);
+                    Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/background1.png", ref backSprites[1], GraphicsDevice);
+                    if (Directory.Exists("Skin/" + config.skin + "/Textures/Hub/"))
                     {
-                        if (Directory.Exists("Skin/" + skinName + "/Textures/Hub/Buttons"))
+                        if (Directory.Exists("Skin/" + config.skin + "/Textures/Hub/Buttons"))
                         {
                             for (int i = 0; i < buttonsSprites.Length; i++)
                             {
-                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/topLeft.png", ref buttonsSprites[i].topLeft, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/topCenter.png", ref buttonsSprites[i].topCenter, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/topRight.png", ref buttonsSprites[i].topRight, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/centerLeft.png", ref buttonsSprites[i].centerLeft, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/centerCenter.png", ref buttonsSprites[i].centerCenter, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/centerRight.png", ref buttonsSprites[i].centerRight, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/bottomLeft.png", ref buttonsSprites[i].bottomLeft, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/bottomCenter.png", ref buttonsSprites[i].bottomCenter, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + skinName + "Textures/Hub/Buttons/" + i + "/bottomRight.png", ref buttonsSprites[i].bottomRight, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/topLeft.png", ref buttonsSprites[i].topLeft, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/topCenter.png", ref buttonsSprites[i].topCenter, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/topRight.png", ref buttonsSprites[i].topRight, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/centerLeft.png", ref buttonsSprites[i].centerLeft, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/centerCenter.png", ref buttonsSprites[i].centerCenter, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/centerRight.png", ref buttonsSprites[i].centerRight, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/bottomLeft.png", ref buttonsSprites[i].bottomLeft, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/bottomCenter.png", ref buttonsSprites[i].bottomCenter, GraphicsDevice);
+                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/bottomRight.png", ref buttonsSprites[i].bottomRight, GraphicsDevice);
                             }
                         }
 
                         for (int i = 0; i < pointerSprites.Length; i++)
                         {
-                            Utilities.SpriteFromPng("Skin/" + skinName + "/Textures/Hub/pointer" + i + ".png", ref pointerSprites[i], GraphicsDevice);
+                            Utilities.SpriteFromPng("Skin/" + config.skin + "/Textures/Hub/pointer" + i + ".png", ref pointerSprites[i], GraphicsDevice);
                         }
                     }
                 }

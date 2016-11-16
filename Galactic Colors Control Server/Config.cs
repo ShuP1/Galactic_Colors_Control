@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 
 namespace Galactic_Colors_Control_Server
 {
+    //TODO Common config 
     [XmlRoot("config")]
     public class Config
     {

@@ -16,10 +16,10 @@ namespace Galactic_Colors_Control_GUI.States
         public override void Draw(SpriteBatch spritebatch)
         {
             Game.singleton.background.Draw(spritebatch);
-            Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4), "Galactic Colors Control", Game.singleton.fonts.title, new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
-            Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 40), "GUI " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
+            Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4), Game.singleton.multilang.Get("GCC", Game.singleton.config.lang), Game.singleton.fonts.title, new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
+            Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 40), Game.singleton.multilang.Get("GUI", Game.singleton.config.lang) + " " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
             if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth - 64, Game.singleton.ScreenHeight - 74, 64, 64), logoSprite)) { System.Diagnostics.Process.Start("https://sheychen.shost.ca/"); }
-            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 - 30, 150, 40), Game.singleton.buttonsSprites[0], "Play", Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.White, Color.Green)))
+            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 - 30, 150, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Play", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.White, Color.Green)))
             {
                 if (!locked)
                 {
@@ -33,11 +33,11 @@ namespace Galactic_Colors_Control_GUI.States
                     }).Start();
                 }
             }
-            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 + 20, 150, 40), Game.singleton.buttonsSprites[0], "Options", Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.White, Color.Blue))) {
+            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 + 20, 150, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Options", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.White, Color.Blue))) {
                 Game.singleton.GUI.ResetFocus();
                 Game.singleton.gameState = new OptionsState();
             }
-            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 + 70, 150, 40), Game.singleton.buttonsSprites[0], "Exit", Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.White, Color.Red)))
+            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 + 70, 150, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Exit", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.White, Color.Red)))
             {
                 if (!locked)
                 {
@@ -47,6 +47,7 @@ namespace Galactic_Colors_Control_GUI.States
                     new Thread(() =>
                     {
                         while (!Utilities.DoubleTo(ref Game.singleton.background.speedX, 0, 0.1)) { Thread.Sleep(50); }
+                        Game.singleton.logger.Join();
                         Game.singleton.Exit();
                     }).Start();
                 }

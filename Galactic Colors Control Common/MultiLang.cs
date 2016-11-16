@@ -48,6 +48,14 @@ namespace Galactic_Colors_Control_Common
             }
         }
 
+        public string GetResultText(ResultData res, int lang)
+        {
+            string data = Common.ArrayToString(res.result);
+            if (res.type == ResultTypes.Error)
+                data = Get("Error", lang) + ": " + data;
+            return data;
+        }
+
         public string Get(string Key, int Lang)
         {
             string text = "";

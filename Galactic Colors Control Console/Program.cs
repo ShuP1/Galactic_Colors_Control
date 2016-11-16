@@ -15,7 +15,7 @@ namespace Galactic_Colors_Control_Console
         public static bool _dev = false;
 
         private static Client client = new Client();
-        private static MultiLang multilang = new MultiLang(); //TODO use multilang
+        private static MultiLang multilang = new MultiLang();
         public static Config config = new Config();
         public static Logger logger = new Logger();
         private static bool run = true;
@@ -23,13 +23,13 @@ namespace Galactic_Colors_Control_Console
         private static void Main(string[] args)
         {
             config = config.Load();
-            logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel);
+            logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel, _debug, _dev);
             multilang.Load();
             client.OnEvent += new EventHandler(OnEvent); //Set OnEvent function
-            Console.Title = "Galactic Colors Control Client"; //Start display
+            Console.Title ="Galactic Colors Control Client"; //Start display
             Console.Write(">");
-            Common.ConsoleWrite("Galactic Colors Control Client", ConsoleColor.Red);
-            Common.ConsoleWrite("Console " + Assembly.GetEntryAssembly().GetName().Version.ToString(), ConsoleColor.Yellow);
+            Common.ConsoleWrite(Console.Title, ConsoleColor.Red);
+            Common.ConsoleWrite(multilang.Get("Console", config.lang) + " " + Assembly.GetEntryAssembly().GetName().Version.ToString(), ConsoleColor.Yellow);
             if (args.Length > 0)
             {
                 switch (args[0])
@@ -52,7 +52,7 @@ namespace Galactic_Colors_Control_Console
             bool hostSet = false;
             while (!hostSet) //Request hostname
             {
-                Common.ConsoleWrite("Enter server host:");
+                Common.ConsoleWrite(multilang.Get("EnterHostname", config.lang) +":");
                 string host = client.ValidateHost(Console.ReadLine());
                 if (host[0] == '*')
                 {
@@ -62,7 +62,7 @@ namespace Galactic_Colors_Control_Console
                 }
                 else
                 {
-                    Common.ConsoleWrite("Use " + host + "? y/n");
+                    Common.ConsoleWrite(multilang.Get("Use", config.lang) + " " + host + "? y/n");
                     ConsoleKeyInfo c = new ConsoleKeyInfo();
                     while (c.Key != ConsoleKey.Y && c.Key != ConsoleKey.N)
                     {
@@ -90,7 +90,7 @@ namespace Galactic_Colors_Control_Console
             }
             else
             {
-                Common.ConsoleWrite("Can't connect sorry. Bye", ConsoleColor.Red);
+                Common.ConsoleWrite(multilang.Get("CantConnect", config.lang), ConsoleColor.Red);
                 Console.Read();
             }
         }
@@ -113,11 +113,12 @@ namespace Galactic_Colors_Control_Console
             {
                 req = Common.Strings("say", input);
             }
-            Common.ConsoleWrite(client.Request(req).ToSmallString()); //Add processing (common)
+            Common.ConsoleWrite(multilang.GetResultText(client.Request(req),config.lang));
         }
 
         private static void OnEvent(object sender, EventArgs e)
         {
+            //TODO add PartyKick
             EventData eve = ((EventDataArgs)e).Data;
             Common.ConsoleWrite(multilang.GetEventText(eve, config.lang));
         }

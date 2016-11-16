@@ -29,9 +29,9 @@ namespace Galactic_Colors_Control_Server
         public static Dictionary<int, Party> parties { get; private set; } = new Dictionary<int, Party>();
         public static int selectedParty = -1;
 
-        //TODO add multilang
         public static Config config = new Config();
         public static Logger logger = new Logger();
+        public static MultiLang multilang = new MultiLang();
         public static Thread CheckConnected = new Thread(CheckConnectedLoop);
 
         /// <summary>
@@ -39,8 +39,11 @@ namespace Galactic_Colors_Control_Server
         /// </summary>
         private static void Main(string[] args)
         {
-            Console.Title = "Galactic Colors Control Server";
-            logger.Write("Galactic Colors Control Server " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Logger.logType.fatal);
+            config = config.Load();
+            logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel, _debug, _dev);
+            multilang.Load();
+            Console.Title = multilang.Get("Galactic Colors Control Server", config.lang);
+            logger.Write(Console.Title + " " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Logger.logType.fatal);
             if (args.Length > 0)
             {
                 switch (args[0])
@@ -72,8 +75,6 @@ namespace Galactic_Colors_Control_Server
         /// </summary>
         private static void SetupServer()
         {
-            config = config.Load();
-            logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel);
             Commands.Manager.Load();
             logger.Write("Setting up server on *:" + config.port, Logger.logType.warm);
             logger.Write("Size:" + config.size, Logger.logType.debug);
@@ -94,7 +95,7 @@ namespace Galactic_Colors_Control_Server
                 string ConsoleInput = Console.ReadLine();
                 Console.Write(">");
                 string[] args = Common.SplitArgs(ConsoleInput);
-                Common.ConsoleWrite(new ResultData(-1, Commands.Manager.Execute(args, null, true)).ToSmallString());
+                Common.ConsoleWrite(multilang.GetResultText(new ResultData(-1, Commands.Manager.Execute(args, null, true)), config.lang));
                 ConsoleInput = null;
             }
         }

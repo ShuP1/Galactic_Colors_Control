@@ -34,20 +34,24 @@ namespace Galactic_Colors_Control_Common
         private ConsoleColor[] logBackColor;
         private ConsoleColor[] logForeColor;
         private Thread Updater;
-        private logType logLevel;
+        private logType logLevel = logType.info;
         private bool _run = true;
-        public bool run { get { return _run; } } 
+        public bool run { get { return _run; } }
+        private static bool _debug = false;
+        private static bool _dev = false;
 
         /// <summary>
         /// Create log file and start logger thread
         /// </summary>
         /// <param name="LogPath">Absolute path to logs directory</param>
-        public void Initialise(string LogPath, ConsoleColor[] backColor, ConsoleColor[] foreColor, logType LogLevel)
+        public void Initialise(string LogPath, ConsoleColor[] backColor, ConsoleColor[] foreColor, logType LogLevel, bool debug, bool dev)
         {
             logPath = LogPath;
             logBackColor = backColor;
             logForeColor = foreColor;
             logLevel = LogLevel;
+            _debug = debug;
+            _dev = dev;
             if (!Directory.Exists(logPath))
             {
                 Directory.CreateDirectory(logPath);
@@ -120,7 +124,7 @@ namespace Galactic_Colors_Control_Common
         /// <param name="log">Log struct</param>
         private void Write(Log log)
         {
-            if (logLevel == logType.debug || logLevel == logType.dev)
+            if (_debug || _dev)
             {
                 //Add Source Method
                 log.text = "[" + new StackTrace().GetFrame(2).GetMethod().Name + "]: " + log.text;

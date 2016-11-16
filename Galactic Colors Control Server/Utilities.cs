@@ -32,7 +32,7 @@ namespace Galactic_Colors_Control_Server
         public static string GetName(Socket soc)
         {
             if (soc == null)
-                return "Server";
+                return Program.multilang.Get("Server",Program.config.lang);
 
             if (!Program.clients.ContainsKey(soc))
                 return "?";

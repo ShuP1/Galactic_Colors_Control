@@ -1,5 +1,30 @@
 Key;Français;English
+GCC;Galactic Colors Control;Galactic Colors Control
+Client;Client;Client
+Server;Serveur;Server
+Console;Console;Console
+Loading;Chargement;Loading
+OK;OK;OK
+Yes;Oui;Yes
+No;Non;No
+EnterHostname;Saisir l'addresse;Enter hostname
+EnterMessage;Saisir un message;Enter message
+Connect;Connexion;Connect
+Back;Retour;Back
+Username;Pseudo;Username
+Validate;Valider;Validate
+GUI;GUI;GUI
+Play;Jouer;Play
+Options;Options;Options
+Exit;Quitter;Exit
+Error;Erreur;Error
+Hide;Cacher;Hide
+Show;Afficher;Show
+Chat;Chat;Chat
+Use;Utiliser;Use
+CantConnect;Connexion impossible. Au revoir;Can't connect sorry. Bye
 ServerJoin;rejoint le server;join the server
 PartyJoin;rejoint la partie;join the party
 ServerLeave;quitte le server;leave the server
 PartyLeave;quitte la partie;leave the party
+ServerKick;Exclus du serveur;Kick from server

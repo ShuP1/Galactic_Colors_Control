@@ -31,20 +31,20 @@ namespace Galactic_Colors_Control_GUI.States
         {
             Game.singleton.background.Draw(spritebatch);
             Game.singleton.GUI.Texture(new Rectangle(0, 0, Game.singleton.ScreenWidth, 30), Game.nullSprite, new MyMonoGame.Colors(new Color(0.1f, 0.1f, 0.1f)));
-            if (Game.singleton.GUI.Button(new Rectangle(5, 5, 50, 20), (showChat ? "Hide" : "Show") + " chat", Game.singleton.fonts.small, new MyMonoGame.Colors(Color.White, Color.LightGray, Color.Gray))) { Game.singleton.GUI.ResetFocus(); showChat = !showChat; }
+            if (Game.singleton.GUI.Button(new Rectangle(5, 5, 50, 20), (showChat ? Game.singleton.multilang.Get("Hide", Game.singleton.config.lang) : Game.singleton.multilang.Get("Show", Game.singleton.config.lang)) + " " + Game.singleton.multilang.Get("Chat", Game.singleton.config.lang), Game.singleton.fonts.small, new MyMonoGame.Colors(Color.White, Color.LightGray, Color.Gray))) { Game.singleton.GUI.ResetFocus(); showChat = !showChat; }
             //if (Game.singleton.GUI.Button(new Rectangle(65, 5, 50, 20), (showParty ? "Leave" : "Join") + " party", smallFont, new MyMonoGame.Colors(Color.White, Color.LightGray, Color.Gray))) { new Thread(PartyClick).Start(); }
 
             if (showChat)
             {
                 Game.singleton.GUI.Box(new Rectangle(0, 30, 310, 310), Game.singleton.buttonsSprites[0]);
-                if (Game.singleton.GUI.TextField(new Rectangle(5, 35, 305, 20), ref chatInput, Game.singleton.fonts.basic, null, Manager.textAlign.centerLeft, "Enter message")) { if (chatInput != null) { new Thread(ChatEnter).Start(); } }
+                if (Game.singleton.GUI.TextField(new Rectangle(5, 35, 305, 20), ref chatInput, Game.singleton.fonts.basic, null, Manager.textAlign.centerLeft, Game.singleton.multilang.Get("EnterMessage", Game.singleton.config.lang))) { if (chatInput != null) { new Thread(ChatEnter).Start(); } }
                 Game.singleton.GUI.Label(new Rectangle(5, 60, 305, 245), chatText, Game.singleton.fonts.small, null, Manager.textAlign.topLeft, true);
             }
 
             if (showLoading)
             {
                 Game.singleton.GUI.Box(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 4 + 50, 300, 50), Game.singleton.buttonsSprites[0]);
-                Game.singleton.GUI.Label(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 4 + 50, 300, 50), "Loading", Game.singleton.fonts.basic);
+                Game.singleton.GUI.Label(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 4 + 50, 300, 50), Game.singleton.multilang.Get("Loading", Game.singleton.config.lang), Game.singleton.fonts.basic);
             }
             else
             {
@@ -53,7 +53,7 @@ namespace Galactic_Colors_Control_GUI.States
                     Game.singleton.GUI.Box(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 4 + 50, 300, 150), Game.singleton.buttonsSprites[0]);
                     Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 60), message.title, Game.singleton.fonts.basic, null, Manager.textAlign.bottomCenter);
                     Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 100), message.text, Game.singleton.fonts.small, null, Manager.textAlign.bottomCenter);
-                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 140, Game.singleton.ScreenHeight / 4 + 150, 280, 40), Game.singleton.buttonsSprites[0], "Ok", Game.singleton.fonts.basic)) { Game.singleton.GUI.ResetFocus(); showOKMessage = false; Game.singleton.client.ExitHost(); }
+                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 140, Game.singleton.ScreenHeight / 4 + 150, 280, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("OK", Game.singleton.config.lang), Game.singleton.fonts.basic)) { Game.singleton.GUI.ResetFocus(); showOKMessage = false; Game.singleton.client.ExitHost(); }
                 }
             }
         }
@@ -79,15 +79,14 @@ namespace Galactic_Colors_Control_GUI.States
             {
                 request = request.Substring(1);
                 res = Game.singleton.client.Request(Common.SplitArgs(request));
-                ChatText(res.ToSmallString()); //TODO multilang
+                ChatText(Game.singleton.multilang.GetResultText(res, Game.singleton.config.lang));
             }
             else
             {
                 res = Game.singleton.client.Request(Common.Strings("say", request));
                 if (res.type != ResultTypes.OK)
                 {
-                    //TODO Mutlilang
-                    ChatText("Error :" + Common.ArrayToString(res.result));
+                    ChatText(Game.singleton.multilang.GetResultText(res, Game.singleton.config.lang));
                 }
             }
         }
@@ -98,7 +97,7 @@ namespace Galactic_Colors_Control_GUI.States
             EventData eve = ((EventDataArgs)e).Data;
             if (eve.type == EventTypes.ServerKick)
             {
-                message.title = "Kick from server";
+                message.title = Game.singleton.multilang.Get("ServerKick", Game.singleton.config.lang);
                 message.text = Common.ArrayToString(eve.data);
                 showOKMessage = true;
             }else

@@ -5,8 +5,7 @@
       <xsd:sequence>
         <xsd:element name="logPath" type="xsd:string" />
         <xsd:element name="logLevel" type="xsd:string" />
-        <xsd:element name="port" type="xsd:unsignedShort" />
-        <xsd:element name="size" type="xsd:unsignedShort" />
+        <xsd:element name="commandChar" type="xsd:unsignedByte" />
         <xsd:element name="logForeColor">
           <xsd:complexType>
             <xsd:sequence>
@@ -21,7 +20,8 @@
             </xsd:sequence>
           </xsd:complexType>
         </xsd:element>
-        <xsd:element name="lang" type="xsd:unsignedInt" />
+        <xsd:element name="lang" type="xsd:unsignedByte" />
+        <xsd:element name="skin" type="xsd:string" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
