@@ -20,7 +20,7 @@ namespace Galactic_Colors_Control_Server.Commands
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
             int partyId = -1;
-            if (Utilities.AccessParty(ref partyId, args, true, soc, server))
+            if (!Utilities.AccessParty(ref partyId, args, true, soc, server))
                 return new RequestResult(ResultTypes.Error, Common.Strings("Access"));
 
             if (Program.parties[partyId].open)

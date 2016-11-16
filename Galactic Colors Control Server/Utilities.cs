@@ -86,7 +86,16 @@ namespace Galactic_Colors_Control_Server
             {
                 Send(soc, packet);
             }
-            Common.ConsoleWrite(packet.ToSmallString());
+            switch (packet.GetType().Name)
+            {
+                case "EventData":
+                    Common.ConsoleWrite(Program.multilang.GetEventText((EventData)packet, Program.config.lang));
+                    break;
+
+                default:
+                    Common.ConsoleWrite(packet.ToSmallString());
+                    break;
+            }
         }
 
         /// <summary>
@@ -107,7 +116,16 @@ namespace Galactic_Colors_Control_Server
             }
             if (Program.selectedParty == party)
             {
-                Common.ConsoleWrite(data.ToSmallString());
+                switch (data.GetType().Name)
+                {
+                    case "EventData":
+                        Common.ConsoleWrite(Program.multilang.GetEventText((EventData)data, Program.config.lang));
+                        break;
+
+                    default:
+                        Common.ConsoleWrite(data.ToSmallString());
+                        break;
+                }
             }
         }
 

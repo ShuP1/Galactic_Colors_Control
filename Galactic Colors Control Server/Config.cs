@@ -16,7 +16,8 @@ namespace Galactic_Colors_Control_Server
         public int size = 20;
         public ConsoleColor[] logForeColor = new ConsoleColor[6] { ConsoleColor.DarkGray, ConsoleColor.Gray, ConsoleColor.White, ConsoleColor.Yellow, ConsoleColor.Red, ConsoleColor.White };
         public ConsoleColor[] logBackColor = new ConsoleColor[6] { ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Red };
-        public int lang = 0;
+        public int lang = 1;
+        public int partysize = 10;
 
         /// <summary>
         /// Load config from xml file

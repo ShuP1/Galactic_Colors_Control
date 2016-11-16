@@ -150,7 +150,7 @@ namespace Galactic_Colors_Control
         /// </summary>
         public void ExitHost()
         {
-            Send(new RequestData(GetRequestId(), new string[1] { "exit" }));// Tell the server we are exiting
+            try { Send(new RequestData(GetRequestId(), new string[1] { "exit" })); } catch { }// Tell the server we are exiting
             _run = false; //Stopping Thread
             RecieveThread.Join(2000);
             ClientSocket.Shutdown(SocketShutdown.Both);

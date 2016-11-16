@@ -14,7 +14,7 @@ namespace Galactic_Colors_Control_GUI
         public char commandChar = '/';
         public ConsoleColor[] logForeColor = new ConsoleColor[6] { ConsoleColor.DarkGray, ConsoleColor.Gray, ConsoleColor.White, ConsoleColor.Yellow, ConsoleColor.Red, ConsoleColor.White };
         public ConsoleColor[] logBackColor = new ConsoleColor[6] { ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Red };
-        public int lang = 0;
+        public int lang = 1;
         public string skin = "default";
 
         /// <summary>

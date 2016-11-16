@@ -20,7 +20,7 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
-            if ((server && Program.selectedParty == -1) || (!server && Program.clients[soc].partyID == -1))
+            if ((server && Program.selectedParty != -1) || (!server && Program.clients[soc].partyID != -1))
                 return new RequestResult(ResultTypes.Error, Common.Strings("Allready"));
 
             int id;

@@ -3,6 +3,7 @@ using Galactic_Colors_Control_Common;
 using Galactic_Colors_Control_Common.Protocol;
 using System;
 using System.Reflection;
+using System.Threading;
 
 namespace Galactic_Colors_Control_Console
 {
@@ -22,14 +23,14 @@ namespace Galactic_Colors_Control_Console
 
         private static void Main(string[] args)
         {
+            Console.Title = "Galactic Colors Control Client"; //Start display
+            Console.Write(">");
+            logger.Write(Console.Title, Logger.logType.fatal);
+            logger.Write("Console " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Logger.logType.error);
             config = config.Load();
             logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel, _debug, _dev);
             multilang.Load();
-            client.OnEvent += new EventHandler(OnEvent); //Set OnEvent function
-            Console.Title ="Galactic Colors Control Client"; //Start display
-            Console.Write(">");
-            Common.ConsoleWrite(Console.Title, ConsoleColor.Red);
-            Common.ConsoleWrite(multilang.Get("Console", config.lang) + " " + Assembly.GetEntryAssembly().GetName().Version.ToString(), ConsoleColor.Yellow);
+            client.OnEvent += new EventHandler(OnEvent); //Set OnEvent function         
             if (args.Length > 0)
             {
                 switch (args[0])
@@ -52,6 +53,7 @@ namespace Galactic_Colors_Control_Console
             bool hostSet = false;
             while (!hostSet) //Request hostname
             {
+                Thread.Sleep(100);
                 Common.ConsoleWrite(multilang.Get("EnterHostname", config.lang) +":");
                 string host = client.ValidateHost(Console.ReadLine());
                 if (host[0] == '*')
@@ -78,9 +80,79 @@ namespace Galactic_Colors_Control_Console
                     }
                 }
             }
+            Common.ConsoleWrite(multilang.Get("Loading", config.lang));
             if (client.ConnectHost()) //Try connection
-            {
+            {//TODO Cleaner
                 run = true;
+                bool connected = false;
+                //Identifaction
+                while (!connected)
+                {
+                    Common.ConsoleWrite(multilang.Get("Username", config.lang) + ":");
+                    string username = Console.ReadLine();
+                    if (username.Length > 3)
+                    {
+                        ResultData res = client.Request(new string[2] { "connect", username });
+                        if(res.type == ResultTypes.OK) { connected = true; }
+                        else
+                        {
+                            Common.ConsoleWrite(multilang.GetResultText(res, config.lang));
+                        }
+                    }
+                    else
+                    {
+                        Common.ConsoleWrite(multilang.Get("TooShort", config.lang));
+                    }
+                }
+                bool inparty = false;
+                while (!inparty)
+                {
+                    Console.Clear();
+                    Common.ConsoleWrite(multilang.GetResultText(client.Request(new string[2] { "party", "list" }), config.lang));
+                    Common.ConsoleWrite(multilang.Get("Party", config.lang) + ":" + Environment.NewLine + "     (<id> [password] or 'c' for create)");
+                    string[] data = Common.SplitArgs(Console.ReadLine());
+                    if (data.Length > 0)
+                    {
+                        if (data[0] == "c")
+                        {
+                            Common.ConsoleWrite("<party name> <player count>:");
+                            string[] split = Common.SplitArgs(Console.ReadLine());
+                            if (split.Length == 2)
+                            {
+                                ResultData createRes = client.Request(new string[4] { "party", "create", split[0], split[1] });
+                                if (createRes.type == ResultTypes.OK) { inparty = true; }
+                                else
+                                {
+                                    Common.ConsoleWrite(multilang.GetResultText(createRes, config.lang));
+                                    Console.ReadLine();
+                                }
+                            }
+                            else
+                            {
+                                Common.ConsoleWrite("Format");
+                            }
+                        }
+                        else
+                        {
+                            int id;
+                            if (int.TryParse(data[0], out id))
+                            {
+                                string[] request = data.Length == 1 ? new string[3] { "party", "join", id.ToString() } : new string[4] { "party", "join", id.ToString(), data[1] };
+                                ResultData res = client.Request(request);
+                                if (res.type == ResultTypes.OK) { inparty = true; }
+                                else
+                                {
+                                    Common.ConsoleWrite(multilang.GetResultText(res, config.lang));
+                                }
+                            }
+                            else
+                            {
+                                Common.ConsoleWrite("Format");
+                            }
+                        }
+                    }
+                }
+                Common.ConsoleWrite(multilang.Get("Play", config.lang));
                 while (run)
                 {
                     Execute(Console.ReadLine()); //Process console input
@@ -91,8 +163,10 @@ namespace Galactic_Colors_Control_Console
             else
             {
                 Common.ConsoleWrite(multilang.Get("CantConnect", config.lang), ConsoleColor.Red);
-                Console.Read();
             }
+            run = false;
+            logger.Join();
+            Console.ReadLine();
         }
 
         private static void Execute(string input)

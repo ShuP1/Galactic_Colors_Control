@@ -1,4 +1,4 @@
-Key;Français;English
+Key;Francais;English
 GCC;Galactic Colors Control;Galactic Colors Control
 Client;Client;Client
 Server;Serveur;Server
@@ -21,6 +21,8 @@ Error;Erreur;Error
 Hide;Cacher;Hide
 Show;Afficher;Show
 Chat;Chat;Chat
+Party;Partie;Party
+Join;Rejoindre;Join
 Use;Utiliser;Use
 CantConnect;Connexion impossible. Au revoir;Can't connect sorry. Bye
 ServerJoin;rejoint le server;join the server
@@ -28,3 +30,8 @@ PartyJoin;rejoint la partie;join the party
 ServerLeave;quitte le server;leave the server
 PartyLeave;quitte la partie;leave the party
 ServerKick;Exclus du serveur;Kick from server
+TooShort;Trop court;Too short
+TooLong;Trop long;Too long
+Update;Actualiser;Update
+AnyParty;Aucune partie;Any party
+Password;Mot de passe;Password

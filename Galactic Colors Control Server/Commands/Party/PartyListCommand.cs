@@ -1,4 +1,5 @@
-﻿using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common;
+using Galactic_Colors_Control_Common.Protocol;
 using System;
 using System.Net.Sockets;
 
@@ -19,12 +20,15 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
+            if (Program.parties.Keys.Count == 0)
+                return new RequestResult(ResultTypes.Error, Common.Strings("AnyParty")); 
+
             string[] text = new string[Program.parties.Keys.Count];
             int i = 0;
             foreach (int key in Program.parties.Keys)
             {
                 Party party = Program.parties[key];
-                text[i] = (key + " : " + party.name + " : " + party.count + "/" + party.size + " : " + (party.open ? (party.isPrivate ? "private" : "open") : "close") + Environment.NewLine + " ");
+                text[i] = (key + " : " + party.name + " : " + party.count + "/" + party.size + " : " + (party.open ? (party.isPrivate ? "private" : "open") : "close"));
                 i++;
             }
             return new RequestResult(ResultTypes.OK, text);

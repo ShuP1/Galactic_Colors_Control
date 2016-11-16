@@ -32,6 +32,9 @@ namespace Galactic_Colors_Control_Server.Commands
             if (size > Program.config.size)
                 return new RequestResult(ResultTypes.Error, Common.Strings("Too Big"));
 
+            if (Program.parties.Count >= Program.config.partysize)
+                return new RequestResult(ResultTypes.Error, Common.Strings("Full"));
+
             Program.AddParty(new Party(args[2], size, Utilities.GetName(soc)));
             Program.logger.Write("Party " + args[2] + " create with " + size + " slots as " + Program.GetPartyID(false), Logger.logType.info);
             if (server)

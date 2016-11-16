@@ -57,6 +57,7 @@ namespace Galactic_Colors_Control_GUI.States
                         {
                             locked = true;
                             Game.singleton.GUI.ResetFocus();
+                            Game.singleton.client.ExitHost();
                             new Thread(() =>
                             {
                                 while (!Utilities.DoubleTo(ref Game.singleton.background.speedX, 1, 0.1)) { Thread.Sleep(20); }
@@ -78,7 +79,7 @@ namespace Galactic_Colors_Control_GUI.States
                     ResultData res = Game.singleton.client.Request(new string[2] { "connect", username });
                     if (res.type == ResultTypes.OK)
                     {
-                        Game.singleton.gameState = new GameState(username);
+                        Game.singleton.gameState = new PartyState();
                     }
                     else
                     {

@@ -12,7 +12,6 @@ namespace Galactic_Colors_Control_GUI.States
 {
     public class GameState : State
     {
-        private string username;
         private bool showChat = false;
         private string chatText;
         private string chatInput;
@@ -21,10 +20,9 @@ namespace Galactic_Colors_Control_GUI.States
         private bool showOKMessage = false;
         private Message message;
 
-        public GameState(string Username)
+        public GameState()
         {
             Game.singleton.client.OnEvent += new EventHandler(OnEvent); //Set OnEvent function
-            username = Username;
         }
 
         public override void Draw(SpriteBatch spritebatch)
@@ -32,7 +30,6 @@ namespace Galactic_Colors_Control_GUI.States
             Game.singleton.background.Draw(spritebatch);
             Game.singleton.GUI.Texture(new Rectangle(0, 0, Game.singleton.ScreenWidth, 30), Game.nullSprite, new MyMonoGame.Colors(new Color(0.1f, 0.1f, 0.1f)));
             if (Game.singleton.GUI.Button(new Rectangle(5, 5, 50, 20), (showChat ? Game.singleton.multilang.Get("Hide", Game.singleton.config.lang) : Game.singleton.multilang.Get("Show", Game.singleton.config.lang)) + " " + Game.singleton.multilang.Get("Chat", Game.singleton.config.lang), Game.singleton.fonts.small, new MyMonoGame.Colors(Color.White, Color.LightGray, Color.Gray))) { Game.singleton.GUI.ResetFocus(); showChat = !showChat; }
-            //if (Game.singleton.GUI.Button(new Rectangle(65, 5, 50, 20), (showParty ? "Leave" : "Join") + " party", smallFont, new MyMonoGame.Colors(Color.White, Color.LightGray, Color.Gray))) { new Thread(PartyClick).Start(); }
 
             if (showChat)
             {
@@ -60,7 +57,10 @@ namespace Galactic_Colors_Control_GUI.States
 
         public override void Update()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape) || (!Game.singleton.client.isRunning)) { Game.singleton.GUI.ResetFocus(); Game.singleton.client.ExitHost(); }
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape) || (!Game.singleton.client.isRunning)) {
+                Game.singleton.client.ExitHost();
+                Game.singleton.gameState = new MainMenuState();
+            }
         }
 
         private void ChatEnter()

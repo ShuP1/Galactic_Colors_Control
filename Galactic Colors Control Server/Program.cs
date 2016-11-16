@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
+//TODO gui parties pages
 
 namespace Galactic_Colors_Control_Server
 {
@@ -39,11 +40,11 @@ namespace Galactic_Colors_Control_Server
         /// </summary>
         private static void Main(string[] args)
         {
+            Console.Title = "Galactic Colors Control Server";
+            logger.Write(Console.Title + " " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Logger.logType.fatal);
             config = config.Load();
             logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel, _debug, _dev);
             multilang.Load();
-            Console.Title = multilang.Get("Galactic Colors Control Server", config.lang);
-            logger.Write(Console.Title + " " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Logger.logType.fatal);
             if (args.Length > 0)
             {
                 switch (args[0])
@@ -227,16 +228,19 @@ namespace Galactic_Colors_Control_Server
             {
                 foreach (Socket current in clients.Keys.ToArray())
                 {
-                    if ((current.Poll(10, SelectMode.SelectRead) && current.Available == 0) || !current.Connected)
+                    try
                     {
-                        string username = Utilities.GetName(current);
-                        logger.Write("Client forcefully disconnected from " + username + " : NotConnected", Logger.logType.info);
-                        bool connected = clients[current].status != -1;
-                        logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.debug);
-                        current.Close(); // Don't shutdown because the socket may be disposed and its disconnected anyway.
-                        clients.Remove(current);
-                        if (connected) { Utilities.Broadcast(new EventData(EventTypes.ServerLeave, Common.Strings(username))); }
-                    }
+                        if ((current.Poll(10, SelectMode.SelectRead) && current.Available == 0) || !current.Connected)
+                        {
+                            string username = Utilities.GetName(current);
+                            logger.Write("Client forcefully disconnected from " + username + " : NotConnected", Logger.logType.info);
+                            bool connected = clients[current].status != -1;
+                            logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.debug);
+                            current.Close(); // Don't shutdown because the socket may be disposed and its disconnected anyway.
+                            clients.Remove(current);
+                            if (connected) { Utilities.Broadcast(new EventData(EventTypes.ServerLeave, Common.Strings(username))); }
+                        }
+                    }catch { }
                     Thread.Sleep(200);
                 }
             }
