@@ -131,7 +131,6 @@ namespace Galactic_Colors_Control_GUI.States
 
         private void PartyJoin()
         {
-            //TODO
             showLoading = true;
             if (id != -1)
             {
@@ -139,10 +138,12 @@ namespace Galactic_Colors_Control_GUI.States
                 ResultData res = Game.singleton.client.Request(request);
                 if (res.type == ResultTypes.OK)
                 {
+                    Game.singleton.logger.Write("Join party " + id.ToString(), Logger.logType.info);
                     Game.singleton.gameState = new GameState();
                 }
                 else
                 {
+                    Game.singleton.logger.Write("Join error " + res.result, Logger.logType.error);
                     message.title = Game.singleton.multilang.Get("Error", Game.singleton.config.lang);
                     message.text = Common.ArrayToString(res.result);
                     showOKMessage = true;

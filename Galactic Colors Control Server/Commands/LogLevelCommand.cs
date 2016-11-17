@@ -27,7 +27,7 @@ namespace Galactic_Colors_Control_Server.Commands
             }
             else
             {
-                return new RequestResult(ResultTypes.Error, Common.Strings("Incorrect argument"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("IncorrectArgs"));
             }
         }
     }

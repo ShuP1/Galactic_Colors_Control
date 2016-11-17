@@ -25,7 +25,7 @@ namespace Galactic_Colors_Control_Server.Commands
                 if (Utilities.GetName(client) == args[2]) { target = client; }
             }
             if (target == null)
-                return new RequestResult(ResultTypes.Error, Common.Strings("Can't find"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("CantFind"));
 
             Program.logger.Write(args[2] + " was kick by server.", Logger.logType.info, Logger.logConsole.show);
             if (args.Length > 2)

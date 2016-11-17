@@ -29,7 +29,7 @@ namespace Galactic_Colors_Control_Server.Commands
                 if (Utilities.GetName(client) == args[2]) { target = client; }
             }
             if (target == null)
-                return new RequestResult(ResultTypes.Error, Common.Strings("Can't find"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("CantFind"));
 
             Utilities.Send(target, new EventData(EventTypes.PartyKick, args.Length > 3 ? Common.Strings(args[2]) : null));
             return Manager.Execute(new string[2] { "party", "leave" }, target, false);

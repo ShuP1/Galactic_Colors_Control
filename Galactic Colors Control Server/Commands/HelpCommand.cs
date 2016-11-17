@@ -66,10 +66,10 @@ namespace Galactic_Colors_Control_Server.Commands
                 ICommand command = null;
                 args = args.Skip(1).ToArray();
                 if (!Manager.TryGetCommand(args, ref command))
-                    return new RequestResult(ResultTypes.Error, Common.Strings("Any Command"));
+                    return new RequestResult(ResultTypes.Error, Common.Strings("AnyCommand"));
 
                 if (!Manager.CanAccess(command, soc, server))
-                    return new RequestResult(ResultTypes.Error, Common.Strings("Any Command"));
+                    return new RequestResult(ResultTypes.Error, Common.Strings("AnyCommand"));
 
                 return new RequestResult(ResultTypes.OK, Common.Strings(command.HelpText));
             }

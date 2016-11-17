@@ -5,6 +5,7 @@ using MyMonoGame.GUI;
 using System.Reflection;
 using Galactic_Colors_Control;
 using System.Threading;
+using Galactic_Colors_Control_Common;
 
 namespace Galactic_Colors_Control_GUI.States
 {
@@ -43,6 +44,7 @@ namespace Galactic_Colors_Control_GUI.States
                 {
                     locked = true;
                     Game.singleton.GUI.ResetFocus();
+                    Game.singleton.logger.Write("Game exit", Logger.logType.warm);
                     Game.singleton.gameState = new TitleState();
                     new Thread(() =>
                     {

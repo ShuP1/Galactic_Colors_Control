@@ -25,10 +25,10 @@ namespace Galactic_Colors_Control_Server.Commands
 
             int id;
             if (!int.TryParse(args[2], out id))
-                return new RequestResult(ResultTypes.Error, Common.Strings("Any Party"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("Format"));
 
             if (!Program.parties.ContainsKey(id))
-                return new RequestResult(ResultTypes.Error, Common.Strings("Can't Find"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("CantFind"));
 
             Party party = Program.parties[id];
             if (args.Length == 3)

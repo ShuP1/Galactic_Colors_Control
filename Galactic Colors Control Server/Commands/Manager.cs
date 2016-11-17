@@ -14,7 +14,7 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public enum CommandGroup { root, server, party, client }
 
-        private static RequestResult AnyCommand = new RequestResult(ResultTypes.Error, Common.Strings("Any Command"));
+        private static RequestResult AnyCommand = new RequestResult(ResultTypes.Error, Common.Strings("AnyCommand"));
 
         /// <summary>
         /// Find all ICommand and add them to commands
@@ -46,13 +46,13 @@ namespace Galactic_Colors_Control_Server.Commands
                 return AnyCommand;
 
             if (!server && command.IsClientSide)
-                return new RequestResult(ResultTypes.Error, Common.Strings("Client Side"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("ClientSide"));
 
             if (args.Length - (command.Group == 0 ? 0 : 1) <= command.minArgs)
-                return new RequestResult(ResultTypes.Error, new string[2] { "Too Short", command.minArgs.ToString() });
+                return new RequestResult(ResultTypes.Error, new string[2] { "TooShort", command.minArgs.ToString() });
 
             if (args.Length - (command.Group == 0 ? 1 : 2) > command.maxArgs)
-                return new RequestResult(ResultTypes.Error, new string[2] { "Too Long", command.maxArgs.ToString() });
+                return new RequestResult(ResultTypes.Error, new string[2] { "TooLong", command.maxArgs.ToString() });
 
             try
             {
@@ -61,7 +61,7 @@ namespace Galactic_Colors_Control_Server.Commands
             catch (Exception e)
             {
                 Program.logger.Write("Command " + args[0] + " Exception : " + e.Message, Logger.logType.error);
-                return new RequestResult(ResultTypes.Error, Common.Strings("Execute Exception"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("ExecuteException"));
             }
         }
 

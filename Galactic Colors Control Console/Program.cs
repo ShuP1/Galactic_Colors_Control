@@ -59,11 +59,13 @@ namespace Galactic_Colors_Control_Console
                 if (host[0] == '*')
                 {
                     host = host.Substring(1);
+                    logger.Write("Validate error " + host, Logger.logType.error);
                     Common.ConsoleWrite(host, ConsoleColor.Red);
                     client.ResetHost();
                 }
                 else
                 {
+                    logger.Write("Validate " + host, Logger.logType.info);
                     Common.ConsoleWrite(multilang.Get("Use", config.lang) + " " + host + "? y/n");
                     ConsoleKeyInfo c = new ConsoleKeyInfo();
                     while (c.Key != ConsoleKey.Y && c.Key != ConsoleKey.N)
@@ -82,7 +84,8 @@ namespace Galactic_Colors_Control_Console
             }
             Common.ConsoleWrite(multilang.Get("Loading", config.lang));
             if (client.ConnectHost()) //Try connection
-            {//TODO Cleaner
+            {
+                logger.Write("Connected", Logger.logType.warm);
                 run = true;
                 bool connected = false;
                 //Identifaction
@@ -93,9 +96,10 @@ namespace Galactic_Colors_Control_Console
                     if (username.Length > 3)
                     {
                         ResultData res = client.Request(new string[2] { "connect", username });
-                        if(res.type == ResultTypes.OK) { connected = true; }
+                        if(res.type == ResultTypes.OK) { connected = true; logger.Write("Identification", Logger.logType.info); }
                         else
                         {
+                            logger.Write("Identification error " + res.result, Logger.logType.info);
                             Common.ConsoleWrite(multilang.GetResultText(res, config.lang));
                         }
                     }
@@ -152,6 +156,7 @@ namespace Galactic_Colors_Control_Console
                         }
                     }
                 }
+                logger.Write("Play", Logger.logType.info, Logger.logConsole.hide);
                 Common.ConsoleWrite(multilang.Get("Play", config.lang));
                 while (run)
                 {
@@ -162,6 +167,7 @@ namespace Galactic_Colors_Control_Console
             }
             else
             {
+                logger.Write("Connection error", Logger.logType.error);
                 Common.ConsoleWrite(multilang.Get("CantConnect", config.lang), ConsoleColor.Red);
             }
             run = false;

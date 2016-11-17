@@ -24,7 +24,7 @@ namespace Galactic_Colors_Control_Server.Commands
                 return new RequestResult(ResultTypes.Error, Common.Strings("Connected"));
 
             if (args[1].Length < 3)
-                return new RequestResult(ResultTypes.Error, Common.Strings("Too Short"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("TooShort"));
 
             Program.logger.Write("Identifiaction request from " + Utilities.GetName(soc), Logger.logType.debug);
             bool allreadyconnected = false;
@@ -34,7 +34,7 @@ namespace Galactic_Colors_Control_Server.Commands
                 if (client.pseudo == args[1]) { allreadyconnected = true; break; }
             }
             if (allreadyconnected)
-                return new RequestResult(ResultTypes.Error, Common.Strings("Taken"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("AllreadyTaken"));
 
             Program.clients[soc].status = 0;
             Program.clients[soc].pseudo = args[1];

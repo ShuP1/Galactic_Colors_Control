@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using MyMonoGame.GUI;
 using System;
 using System.IO;
+using System.Reflection;
 
 namespace Galactic_Colors_Control_GUI
 {
@@ -74,6 +75,7 @@ namespace Galactic_Colors_Control_GUI
         protected override void Initialize()
         {
             config = config.Load();
+            logger.Write("Galactic Colors Control GUI " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Logger.logType.fatal);
             logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel, Program._debug, Program._dev);
             multilang.Load();
             if (Program._debug) { logger.Write("CLIENT IS IN DEBUG MODE !", Logger.logType.error, Logger.logConsole.show); }

@@ -35,3 +35,18 @@ TooLong;Trop long;Too long
 Update;Actualiser;Update
 AnyParty;Aucune partie;Any party
 Password;Mot de passe;Password
+ClientSide;Cote client;Client side
+CantFind:Introuvable;Can't find
+Connected:Connecte;Connected
+AllreadyTaken;Deja pris;Allready taken
+AnyCommand;Aucune commande;Any command
+IncorrectArgs;Arguements incorrects;Incorrect Arguements
+ExecuteException;Exception d'execution;Execute exception
+Access;Acces refuse;Access denied
+Allready;Deja fait;Allready do
+Format;Format incorrect;Incorrect format
+Full;Plein;Full
+Close;Fermee;Close
+Owner;Proprietaire;Owner
+AnyMessage;Aucun message;Any message
+MustBeConnected;Doit etre connecte;Must be connected

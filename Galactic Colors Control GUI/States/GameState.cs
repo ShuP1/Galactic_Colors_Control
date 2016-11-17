@@ -1,5 +1,4 @@
-﻿//TODO add party support
-using Galactic_Colors_Control_Common;
+﻿using Galactic_Colors_Control_Common;
 using Galactic_Colors_Control_Common.Protocol;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -97,6 +96,7 @@ namespace Galactic_Colors_Control_GUI.States
             EventData eve = ((EventDataArgs)e).Data;
             if (eve.type == EventTypes.ServerKick)
             {
+                Game.singleton.logger.Write("Server kick" + eve.data, Logger.logType.warm);
                 message.title = Game.singleton.multilang.Get("ServerKick", Game.singleton.config.lang);
                 message.text = Common.ArrayToString(eve.data);
                 showOKMessage = true;

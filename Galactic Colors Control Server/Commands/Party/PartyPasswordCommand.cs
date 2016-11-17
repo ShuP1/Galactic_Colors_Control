@@ -31,7 +31,7 @@ namespace Galactic_Colors_Control_Server.Commands
             }
 
             if (!Program.parties[partyId].SetPassword(args[2], args[3]))
-                return new RequestResult(ResultTypes.Error, Common.Strings("Can't Change"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("Password"));
 
             return new RequestResult(ResultTypes.OK);
         }

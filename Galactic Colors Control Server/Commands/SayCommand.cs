@@ -20,10 +20,10 @@ namespace Galactic_Colors_Control_Server.Commands
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
             if (args[1].Length == 0)
-                return new RequestResult(ResultTypes.Error, Common.Strings("Any Message"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("AnyMessage"));
 
             if (!Utilities.IsConnect(soc))
-                return new RequestResult(ResultTypes.Error, Common.Strings("Must Be Connected"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("MustBeConnected"));
 
             int party = -1;
             party = Utilities.GetParty(soc);

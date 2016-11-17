@@ -28,7 +28,7 @@ namespace Galactic_Colors_Control_Server.Commands
             }
             else
             {
-                return new RequestResult(ResultTypes.Error, Common.Strings("Client Side"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("ClientSide"));
             }
         }
     }

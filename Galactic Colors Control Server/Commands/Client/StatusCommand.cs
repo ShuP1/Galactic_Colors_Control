@@ -27,7 +27,7 @@ namespace Galactic_Colors_Control_Server.Commands
                 if (Utilities.GetName(client) == args[2]) { target = client; }
             }
             if (target == null)
-                return new RequestResult(ResultTypes.Error, Common.Strings("Can't find"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("CantFind"));
 
             string text = "";
             text += ("Name   : " + Utilities.GetName(target) + Environment.NewLine);

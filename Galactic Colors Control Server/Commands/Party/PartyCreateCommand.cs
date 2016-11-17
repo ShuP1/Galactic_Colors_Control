@@ -27,10 +27,10 @@ namespace Galactic_Colors_Control_Server.Commands
                 return new RequestResult(ResultTypes.Error, Common.Strings("Format"));
 
             if (size < 1)
-                return new RequestResult(ResultTypes.Error, Common.Strings("Too Small"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("TooSmall"));
 
             if (size > Program.config.size)
-                return new RequestResult(ResultTypes.Error, Common.Strings("Too Big"));
+                return new RequestResult(ResultTypes.Error, Common.Strings("TooBig"));
 
             if (Program.parties.Count >= Program.config.partysize)
                 return new RequestResult(ResultTypes.Error, Common.Strings("Full"));

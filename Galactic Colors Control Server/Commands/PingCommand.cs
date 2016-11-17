@@ -19,7 +19,7 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
-            return new RequestResult(ResultTypes.Error, Common.Strings("Client Side"));
+            return new RequestResult(ResultTypes.Error, Common.Strings("ClientSide"));
         }
     }
 }

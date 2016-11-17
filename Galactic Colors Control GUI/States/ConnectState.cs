@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MyMonoGame.GUI;
 using System.Threading;
 using System;
+using Galactic_Colors_Control_Common;
 
 namespace Galactic_Colors_Control_GUI.States
 {
@@ -119,7 +120,8 @@ namespace Galactic_Colors_Control_GUI.States
                 message.title = Game.singleton.multilang.Get("Error", Game.singleton.config.lang);
                 message.text = Host;
                 showOKMessage = true;
-                Game.singleton.client.ResetHost(); ;
+                Game.singleton.client.ResetHost();
+                Game.singleton.logger.Write("Validate : " + Host, Logger.logType.info);
             }
             else
             {
@@ -135,10 +137,12 @@ namespace Galactic_Colors_Control_GUI.States
             showLoading = true;
             if (Game.singleton.client.ConnectHost())
             {
+                Game.singleton.logger.Write("Connected", Logger.logType.info);
                 Game.singleton.gameState = new IndentificationState();
             }
             else
             {
+                Game.singleton.logger.Write("Connect error", Logger.logType.error);
                 message.title = Game.singleton.multilang.Get("Error", Game.singleton.config.lang);
                 message.text = string.Empty;
                 showOKMessage = true;
