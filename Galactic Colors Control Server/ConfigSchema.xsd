@@ -21,6 +21,8 @@
             </xsd:sequence>
           </xsd:complexType>
         </xsd:element>
+        <xsd:element name="lang" type="xsd:unsignedInt" />
+        <xsd:element name="partysize" type="xsd:unsignedShort" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>

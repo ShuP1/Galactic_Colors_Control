@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Galactic_Colors_Control_Common;
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
 namespace Galactic_Colors_Control_Server
 {
+    //TODO Common config 
     [XmlRoot("config")]
     public class Config
     {
@@ -16,8 +14,10 @@ namespace Galactic_Colors_Control_Server
         public Logger.logType logLevel = Logger.logType.info;
         public int port = 25001;
         public int size = 20;
-        public ConsoleColor[] logForeColor = new ConsoleColor[5] {ConsoleColor.Gray , ConsoleColor.White, ConsoleColor.Yellow, ConsoleColor.Red, ConsoleColor.White};
-        public ConsoleColor[] logBackColor = new ConsoleColor[5] { ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Red };
+        public ConsoleColor[] logForeColor = new ConsoleColor[6] { ConsoleColor.DarkGray, ConsoleColor.Gray, ConsoleColor.White, ConsoleColor.Yellow, ConsoleColor.Red, ConsoleColor.White };
+        public ConsoleColor[] logBackColor = new ConsoleColor[6] { ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Black, ConsoleColor.Red };
+        public int lang = 1;
+        public int partysize = 10;
 
         /// <summary>
         /// Load config from xml file
@@ -26,7 +26,7 @@ namespace Galactic_Colors_Control_Server
         /// <returns>Loaded config</returns>
         public Config Load()
         {
-            Logger.Write("Loading config", Logger.logType.info);
+            Program.logger.Write("Loading config", Logger.logType.info);
             Config config = new Config();
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Config.xml"))
             {
@@ -40,17 +40,19 @@ namespace Galactic_Colors_Control_Server
                 }
                 else
                 {
-                    Logger.Write("Old config in Config.xml.old", Logger.logType.warm);
+                    Program.logger.Write("Old config in Config.xml.old", Logger.logType.warm);
+                    File.Delete(AppDomain.CurrentDomain.BaseDirectory + "Config.xml.old");
                     File.Move(AppDomain.CurrentDomain.BaseDirectory + "Config.xml", AppDomain.CurrentDomain.BaseDirectory + "Config.xml.old");
                     config.Save();
                 }
             }
             else
             {
-                Logger.Write("Any config file", Logger.logType.error);
+                Program.logger.Write("Any config file", Logger.logType.error);
                 config.Save();
             }
             if (Program._debug) { config.logLevel = Logger.logType.debug; }
+            if (Program._dev) { config.logLevel = Logger.logType.dev; }
             return config;
         }
 
@@ -60,12 +62,13 @@ namespace Galactic_Colors_Control_Server
         public void Save()
         {
             XmlSerializer xs = new XmlSerializer(typeof(Config));
-            if (Program._debug) { logLevel = Logger.logType.info; }
+            if (Program._debug || Program._dev) { logLevel = Logger.logType.info; }
             using (StreamWriter st = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "Config.xml"))
             {
-                xs.Serialize(st,this);
+                xs.Serialize(st, this);
             };
             if (Program._debug) { logLevel = Logger.logType.debug; }
+            if (Program._dev) { logLevel = Logger.logType.dev; }
         }
 
         /// <summary>
@@ -86,7 +89,7 @@ namespace Galactic_Colors_Control_Server
                 catch (XmlException e)
                 {
                     isCorrect = false;
-                    Logger.Write("Error: " + e.Message, Logger.logType.error);
+                    Program.logger.Write("Error: " + e.Message, Logger.logType.error);
                 }
             }
 
@@ -100,14 +103,14 @@ namespace Galactic_Colors_Control_Server
 
                     d.Validate((o, e) =>
                     {
-                        Logger.Write("Error: " + e.Message, Logger.logType.error);
+                        Program.logger.Write("Error: " + e.Message, Logger.logType.error);
                         isCorrect = false;
                     });
                 }
                 catch (XmlException e)
                 {
                     isCorrect = false;
-                    Logger.Write("Error: " + e.Message, Logger.logType.error);
+                    Program.logger.Write("Error: " + e.Message, Logger.logType.error);
                 }
             }
 

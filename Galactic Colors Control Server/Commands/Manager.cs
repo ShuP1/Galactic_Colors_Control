@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Galactic_Colors_Control_Common;
+using Galactic_Colors_Control_Common.Protocol;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -6,9 +8,13 @@ using System.Reflection;
 
 namespace Galactic_Colors_Control_Server.Commands
 {
-    class Manager
+    public class Manager
     {
-        public static Dictionary<string, ICommand> commands { get; private set; } = new Dictionary<string, ICommand>();
+        public static List<ICommand> commands { get; private set; } = new List<ICommand>();
+
+        public enum CommandGroup { root, server, party, client }
+
+        private static RequestResult AnyCommand = new RequestResult(ResultTypes.Error, Common.Strings("AnyCommand"));
 
         /// <summary>
         /// Find all ICommand and add them to commands
@@ -19,8 +25,8 @@ namespace Galactic_Colors_Control_Server.Commands
             IEnumerable<ICommand> coms = Assembly.GetExecutingAssembly().GetTypes().Where(x => x.GetInterfaces().Contains(typeof(ICommand)) && x.GetConstructor(Type.EmptyTypes) != null).Select(x => Activator.CreateInstance(x) as ICommand);
             foreach (ICommand com in coms)
             {
-                commands.Add(com.Name, com);
-                Logger.Write("Added command " + com.GetType().Name, Logger.logType.debug);
+                commands.Add(com);
+                Program.logger.Write("Added command " + com.Group.ToString() + " " + com.Name, Logger.logType.debug);
             }
         }
 
@@ -30,45 +36,97 @@ namespace Galactic_Colors_Control_Server.Commands
         /// <param name="args">command with args</param>
         /// <param name="soc">Sender socket</param>
         /// <param name="server">Is server?</param>
-        public static void Execute(string[] args, Socket soc = null, bool server = false)
+        public static RequestResult Execute(string[] args, Socket soc = null, bool server = false)
         {
-            if (commands.ContainsKey(args[0]))
-            {
-                ICommand command = commands[args[0]];
-                if (CanAccess(command, soc, server))
-                {
-                    if (command.IsClientSide)
-                    {
-                        Utilities.Return("It's a client side command", soc, server);
-                    }
-                    else
-                    {
-                        if (args.Length > command.minArgs)
-                        {
-                            if (args.Length - 1 <= command.maxArgs)
-                            {
-                                command.Execute(args, soc, server);
-                            }
-                            else
-                            {
-                                Utilities.Return("Command " + command.Name + " require at most " + command.minArgs + " argument(s).", soc, server);
-                            }
-                        }
+            ICommand command = null;
+            if (!TryGetCommand(args, ref command))
+                return AnyCommand;
 
-                        else
-                        {
-                            Utilities.Return("Command " + command.Name + " require at least " + command.minArgs + " argument(s).", soc, server);
-                        }
+            if (!CanAccess(command, soc, server))
+                return AnyCommand;
+
+            if (!server && command.IsClientSide)
+                return new RequestResult(ResultTypes.Error, Common.Strings("ClientSide"));
+
+            if (args.Length - (command.Group == 0 ? 0 : 1) <= command.minArgs)
+                return new RequestResult(ResultTypes.Error, new string[2] { "TooShort", command.minArgs.ToString() });
+
+            if (args.Length - (command.Group == 0 ? 1 : 2) > command.maxArgs)
+                return new RequestResult(ResultTypes.Error, new string[2] { "TooLong", command.maxArgs.ToString() });
+
+            try
+            {
+                return command.Execute(args, soc, server);
+            }
+            catch (Exception e)
+            {
+                Program.logger.Write("Command " + args[0] + " Exception : " + e.Message, Logger.logType.error);
+                return new RequestResult(ResultTypes.Error, Common.Strings("ExecuteException"));
+            }
+        }
+
+        public static string CommandToString(ICommand command)
+        {
+            string text = "";
+            if (command.Group != 0) { text += (command.Group.ToString() + " "); }
+            text += command.Name;
+            return text;
+        }
+
+        /// <summary>
+        /// Convert command args in readable string
+        /// </summary>
+        /// <param name="args">Command args</param>
+        public static string CommandToString(string[] args)
+        {
+            if (args.Length > 0)
+            {
+                string text = "";
+                foreach (string arg in args)
+                {
+                    text += (arg + " ");
+                }
+                return text;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Try to get a command
+        /// </summary>
+        /// <param name="args">command args</param>
+        /// <param name="command">Command result</param>
+        /// <returns>Correct command</returns>
+        public static bool TryGetCommand(string[] args, ref ICommand command)
+        {
+            if (args.Length > 0)
+            {
+                List<string> groups = Enum.GetNames(typeof(CommandGroup)).ToList();
+                CommandGroup group = 0;
+                if (groups.Contains(args[0]))
+                {
+                    if (args.Length > 1)
+                    {
+                        group = (CommandGroup)Enum.Parse(typeof(CommandGroup), args[0]);
                     }
+                }
+                IEnumerable<ICommand> coms = commands.Where(p => (p.Name == args[group == 0 ? 0 : 1] && p.Group == group));
+                if (coms.Count() == 1)
+                {
+                    command = coms.First();
+                    return true;
                 }
                 else
                 {
-                    Utilities.Return("Unknown command : " + args[0], soc, server);
+                    return false;
                 }
             }
             else
             {
-                Utilities.Return("Unknown command : " + args[0], soc, server);
+                return false;
             }
         }
 
@@ -85,7 +143,7 @@ namespace Galactic_Colors_Control_Server.Commands
             {
                 if (command.IsClient)
                 {
-                    if(!Utilities.IsConnect(soc))
+                    if (!Utilities.IsConnect(soc))
                     {
                         return command.IsNoConnect;
                     }

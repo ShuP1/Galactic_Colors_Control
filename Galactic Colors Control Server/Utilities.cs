@@ -1,38 +1,27 @@
-﻿using System;
-using System.IO;
+﻿using Galactic_Colors_Control_Common;
+using Galactic_Colors_Control_Common.Protocol;
+using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 
 namespace Galactic_Colors_Control_Server
 {
-    class Utilities
+    internal class Utilities
     {
-        public enum dataType { message, data };
-
         /// <summary>
         /// Check if socket is connect
         /// </summary>
         /// <param name="soc">Client socket</param>
         public static bool IsConnect(Socket soc)
         {
-            if(soc == null)
-            {
+            if (soc == null)
                 return true;
-            }
-            else
-            {
-                if (Program.clients.ContainsKey(soc))
-                {
-                    return Program.clients[soc].status != -1;
-                }
-                else
-                {
-                    Logger.Write("IsConnect : Unknown client", Logger.logType.error);
-                    return true;
-                }
-            }
+
+            if (Program.clients.ContainsKey(soc))
+                return Program.clients[soc].status != -1;
+
+            Program.logger.Write("IsConnect : Unknown client", Logger.logType.error);
+            return false;
         }
 
         /// <summary>
@@ -42,47 +31,23 @@ namespace Galactic_Colors_Control_Server
         /// <returns>Name</returns>
         public static string GetName(Socket soc)
         {
-            if (soc != null)
-            {
-                if (Program.clients.ContainsKey(soc))
-                {
-                    string res = Program.clients[soc].pseudo;
-                    if (res == "") { res = ((IPEndPoint)soc.LocalEndPoint).Address.ToString(); }
-                    return res;
-                }
-                else
-                {
-                    return "?";
-                }
-            }
-            else
-            {
-                return "Server";
-            }
+            if (soc == null)
+                return Program.multilang.Get("Server",Program.config.lang);
+
+            if (!Program.clients.ContainsKey(soc))
+                return "?";
+
+            string res = Program.clients[soc].pseudo;
+            if (res == "") { res = ((IPEndPoint)soc.LocalEndPoint).Address.ToString(); }
+            return res;
         }
 
-        /// <summary>
-        /// Write line in console with correct colors
-        /// </summary>
-        /// <param name="v">Text to write</param>
-        public static void ConsoleWrite(string v)
+        public static int GetParty(Socket soc)
         {
-            Console.Write("\b");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.WriteLine(v);
-            ConsoleResetColor();
-            Console.Write(">");
-        }
+            if (soc == null)
+                return Program.selectedParty;
 
-        /// <summary>
-        /// Reset Console Colors
-        /// For non black background console as Ubuntu
-        /// </summary>
-        public static void ConsoleResetColor()
-        {
-            Console.ResetColor();
-            Console.BackgroundColor = ConsoleColor.Black;
+            return Program.clients[soc].partyID;
         }
 
         /// <summary>
@@ -90,40 +55,23 @@ namespace Galactic_Colors_Control_Server
         /// </summary>
         /// <param name="soc">Target socket</param>
         /// <param name="data">Data to send</param>
-        /// <param name="dtype">Type of data</param>
-        public static void Send(Socket soc, object data, dataType dtype)
+        public static void Send(Socket soc, Data packet)
         {
-            /*
-            Format:
-            0-3: dataType
-            4-x: data
-            */
-            byte[] type = new byte[4];
-            type = BitConverter.GetBytes((int)dtype);
-            byte[] bytes = null;
-            switch (dtype)
+            if (soc.Connected)
             {
-                case dataType.message:
-                    bytes = Encoding.ASCII.GetBytes((string)data);
-                    break;
-
-                case dataType.data:
-                    BinaryFormatter bf = new BinaryFormatter();
-                    using (MemoryStream ms = new MemoryStream())
+                try
+                {
+                    soc.Send(packet.ToBytes());
+                    if (Program.config.logLevel == Logger.logType.dev)
                     {
-                        bf.Serialize(ms, data);
-                        bytes = ms.ToArray();
+                        Program.logger.Write("Send to " + GetName(soc) + " : " + packet.ToLongString(), Logger.logType.dev);
                     }
-                    break;
-
-                default:
-                    bytes = new byte[] { 1 };
-                    break;
+                }
+                catch (Exception e)
+                {
+                    Program.logger.Write("Send exception to " + GetName(soc) + " : " + e.Message, Logger.logType.error);
+                }
             }
-            byte[] final = new byte[type.Length + bytes.Length];
-            type.CopyTo(final, 0);
-            bytes.CopyTo(final, type.Length);
-            soc.Send(final);
         }
 
         /// <summary>
@@ -131,29 +79,115 @@ namespace Galactic_Colors_Control_Server
         /// </summary>
         /// <param name="data">Data to send</param>
         /// <param name="dtype">Type of data</param>
-        public static void Broadcast(object data, dataType dtype)
+        /// <param name="message">Message to display for server</param>
+        public static void Broadcast(Data packet)
         {
             foreach (Socket soc in Program.clients.Keys)
             {
-                Send(soc, data, dtype);
+                Send(soc, packet);
+            }
+            switch (packet.GetType().Name)
+            {
+                case "EventData":
+                    Common.ConsoleWrite(Program.multilang.GetEventText((EventData)packet, Program.config.lang));
+                    break;
+
+                default:
+                    Common.ConsoleWrite(packet.ToSmallString());
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Send data to all client of the party
+        /// </summary>
+        /// <param name="data">Data to send</param>
+        /// <param name="dtype">Type of data</param>
+        /// <param name="party">Id of the party</param>
+        /// <param name="message">Message to display for server</param>
+        public static void BroadcastParty(Data data, int party)
+        {
+            foreach (Socket soc in Program.clients.Keys)
+            {
+                if (Program.clients[soc].partyID == party)
+                {
+                    Send(soc, data);
+                }
+            }
+            if (Program.selectedParty == party)
+            {
+                switch (data.GetType().Name)
+                {
+                    case "EventData":
+                        Common.ConsoleWrite(Program.multilang.GetEventText((EventData)data, Program.config.lang));
+                        break;
+
+                    default:
+                        Common.ConsoleWrite(data.ToSmallString());
+                        break;
+                }
             }
         }
 
         /// <summary>
         /// Send or display if server
         /// </summary>
-        /// <param name="message">Text to send</param>
+        /// <param name="message">Text to display if server</param>
+        /// <param name="data">Data to send if client</param>
         /// <param name="soc">Target socket</param>
         /// <param name="server">Is server?</param>
-        public static void Return(string message, Socket soc = null, bool server = false)
+        public static void Return(Data data, Socket soc = null, bool server = false)
         {
             if (server)
             {
-                ConsoleWrite(message);
+                Common.ConsoleWrite(data.ToSmallString());
             }
             else
             {
-                Send(soc, message, dataType.message);
+                Send(soc, data);
+            }
+        }
+
+        /// <summary>
+        /// Try get party of the socket
+        /// </summary>
+        /// <param name="partyId">Result party ID</param>
+        /// <param name="needOwn">Return true only for owner and server</param>
+        /// <param name="soc">Target socket</param>
+        /// <param name="server">Is server?</param>
+        /// <returns>Can access?</returns>
+        public static bool AccessParty(ref int partyId, string[] args, bool needOwn, Socket soc = null, bool server = false)
+        {
+            if (server)
+            {
+                if (Program.selectedParty == -1)
+                    return false;
+
+                if (Program.parties.ContainsKey(Program.selectedParty))
+                {
+                    partyId = Program.selectedParty;
+                    return true;
+                }
+                else
+                {
+                    Program.selectedParty = -1;
+                    return false;
+                }
+            }
+            else
+            {
+                if (Program.clients[soc].partyID == -1)
+                    return false;
+
+                if (!Program.parties.ContainsKey(Program.clients[soc].partyID))
+                    return false;
+
+                if (Program.parties[Program.clients[soc].partyID].IsOwner(GetName(soc)) || !needOwn)
+                {
+                    partyId = Program.clients[soc].partyID;
+                    return true;
+                }
+                else { return false; }
             }
         }
     }

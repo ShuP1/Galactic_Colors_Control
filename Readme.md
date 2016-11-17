@@ -16,11 +16,16 @@ For GUI
 
 Download last version for your system
 
+Linux
+```
+sudo apt-get install libopenal-dev mono-runtime
+```
+
 ## Running
 
-* Galactic_Colors_Control.exe => Client without GUI
+* Galactic_Colors_Control_Console.exe => Client without GUI
 * Galactic_Colors_Control_GUI.exe => Client
-* Galactic_Colors_Control_Server.exe => Server (Use --debug for DEBUG MODE)
+* Galactic_Colors_Control_Server.exe => Server (Use --debug for DEBUG MODE or --dev at your risks)
 
 Linux
 ```
@@ -34,6 +39,7 @@ mono <program>.exe --args
 
 ## Contributing
 
+Get [Monogame](https://github.com/MonoGame/MonoGame) sdk and [MyMonoGame.GUI](https://github.com/sheychen290/MyMonoGame)
 As you wish, I am opened to new ideas.
 
 ## Author
