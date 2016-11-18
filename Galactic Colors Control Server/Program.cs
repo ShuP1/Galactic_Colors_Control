@@ -33,6 +33,8 @@ namespace Galactic_Colors_Control_Server
         public static Config config = new Config();
         public static Logger logger = new Logger();
         public static MultiLang multilang = new MultiLang();
+
+        public static Timer UpdateTimer;
         public static Thread CheckConnected = new Thread(CheckConnectedLoop);
 
         /// <summary>
@@ -83,6 +85,7 @@ namespace Galactic_Colors_Control_Server
             serverSocket.Listen(0);
             serverSocket.BeginAccept(AcceptCallback, null);
             CheckConnected.Start();
+            UpdateTimer = new Timer(UpdateCallback, null, 0, 200);
             logger.Write("Server setup complete", Logger.logType.info);
         }
 
@@ -220,6 +223,22 @@ namespace Galactic_Colors_Control_Server
             }
 
             if (clients.ContainsKey(current)) { current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current); }
+        }
+
+        private static void UpdateCallback(object state)
+        {
+            foreach (int partyId in parties.Keys.ToArray())
+            {
+                if (parties[partyId].isBuzy)
+                {
+                    logger.Write("Party " + partyId + " overload", Logger.logType.error);
+                }
+                else
+                {
+                    parties[partyId].isBuzy = true;
+                    new Thread(parties[partyId].Update).Start();
+                }
+            }
         }
 
         private static void CheckConnectedLoop()

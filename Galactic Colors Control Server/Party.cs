@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace Galactic_Colors_Control_Server
 {
@@ -10,6 +11,7 @@ namespace Galactic_Colors_Control_Server
         public int size = 0;
         public bool open = false;
         private string owner = "";
+        public bool isBuzy = false;
         public bool isPrivate { get { return password != ""; } }
 
         public Party(string Name, int Size, string Owner)
@@ -68,6 +70,14 @@ namespace Galactic_Colors_Control_Server
                 }
                 return list;
             }
+        }
+
+        /// <summary>
+        /// Update party (max: 150ms)
+        /// </summary>
+        public virtual void Update()
+        {
+            isBuzy = false;
         }
     }
 }
