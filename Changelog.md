@@ -1,7 +1,7 @@
 # Change Log
 
 
-## 1.1.0 Release - Soon
+## 1.1.0 Release - 17/11/2016
 
  - Complete Network rework
  - Parties as Chat Channels

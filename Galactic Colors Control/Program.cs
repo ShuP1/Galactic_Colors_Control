@@ -227,16 +227,16 @@ namespace Galactic_Colors_Control
         /// <returns>Send success</returns>
         private bool Send(Data packet)
         {
-            //try
-            //{
+            try
+            {
                 ClientSocket.Send(packet.ToBytes());
                 return true;
-            /*}
+            }
             catch //Can't contact server
             {
                 _errorCount++;
             }
-            return false;*/
+            return false;
         }
 
         /// <summary>
