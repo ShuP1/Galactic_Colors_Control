@@ -95,7 +95,7 @@ namespace Galactic_Colors_Control_Console
                     string username = Console.ReadLine();
                     if (username.Length > 3)
                     {
-                        ResultData res = client.Request(new string[2] { "connect", username });
+                        ResultData res = client.Request(new string[3] { "connect", username, Protocol.version.ToString() });
                         if(res.type == ResultTypes.OK) { connected = true; logger.Write("Identification", Logger.logType.info); }
                         else
                         {

@@ -76,7 +76,7 @@ namespace Galactic_Colors_Control_GUI.States
             {
                 if (username.Length > 3)
                 {
-                    ResultData res = Game.singleton.client.Request(new string[2] { "connect", username });
+                    ResultData res = Game.singleton.client.Request(new string[3] { "connect", username, Protocol.version.ToString() });
                     if (res.type == ResultTypes.OK)
                     {
                         Game.singleton.gameState = new PartyState();
