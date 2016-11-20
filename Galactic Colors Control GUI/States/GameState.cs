@@ -92,7 +92,6 @@ namespace Galactic_Colors_Control_GUI.States
 
         private void OnEvent(object sender, EventArgs e)
         {
-            //TODO add PartyKick
             EventData eve = ((EventDataArgs)e).Data;
             if (eve.type == EventTypes.ServerKick)
             {
@@ -110,66 +109,5 @@ namespace Galactic_Colors_Control_GUI.States
         {
             chatText += (text + Environment.NewLine);
         }
-
-        /*
-        private void PartyClick()
-        {
-            showLoading = true;
-            GUI.ResetFocus();
-            //TODO
-            /*
-            if (showParty)
-            {
-                client.SendRequest("/party leave");
-                showParty = false;
-                showLoading = false;
-            }
-            else
-            {
-                client.Output.Clear();
-                client.SendRequest("/party list");
-                int wait = 0;
-                while (wait < 20)
-                {
-                    if (client.Output.Count > 0)
-                    {
-                        wait = 20;
-                    }
-                    else
-                    {
-                        wait++;
-                        Thread.Sleep(200);
-                    }
-                }
-                if (client.Output.Count > 0)
-                {
-                    Thread.Sleep(500);
-                    if (client.Output.Count > 1)
-                    {
-                        messageTitle = "Party";
-                        messageText = string.Empty;
-                        foreach (string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
-                        showOKMessage = true;
-                        client.Output.Clear();
-                    }
-                    else
-                    {
-                        messageTitle = "Any party";
-                        messageText = string.Empty;
-                        foreach (string line in client.Output.ToArray()) { messageText += (line + Environment.NewLine); }
-                        showOKMessage = true;
-                        client.Output.Clear();
-                    }
-                }
-                else
-                {
-                    messageTitle = "Timeout";
-                    messageText = "";
-                    showOKMessage = true;
-                    showLoading = false;
-                    client.Output.Clear();
-                }
-            }
-    }*/
     }
 }

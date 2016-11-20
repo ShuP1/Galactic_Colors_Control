@@ -67,14 +67,23 @@ namespace Galactic_Colors_Control_GUI.States
                             new Thread(UpdateParty).Start();
                         }
                     }
-                    Game.singleton.GUI.TextField(new Rectangle(Game.singleton.ScreenWidth / 2 + 40, Game.singleton.ScreenHeight / 2 - 290, 100, 40), ref password, Game.singleton.fonts.basic, null, Manager.textAlign.centerCenter, Game.singleton.multilang.Get("Password", Game.singleton.config.lang));
+                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 + 40, Game.singleton.ScreenHeight / 2 - 290, 100, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Create", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White)))
+                    {
+                        if (!locked)
+                        {
+                            locked = true;
+                            Game.singleton.gameState = new PartyCreateState();
+                        }
+                    }
+
+                    //TODO Game.singleton.GUI.TextField(new Rectangle(Game.singleton.ScreenWidth / 2 + 40, Game.singleton.ScreenHeight / 2 - 290, 100, 40), ref password, Game.singleton.fonts.basic, null, Manager.textAlign.centerCenter, Game.singleton.multilang.Get("Password", Game.singleton.config.lang));
                     if (parties.Count > 0) {
                         if (parties.Count > 10) {
                             //TODO page change
                         }
                         for (int i = (page - 1) * 10; i < page * 10 && i < parties.Count; i++)
                         {
-                            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 100, Game.singleton.ScreenHeight / 2 - 250 + i*50, 200, 40), Game.singleton.buttonsSprites[0], parties[i].text, Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White)))
+                            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 100, Game.singleton.ScreenHeight / 2 - 240 + i*50, 200, 40), Game.singleton.buttonsSprites[0], parties[i].text, Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White)))
                             {
                                 locked = true;
                                 id = parties[i].id;
@@ -86,7 +95,7 @@ namespace Galactic_Colors_Control_GUI.States
                     {
                         Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 2 - 240), Game.singleton.multilang.Get("AnyParty", Game.singleton.config.lang), Game.singleton.fonts.basic, null, Manager.textAlign.centerCenter);
                     }
-                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 + 250, 150, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Back", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White)))
+                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 + 240, 150, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Back", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White)))
                     {
                         if (!locked)
                         {
@@ -143,7 +152,7 @@ namespace Galactic_Colors_Control_GUI.States
                 }
                 else
                 {
-                    Game.singleton.logger.Write("Join error " + res.result, Logger.logType.error);
+                    Game.singleton.logger.Write("Join error " + Common.ArrayToString(res.result), Logger.logType.error);
                     message.title = Game.singleton.multilang.Get("Error", Game.singleton.config.lang);
                     message.text = Common.ArrayToString(res.result);
                     showOKMessage = true;
@@ -151,11 +160,6 @@ namespace Galactic_Colors_Control_GUI.States
             }
             showLoading = false;
             locked = false;
-        }
-
-        private void PartyCreate()
-        {
-            //TODO 
         }
 
         public override void Update()
