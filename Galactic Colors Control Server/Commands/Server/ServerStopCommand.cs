@@ -18,7 +18,7 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
-            Program._run = false;
+            Server._run = false;
             return new RequestResult(ResultTypes.OK);
         }
     }

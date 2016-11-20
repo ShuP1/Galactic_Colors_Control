@@ -21,7 +21,7 @@ namespace Galactic_Colors_Control_Server.Commands
         {
             if (server)
             {
-                Program.selectedParty = -1;
+                Server.selectedParty = -1;
                 return new RequestResult(ResultTypes.OK);
             }
             else
@@ -30,10 +30,10 @@ namespace Galactic_Colors_Control_Server.Commands
                 if (!Utilities.AccessParty(ref partyId, args, false, soc, server))
                     return new RequestResult(ResultTypes.Error, Common.Strings("Access"));
 
-                if (Program.parties[partyId].IsOwner(Utilities.GetName(soc)))
+                if (Server.parties[partyId].IsOwner(Utilities.GetName(soc)))
                     return new RequestResult(ResultTypes.Error, Common.Strings("Owner"));
 
-                Program.clients[soc].partyID = -1;
+                Server.clients[soc].partyID = -1;
                 Utilities.BroadcastParty(new EventData(EventTypes.PartyLeave, Common.Strings(Utilities.GetName(soc))), partyId);
                 return new RequestResult(ResultTypes.OK);
             }

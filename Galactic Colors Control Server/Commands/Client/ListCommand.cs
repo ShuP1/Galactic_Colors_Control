@@ -22,7 +22,7 @@ namespace Galactic_Colors_Control_Server.Commands
             if (server)
             {
                 string text = "  ";
-                foreach (Socket socket in Program.clients.Keys)
+                foreach (Socket socket in Server.clients.Keys)
                 {
                     text += (Utilities.GetName(socket) + ", ");
                 }
@@ -31,9 +31,9 @@ namespace Galactic_Colors_Control_Server.Commands
             }
             else
             {
-                string[] data = new string[Program.clients.Count];
+                string[] data = new string[Server.clients.Count];
                 int i = 0;
-                foreach (Socket socket in Program.clients.Keys)
+                foreach (Socket socket in Server.clients.Keys)
                 {
                     data[i] = (Utilities.GetName(socket) + ", ");
                     i++;

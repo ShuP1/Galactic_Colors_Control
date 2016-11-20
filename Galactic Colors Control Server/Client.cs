@@ -8,7 +8,7 @@
 
         public Party party
         {
-            get { if (partyID != -1) { return Program.parties[partyID]; } else { return null; } }
+            get { if (partyID != -1) { return Server.parties[partyID]; } else { return null; } }
         }
     }
 }

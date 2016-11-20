@@ -64,9 +64,9 @@ namespace Galactic_Colors_Control_Server
             get
             {
                 List<Socket> list = new List<Socket>();
-                foreach (Socket soc in Program.clients.Keys)
+                foreach (Socket soc in Server.clients.Keys)
                 {
-                    if (Program.clients[soc].party == this) { list.Add(soc); }
+                    if (Server.clients[soc].party == this) { list.Add(soc); }
                 }
                 return list;
             }

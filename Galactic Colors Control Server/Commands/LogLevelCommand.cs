@@ -20,10 +20,10 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
-            if (Enum.TryParse(args[1], true, out Program.config.logLevel))
+            if (Enum.TryParse(args[1], true, out Server.config.logLevel))
             {
-                Program.logger.ChangeLevel(Program.config.logLevel);
-                return new RequestResult(ResultTypes.OK, Common.Strings(Program.config.logLevel.ToString()));
+                Server.logger.ChangeLevel(Server.config.logLevel);
+                return new RequestResult(ResultTypes.OK, Common.Strings(Server.config.logLevel.ToString()));
             }
             else
             {

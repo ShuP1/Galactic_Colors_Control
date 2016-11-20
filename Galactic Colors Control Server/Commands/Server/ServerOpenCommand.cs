@@ -19,11 +19,11 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
-            if (Program._open)
+            if (Server._open)
                 return new RequestResult(ResultTypes.Error, Common.Strings("Allready"));
 
-            Program._open = true;
-            Program.logger.Write("Server opened", Logger.logType.warm, Logger.logConsole.show);
+            Server._open = true;
+            Server.logger.Write("Server opened", Logger.logType.warm, Logger.logConsole.show);
             return new RequestResult(ResultTypes.OK);
         }
     }

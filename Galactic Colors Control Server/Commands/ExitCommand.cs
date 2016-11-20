@@ -20,13 +20,13 @@ namespace Galactic_Colors_Control_Server.Commands
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
             soc.Shutdown(SocketShutdown.Both);
-            Program.logger.Write("Client disconnected from " + Utilities.GetName(soc), Logger.logType.info);
+            Server.logger.Write("Client disconnected from " + Utilities.GetName(soc), Logger.logType.info);
             string username = Utilities.GetName(soc);
-            bool connected = Program.clients[soc].status != -1;
+            bool connected = Server.clients[soc].status != -1;
             soc.Close();
-            Program.clients.Remove(soc);
+            Server.clients.Remove(soc);
             if (connected) { Utilities.Broadcast(new EventData(EventTypes.ServerLeave, Common.Strings(username))); }
-            Program.logger.Write("Size: " + Program.clients.Count + "/" + Program.config.size, Logger.logType.debug);
+            Server.logger.Write("Size: " + Server.clients.Count + "/" + Server.config.size, Logger.logType.debug);
             return new RequestResult(ResultTypes.OK);
         }
     }

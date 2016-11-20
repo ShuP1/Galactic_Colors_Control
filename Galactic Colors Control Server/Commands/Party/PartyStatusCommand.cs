@@ -24,7 +24,7 @@ namespace Galactic_Colors_Control_Server.Commands
             if (!Utilities.AccessParty(ref partyId, args, false, soc, server))
                 return new RequestResult(ResultTypes.Error, Common.Strings("Access"));
 
-            Party party = Program.parties[partyId];
+            Party party = Server.parties[partyId];
             if (server)
             {
                 string text = "";

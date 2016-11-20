@@ -20,14 +20,14 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
-            if (Program.parties.Keys.Count == 0)
+            if (Server.parties.Keys.Count == 0)
                 return new RequestResult(ResultTypes.Error, Common.Strings("AnyParty")); 
 
-            string[] text = new string[Program.parties.Keys.Count];
+            string[] text = new string[Server.parties.Keys.Count];
             int i = 0;
-            foreach (int key in Program.parties.Keys)
+            foreach (int key in Server.parties.Keys)
             {
-                Party party = Program.parties[key];
+                Party party = Server.parties[key];
                 text[i] = (key + " : " + party.name + " : " + party.count + "/" + party.size + " : " + (party.open ? (party.isPrivate ? "private" : "open") : "close"));
                 i++;
             }

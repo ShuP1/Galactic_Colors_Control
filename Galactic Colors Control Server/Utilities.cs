@@ -17,10 +17,10 @@ namespace Galactic_Colors_Control_Server
             if (soc == null)
                 return true;
 
-            if (Program.clients.ContainsKey(soc))
-                return Program.clients[soc].status != -1;
+            if (Server.clients.ContainsKey(soc))
+                return Server.clients[soc].status != -1;
 
-            Program.logger.Write("IsConnect : Unknown client", Logger.logType.error);
+            Server.logger.Write("IsConnect : Unknown client", Logger.logType.error);
             return false;
         }
 
@@ -32,12 +32,12 @@ namespace Galactic_Colors_Control_Server
         public static string GetName(Socket soc)
         {
             if (soc == null)
-                return Program.multilang.Get("Server",Program.config.lang);
+                return Server.multilang.Get("Server", Server.config.lang);
 
-            if (!Program.clients.ContainsKey(soc))
+            if (!Server.clients.ContainsKey(soc))
                 return "?";
 
-            string res = Program.clients[soc].pseudo;
+            string res = Server.clients[soc].pseudo;
             if (res == "") { res = ((IPEndPoint)soc.LocalEndPoint).Address.ToString(); }
             return res;
         }
@@ -45,9 +45,9 @@ namespace Galactic_Colors_Control_Server
         public static int GetParty(Socket soc)
         {
             if (soc == null)
-                return Program.selectedParty;
+                return Server.selectedParty;
 
-            return Program.clients[soc].partyID;
+            return Server.clients[soc].partyID;
         }
 
         /// <summary>
@@ -62,14 +62,14 @@ namespace Galactic_Colors_Control_Server
                 try
                 {
                     soc.Send(packet.ToBytes());
-                    if (Program.config.logLevel == Logger.logType.dev)
+                    if (Server.config.logLevel == Logger.logType.dev)
                     {
-                        Program.logger.Write("Send to " + GetName(soc) + " : " + packet.ToLongString(), Logger.logType.dev);
+                        Server.logger.Write("Send to " + GetName(soc) + " : " + packet.ToLongString(), Logger.logType.dev);
                     }
                 }
                 catch (Exception e)
                 {
-                    Program.logger.Write("Send exception to " + GetName(soc) + " : " + e.Message, Logger.logType.error);
+                    Server.logger.Write("Send exception to " + GetName(soc) + " : " + e.Message, Logger.logType.error);
                 }
             }
         }
@@ -82,14 +82,14 @@ namespace Galactic_Colors_Control_Server
         /// <param name="message">Message to display for server</param>
         public static void Broadcast(Data packet)
         {
-            foreach (Socket soc in Program.clients.Keys)
+            foreach (Socket soc in Server.clients.Keys)
             {
                 Send(soc, packet);
             }
             switch (packet.GetType().Name)
             {
                 case "EventData":
-                    Common.ConsoleWrite(Program.multilang.GetEventText((EventData)packet, Program.config.lang));
+                    Common.ConsoleWrite(Server.multilang.GetEventText((EventData)packet, Server.config.lang));
                     break;
 
                 default:
@@ -107,19 +107,19 @@ namespace Galactic_Colors_Control_Server
         /// <param name="message">Message to display for server</param>
         public static void BroadcastParty(Data data, int party)
         {
-            foreach (Socket soc in Program.clients.Keys)
+            foreach (Socket soc in Server.clients.Keys)
             {
-                if (Program.clients[soc].partyID == party)
+                if (Server.clients[soc].partyID == party)
                 {
                     Send(soc, data);
                 }
             }
-            if (Program.selectedParty == party)
+            if (Server.selectedParty == party)
             {
                 switch (data.GetType().Name)
                 {
                     case "EventData":
-                        Common.ConsoleWrite(Program.multilang.GetEventText((EventData)data, Program.config.lang));
+                        Common.ConsoleWrite(Server.multilang.GetEventText((EventData)data, Server.config.lang));
                         break;
 
                     default:
@@ -160,31 +160,31 @@ namespace Galactic_Colors_Control_Server
         {
             if (server)
             {
-                if (Program.selectedParty == -1)
+                if (Server.selectedParty == -1)
                     return false;
 
-                if (Program.parties.ContainsKey(Program.selectedParty))
+                if (Server.parties.ContainsKey(Server.selectedParty))
                 {
-                    partyId = Program.selectedParty;
+                    partyId = Server.selectedParty;
                     return true;
                 }
                 else
                 {
-                    Program.selectedParty = -1;
+                    Server.selectedParty = -1;
                     return false;
                 }
             }
             else
             {
-                if (Program.clients[soc].partyID == -1)
+                if (Server.clients[soc].partyID == -1)
                     return false;
 
-                if (!Program.parties.ContainsKey(Program.clients[soc].partyID))
+                if (!Server.parties.ContainsKey(Server.clients[soc].partyID))
                     return false;
 
-                if (Program.parties[Program.clients[soc].partyID].IsOwner(GetName(soc)) || !needOwn)
+                if (Server.parties[Server.clients[soc].partyID].IsOwner(GetName(soc)) || !needOwn)
                 {
-                    partyId = Program.clients[soc].partyID;
+                    partyId = Server.clients[soc].partyID;
                     return true;
                 }
                 else { return false; }

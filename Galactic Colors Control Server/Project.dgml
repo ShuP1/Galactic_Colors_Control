@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph GraphDirection="RightToLeft" Layout="Sugiyama" ZoomLevel="-1" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="(@1 @2 Type=Background)" Category="CodeSchema_Class" Bounds="538.8825,121.5,104.41,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Background" Icon="Microsoft.VisualStudio.Class.Public" Label="Background" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=9 StartCharacterOffset=17 EndLineNumber=9 EndCharacterOffset=27)" />
+    <Node Id="(@1 @2 Type=Config)" Category="CodeSchema_Class" Bounds="679.2925,95.5,75.9799999999999,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Config" Icon="Microsoft.VisualStudio.Class.Public" Label="Config" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=9 StartCharacterOffset=17 EndLineNumber=9 EndCharacterOffset=23)" />
+    <Node Id="(@1 @2 Type=Utilities)" Category="CodeSchema_Class" Bounds="532.8825,211.5,80.3733333333333,26" CodeSchemaProperty_IsInternal="True" CodeSchemaProperty_IsStatic="True" CommonLabel="Utilities" Icon="Microsoft.VisualStudio.Class.Internal" Label="Utilities" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=14 StartCharacterOffset=26 EndLineNumber=14 EndCharacterOffset=35)" />
+    <Node Id="(@1 Namespace=Galactic_Colors_Control_GUI.States Type=State)" Category="CodeSchema_Class" Bounds="538.8825,149.5,67.5033333333333,26" CodeSchemaProperty_IsPublic="True" CommonLabel="State" Icon="Microsoft.VisualStudio.Class.Public" Label="State" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=7 StartCharacterOffset=17 EndLineNumber=7 EndCharacterOffset=22)" />
+    <Node Id="(@5 @6 Type=Client)" Category="CodeSchema_Class" Bounds="117.463333333333,97.5,71.3766666666666,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Client" Icon="Microsoft.VisualStudio.Class.Public" Label="Client" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=2 StartCharacterOffset=17 EndLineNumber=2 EndCharacterOffset=23)" />
+    <Node Id="(@5 @6 Type=Config)" Category="CodeSchema_Class" Bounds="20,153.5,75.98,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Config" Icon="Microsoft.VisualStudio.Class.Public" Label="Config" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=9 StartCharacterOffset=17 EndLineNumber=9 EndCharacterOffset=23)" />
+    <Node Id="(@5 @6 Type=Party)" Category="CodeSchema_Class" Bounds="20,97.5,67.4633333333334,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Party" Icon="Microsoft.VisualStudio.Class.Public" Label="Party" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=6 StartCharacterOffset=17 EndLineNumber=6 EndCharacterOffset=22)" />
+    <Node Id="(@5 @6 Type=Utilities)" Category="CodeSchema_Class" Bounds="125.98,153.5,80.3733333333334,26" CodeSchemaProperty_IsInternal="True" CommonLabel="Utilities" Icon="Microsoft.VisualStudio.Class.Internal" Label="Utilities" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=8 StartCharacterOffset=19 EndLineNumber=8 EndCharacterOffset=28)" />
+    <Node Id="(@9 Namespace=Galactic_Colors_Control_Console Type=Config)" Category="CodeSchema_Class" Bounds="168.100595326591,263.274457405412,75.98,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Config" Icon="Microsoft.VisualStudio.Class.Public" Label="Config" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=9 StartCharacterOffset=17 EndLineNumber=9 EndCharacterOffset=23)" UseManualLocation="True" />
+    <Node Id="@10" Category="CodeSchema_Class" Bounds="591.4525,0,105.25,25" CodeSchemaProperty_IsInternal="True" CommonLabel="COnsole" Group="Collapsed" Icon="Microsoft.VisualStudio.Class.Internal" Label="COnsole" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=12 StartCharacterOffset=19 EndLineNumber=12 EndCharacterOffset=26)" />
+    <Node Id="@11" Category="CodeSchema_Class" Bounds="264.040833333333,125.5,94.6433333333333,26" CodeSchemaProperty_IsPublic="True" CommonLabel="EventData" Icon="Microsoft.VisualStudio.Class.Public" Label="EventData" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=16 StartCharacterOffset=17 EndLineNumber=16 EndCharacterOffset=26)" />
+    <Node Id="@12" Category="CodeSchema_Class" Bounds="532.8825,95.5,116.41,86" CodeSchemaProperty_IsPublic="True" CommonLabel="Game" Group="Expanded" Icon="Microsoft.VisualStudio.Class.Public" Label="Game" LayoutSettings="List" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=17 StartCharacterOffset=17 EndLineNumber=17 EndCharacterOffset=21)" />
+    <Node Id="@13" Category="CodeSchema_Interface" Bounds="20,209.5,99.29,26" CodeSchemaProperty_IsAbstract="True" CodeSchemaProperty_IsPublic="True" CommonLabel="ICommand" Icon="Microsoft.VisualStudio.Interface.Public" Label="ICommand" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=5 StartCharacterOffset=21 EndLineNumber=5 EndCharacterOffset=29)" />
+    <Node Id="@15" Category="CodeSchema_Class" Bounds="264.040833333333,153.5,108.09,26" CodeSchemaProperty_IsPublic="True" CommonLabel="RequestData" Icon="Microsoft.VisualStudio.Class.Public" Label="RequestData" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=5 StartCharacterOffset=17 EndLineNumber=5 EndCharacterOffset=28)" />
+    <Node Id="@16" Category="CodeSchema_Class" Bounds="264.040833333333,181.5,97.6533333333333,26" CodeSchemaProperty_IsPublic="True" CommonLabel="ResultData" Icon="Microsoft.VisualStudio.Class.Public" Label="ResultData" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=7 StartCharacterOffset=17 EndLineNumber=7 EndCharacterOffset=27)" />
+    <Node Id="@17" Category="CodeSchema_Class" Bounds="0,57.5,226.353333333333,198" CodeSchemaProperty_IsInternal="True" CommonLabel="Server" Group="Expanded" Icon="Microsoft.VisualStudio.Class.Internal" Label="Server" LayoutSettings="TopToBottom" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=13 StartCharacterOffset=19 EndLineNumber=13 EndCharacterOffset=25)" />
+    <Node Id="@4" Category="CodeSchema_Class" Bounds="409.818333333333,143.5,71.3766666666668,26" CodeSchemaProperty_IsPublic="True" CommonLabel="Client" Icon="Microsoft.VisualStudio.Class.Public" Label="Client" SourceLocation="(Assembly=&quot;file:///C:/Prog/Perso/C#/Galactic_Colors_Control/Galactic Colors Control GUI/Background.cs&quot; StartLineNumber=15 StartCharacterOffset=17 EndLineNumber=15 EndCharacterOffset=23)" />
+    <Node Id="GUI" Bounds="512.8825,55.5,262.39,202" Group="Expanded" Label="GUI" />
+    <Node Id="Protocol" Bounds="258.040833333333,99.5,120.09,114" Group="Expanded" Label="Protocol" LayoutSettings="List" />
+  </Nodes>
+  <Links>
+    <Link Source="@10" Target="(@9 Namespace=Galactic_Colors_Control_Console Type=Config)" Category="Contains" />
+    <Link Source="@10" Target="@4" Bounds="456.59765625,24.0160751342773,136.876403808594,111.529426574707" />
+    <Link Source="@11" Target="@4" Bounds="37.9653108693471,178.45197179752,14.0079243395009,135.04802820248" />
+    <Link Source="@12" Target="(@1 @2 Type=Background)" Category="Contains" />
+    <Link Source="@12" Target="(@1 Namespace=Galactic_Colors_Control_GUI.States Type=State)" Category="Contains" />
+    <Link Source="@13" Target="@16" Bounds="87.1923359402041,178,351.798143996067,187.270943949832" />
+    <Link Source="@15" Target="@13" Bounds="87.7165927232727,181.826888478205,339.877614934956,159.673111521795" />
+    <Link Source="@16" Target="@4" Bounds="37.5486369719546,178.467902171197,16.1771494734605,191.032097828803" />
+    <Link Source="@17" Target="(@5 @6 Type=Client)" Category="Contains" />
+    <Link Source="@17" Target="(@5 @6 Type=Config)" Category="Contains" />
+    <Link Source="@17" Target="(@5 @6 Type=Party)" Category="Contains" />
+    <Link Source="@17" Target="(@5 @6 Type=Utilities)" Category="Contains" />
+    <Link Source="@17" Target="@11" Bounds="87.2878546604131,155.760277476944,306.478812006254,153.705025272692" />
+    <Link Source="@17" Target="@13" Category="Contains" />
+    <Link Source="@4" Target="@15" Bounds="37.28750693196,169.5,20.0594811137036,163.06733221769" />
+    <Link Source="GUI" Target="(@1 @2 Type=Config)" Category="Contains" />
+    <Link Source="GUI" Target="(@1 @2 Type=Utilities)" Category="Contains" />
+    <Link Source="GUI" Target="@12" Category="Contains" />
+    <Link Source="GUI" Target="@4" Bounds="490.195007324219,156.5,22.6875,0" />
+    <Link Source="Protocol" Target="@11" Category="Contains" />
+    <Link Source="Protocol" Target="@15" Category="Contains" />
+    <Link Source="Protocol" Target="@16" Category="Contains" />
+  </Links>
+  <Categories>
+    <Category Id="CodeSchema_Class" Label="Classe" BasedOn="CodeSchema_Type" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_Member" Icon="CodeSchema_Class" NavigationActionLabel="Classes" />
+    <Category Id="CodeSchema_Interface" Label="Interface" BasedOn="CodeSchema_Type" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_Member" Icon="CodeSchema_Interface" NavigationActionLabel="Interfaces" />
+    <Category Id="CodeSchema_Type" Label="Type" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_Member" Icon="CodeSchema_Class" NavigationActionLabel="Types" />
+    <Category Id="Contains" Label="Contient" Description="Si la source de la liaison contient ou non l'objet cible" CanBeDataDriven="False" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Contenu par" IsContainment="True" OutgoingActionLabel="Contient" />
+  </Categories>
+  <Properties>
+    <Property Id="Bounds" DataType="System.Windows.Rect" />
+    <Property Id="CanBeDataDriven" Label="CanBeDataDriven" Description="CanBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CanLinkedNodesBeDataDriven" Label="CanLinkedNodesBeDataDriven" Description="CanLinkedNodesBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CodeSchemaProperty_IsAbstract" Label="Est abstrait" Description="L'indicateur qui spécifie que le membre est 'Abstract' ne fournit pas une implémentation complète" DataType="System.Boolean" />
+    <Property Id="CodeSchemaProperty_IsInternal" Label="Est interne" Description="Indicateur qui spécifie que la méthode est 'Internal'" DataType="System.Boolean" />
+    <Property Id="CodeSchemaProperty_IsPublic" Label="Est public" Description="Indicateur qui spécifie que la portée est publique" DataType="System.Boolean" />
+    <Property Id="CodeSchemaProperty_IsStatic" Label="Est statique" Description="Indicateur qui spécifie que le membre est un membre statique" DataType="System.Boolean" />
+    <Property Id="CommonLabel" DataType="System.String" />
+    <Property Id="DefaultAction" Label="DefaultAction" Description="DefaultAction" DataType="System.String" />
+    <Property Id="GraphDirection" DataType="Microsoft.VisualStudio.Diagrams.Layout.LayoutOrientation" />
+    <Property Id="Group" Label="Groupe" Description="Affiche le nœud en tant que groupe" DataType="Microsoft.VisualStudio.GraphModel.GraphGroupStyle" />
+    <Property Id="Icon" Label="Icône" Description="Icône" DataType="System.String" />
+    <Property Id="IncomingActionLabel" Label="IncomingActionLabel" Description="IncomingActionLabel" DataType="System.String" />
+    <Property Id="IsContainment" DataType="System.Boolean" />
+    <Property Id="Label" Label="Étiquette" Description="Étiquette affichable d'un objet pouvant être annoté" DataType="System.String" />
+    <Property Id="Layout" DataType="System.String" />
+    <Property Id="LayoutSettings" DataType="Microsoft.VisualStudio.Diagrams.View.GroupLayoutStyle" />
+    <Property Id="NavigationActionLabel" Label="NavigationActionLabel" Description="NavigationActionLabel" DataType="System.String" />
+    <Property Id="OutgoingActionLabel" Label="OutgoingActionLabel" Description="OutgoingActionLabel" DataType="System.String" />
+    <Property Id="SourceLocation" Label="Numéro de la ligne de début" DataType="Microsoft.VisualStudio.GraphModel.CodeSchema.SourceLocation" />
+    <Property Id="UseManualLocation" DataType="System.Boolean" />
+    <Property Id="ZoomLevel" DataType="System.String" />
+  </Properties>
+  <QualifiedNames>
+    <Name Id="Assembly" Label="Assembly" ValueType="Uri" />
+    <Name Id="Namespace" Label="Espace de noms" ValueType="System.String" />
+    <Name Id="Type" Label="Type" ValueType="System.Object" />
+  </QualifiedNames>
+  <IdentifierAliases>
+    <Alias n="1" Uri="Assembly=file:///C:/Prog/Perso/C%2523/Galactic_Colors_Control/Galactic Colors Control GUI/bin/DesktopGL/x86/Release/Galactic Colors Control GUI.exe" />
+    <Alias n="2" Id="Namespace=Galactic_Colors_Control_GUI" />
+    <Alias n="3" Uri="Assembly=file:///C:/Prog/Perso/C%2523/Galactic_Colors_Control/Galactic Colors Control/bin/Release/Galactic Colors Control.dll" />
+    <Alias n="4" Id="(@3 Namespace=Galactic_Colors_Control Type=Client)" />
+    <Alias n="5" Uri="Assembly=file:///C:/Prog/Perso/C%2523/Galactic_Colors_Control/Galactic Colors Control Server/bin/Release/Galactic Colors Control Server.exe" />
+    <Alias n="6" Id="Namespace=Galactic_Colors_Control_Server" />
+    <Alias n="7" Uri="Assembly=file:///C:/Prog/Perso/C%2523/Galactic_Colors_Control/Galactic Colors Control Common/bin/Release/Galactic Colors Control Common.dll" />
+    <Alias n="9" Uri="Assembly=file:///C:/Prog/Perso/C%2523/Galactic_Colors_Control/Galactic Colors Control Console/bin/Release/Galactic Colors Control Console.exe" />
+    <Alias n="10" Id="(@9 Namespace=Galactic_Colors_Control_Console Type=COnsole)" />
+    <Alias n="11" Id="(@7 Namespace=Galactic_Colors_Control_Common.Protocol Type=EventData)" />
+    <Alias n="12" Id="(@1 @2 Type=Game)" />
+    <Alias n="13" Id="(@5 Namespace=Galactic_Colors_Control_Server.Commands Type=ICommand)" />
+    <Alias n="15" Id="(@7 Namespace=Galactic_Colors_Control_Common.Protocol Type=RequestData)" />
+    <Alias n="16" Id="(@7 Namespace=Galactic_Colors_Control_Common.Protocol Type=ResultData)" />
+    <Alias n="17" Id="(@5 @6 Type=Server)" />
+  </IdentifierAliases>
+</DirectedGraph>

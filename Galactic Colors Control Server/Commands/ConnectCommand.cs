@@ -29,20 +29,20 @@ namespace Galactic_Colors_Control_Server.Commands
             if (args[1].Length < 3)
                 return new RequestResult(ResultTypes.Error, Common.Strings("TooShort"));
 
-            Program.logger.Write("Identifiaction request from " + Utilities.GetName(soc), Logger.logType.debug);
+            Server.logger.Write("Identifiaction request from " + Utilities.GetName(soc), Logger.logType.debug);
             bool allreadyconnected = false;
             args[1] = args[1][0].ToString().ToUpper()[0] + args[1].Substring(1);
-            foreach (Client client in Program.clients.Values)
+            foreach (Client client in Server.clients.Values)
             {
                 if (client.pseudo == args[1]) { allreadyconnected = true; break; }
             }
             if (allreadyconnected)
                 return new RequestResult(ResultTypes.Error, Common.Strings("AllreadyTaken"));
 
-            Program.clients[soc].status = 0;
-            Program.clients[soc].pseudo = args[1];
+            Server.clients[soc].status = 0;
+            Server.clients[soc].pseudo = args[1];
             Utilities.Broadcast(new EventData(EventTypes.ServerJoin, Common.Strings(args[1])));
-            Program.logger.Write("Identified as " + Utilities.GetName(soc) + " form " + ((IPEndPoint)soc.LocalEndPoint).Address.ToString(), Logger.logType.info);
+            Server.logger.Write("Identified as " + Utilities.GetName(soc) + " form " + ((IPEndPoint)soc.LocalEndPoint).Address.ToString(), Logger.logType.info);
             return new RequestResult(ResultTypes.OK, Common.Strings(args[1]));
         }
     }

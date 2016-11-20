@@ -20,18 +20,18 @@ namespace Galactic_Colors_Control_Server.Commands
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
             Socket target = null;
-            foreach (Socket client in Program.clients.Keys)
+            foreach (Socket client in Server.clients.Keys)
             {
                 if (Utilities.GetName(client) == args[2]) { target = client; }
             }
             if (target == null)
                 return new RequestResult(ResultTypes.Error, Common.Strings("CantFind"));
 
-            Program.logger.Write(args[2] + " was kick by server.", Logger.logType.info, Logger.logConsole.show);
+            Server.logger.Write(args[2] + " was kick by server.", Logger.logType.info, Logger.logConsole.show);
             if (args.Length > 2)
             {
                 Utilities.Send(target, new EventData(EventTypes.ServerKick, Common.Strings(args[3])));
-                Program.logger.Write("because" + args[3], Logger.logType.debug);
+                Server.logger.Write("because" + args[3], Logger.logType.debug);
             }
             else
             {

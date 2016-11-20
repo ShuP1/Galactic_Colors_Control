@@ -23,10 +23,10 @@ namespace Galactic_Colors_Control_Server.Commands
             if (!Utilities.AccessParty(ref partyId, args, true, soc, server))
                 return new RequestResult(ResultTypes.Error, Common.Strings("Access"));
 
-            if (!Program.parties[partyId].open)
+            if (!Server.parties[partyId].open)
                 return new RequestResult(ResultTypes.Error, Common.Strings("Allready"));
 
-            Program.parties[partyId].open = false;
+            Server.parties[partyId].open = false;
             return new RequestResult(ResultTypes.OK);
         }
     }

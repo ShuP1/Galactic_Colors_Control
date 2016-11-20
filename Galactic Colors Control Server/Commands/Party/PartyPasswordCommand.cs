@@ -30,7 +30,7 @@ namespace Galactic_Colors_Control_Server.Commands
                 args[3] = "";
             }
 
-            if (!Program.parties[partyId].SetPassword(args[2], args[3]))
+            if (!Server.parties[partyId].SetPassword(args[2], args[3]))
                 return new RequestResult(ResultTypes.Error, Common.Strings("Password"));
 
             return new RequestResult(ResultTypes.OK);

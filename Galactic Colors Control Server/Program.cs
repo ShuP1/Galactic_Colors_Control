@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace Galactic_Colors_Control_Server
 {
-    internal class Program
+    internal class Server
     {
         private const int BUFFER_SIZE = 2048;
         private static readonly Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);

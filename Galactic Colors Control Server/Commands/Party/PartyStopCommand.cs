@@ -23,13 +23,13 @@ namespace Galactic_Colors_Control_Server.Commands
             if (!Utilities.AccessParty(ref partyId, args, true, soc, server))
                 return new RequestResult(ResultTypes.Error, Common.Strings("Access"));
 
-            foreach (Socket client in Program.parties[partyId].clients)
+            foreach (Socket client in Server.parties[partyId].clients)
             {
                 Manager.Execute(new string[4] { "party", "kick", Utilities.GetName(client), "stop_party" }, soc, server);
             }
-            Program.logger.Write("Party " + Program.parties[partyId].name + " closed", Logger.logType.info, server ? Logger.logConsole.show : Logger.logConsole.normal);
-            if (Program.selectedParty == partyId) { Program.selectedParty = -1; }
-            Program.parties.Remove(partyId);
+            Server.logger.Write("Party " + Server.parties[partyId].name + " closed", Logger.logType.info, server ? Logger.logConsole.show : Logger.logConsole.normal);
+            if (Server.selectedParty == partyId) { Server.selectedParty = -1; }
+            Server.parties.Remove(partyId);
             return new RequestResult(ResultTypes.OK);
         }
     }

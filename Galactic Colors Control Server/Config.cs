@@ -6,7 +6,6 @@ using System.Xml.Serialization;
 
 namespace Galactic_Colors_Control_Server
 {
-    //TODO Common config 
     [XmlRoot("config")]
     public class Config
     {
@@ -26,7 +25,7 @@ namespace Galactic_Colors_Control_Server
         /// <returns>Loaded config</returns>
         public Config Load()
         {
-            Program.logger.Write("Loading config", Logger.logType.info);
+            Server.logger.Write("Loading config", Logger.logType.info);
             Config config = new Config();
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Config.xml"))
             {
@@ -40,7 +39,7 @@ namespace Galactic_Colors_Control_Server
                 }
                 else
                 {
-                    Program.logger.Write("Old config in Config.xml.old", Logger.logType.warm);
+                    Server.logger.Write("Old config in Config.xml.old", Logger.logType.warm);
                     File.Delete(AppDomain.CurrentDomain.BaseDirectory + "Config.xml.old");
                     File.Move(AppDomain.CurrentDomain.BaseDirectory + "Config.xml", AppDomain.CurrentDomain.BaseDirectory + "Config.xml.old");
                     config.Save();
@@ -48,11 +47,11 @@ namespace Galactic_Colors_Control_Server
             }
             else
             {
-                Program.logger.Write("Any config file", Logger.logType.error);
+                Server.logger.Write("Any config file", Logger.logType.error);
                 config.Save();
             }
-            if (Program._debug) { config.logLevel = Logger.logType.debug; }
-            if (Program._dev) { config.logLevel = Logger.logType.dev; }
+            if (Server._debug) { config.logLevel = Logger.logType.debug; }
+            if (Server._dev) { config.logLevel = Logger.logType.dev; }
             return config;
         }
 
@@ -62,13 +61,13 @@ namespace Galactic_Colors_Control_Server
         public void Save()
         {
             XmlSerializer xs = new XmlSerializer(typeof(Config));
-            if (Program._debug || Program._dev) { logLevel = Logger.logType.info; }
+            if (Server._debug || Server._dev) { logLevel = Logger.logType.info; }
             using (StreamWriter st = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "Config.xml"))
             {
                 xs.Serialize(st, this);
             };
-            if (Program._debug) { logLevel = Logger.logType.debug; }
-            if (Program._dev) { logLevel = Logger.logType.dev; }
+            if (Server._debug) { logLevel = Logger.logType.debug; }
+            if (Server._dev) { logLevel = Logger.logType.dev; }
         }
 
         /// <summary>
@@ -89,7 +88,7 @@ namespace Galactic_Colors_Control_Server
                 catch (XmlException e)
                 {
                     isCorrect = false;
-                    Program.logger.Write("Error: " + e.Message, Logger.logType.error);
+                    Server.logger.Write("Error: " + e.Message, Logger.logType.error);
                 }
             }
 
@@ -103,14 +102,14 @@ namespace Galactic_Colors_Control_Server
 
                     d.Validate((o, e) =>
                     {
-                        Program.logger.Write("Error: " + e.Message, Logger.logType.error);
+                        Server.logger.Write("Error: " + e.Message, Logger.logType.error);
                         isCorrect = false;
                     });
                 }
                 catch (XmlException e)
                 {
                     isCorrect = false;
-                    Program.logger.Write("Error: " + e.Message, Logger.logType.error);
+                    Server.logger.Write("Error: " + e.Message, Logger.logType.error);
                 }
             }
 

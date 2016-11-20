@@ -26,7 +26,7 @@ namespace Galactic_Colors_Control_Server.Commands
             foreach (ICommand com in coms)
             {
                 commands.Add(com);
-                Program.logger.Write("Added command " + com.Group.ToString() + " " + com.Name, Logger.logType.debug);
+                Server.logger.Write("Added command " + com.Group.ToString() + " " + com.Name, Logger.logType.debug);
             }
         }
 
@@ -60,7 +60,7 @@ namespace Galactic_Colors_Control_Server.Commands
             }
             catch (Exception e)
             {
-                Program.logger.Write("Command " + args[0] + " Exception : " + e.Message, Logger.logType.error);
+                Server.logger.Write("Command " + args[0] + " Exception : " + e.Message, Logger.logType.error);
                 return new RequestResult(ResultTypes.Error, Common.Strings("ExecuteException"));
             }
         }

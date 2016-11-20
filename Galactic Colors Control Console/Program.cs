@@ -10,7 +10,7 @@ namespace Galactic_Colors_Control_Console
     /// <summary>
     /// Console Client
     /// </summary>
-    internal class Program
+    internal class COnsole
     {
         public static bool _debug = false;
         public static bool _dev = false;

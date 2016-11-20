@@ -20,17 +20,17 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
-            if ((server && Program.selectedParty != -1) || (!server && Program.clients[soc].partyID != -1))
+            if ((server && Server.selectedParty != -1) || (!server && Server.clients[soc].partyID != -1))
                 return new RequestResult(ResultTypes.Error, Common.Strings("Allready"));
 
             int id;
             if (!int.TryParse(args[2], out id))
                 return new RequestResult(ResultTypes.Error, Common.Strings("Format"));
 
-            if (!Program.parties.ContainsKey(id))
+            if (!Server.parties.ContainsKey(id))
                 return new RequestResult(ResultTypes.Error, Common.Strings("CantFind"));
 
-            Party party = Program.parties[id];
+            Party party = Server.parties[id];
             if (args.Length == 3)
             {
                 Array.Resize(ref args, 4);
@@ -41,7 +41,7 @@ namespace Galactic_Colors_Control_Server.Commands
 
             if (server)
             {
-                Program.selectedParty = id;
+                Server.selectedParty = id;
                 return new RequestResult(ResultTypes.OK);
             }
             else
@@ -52,7 +52,7 @@ namespace Galactic_Colors_Control_Server.Commands
                 if (party.clients.Count + 1 > party.size)
                     return new RequestResult(ResultTypes.Error, Common.Strings("Full"));
 
-                Program.clients[soc].partyID = id;
+                Server.clients[soc].partyID = id;
                 Utilities.BroadcastParty(new EventData(EventTypes.PartyJoin, Common.Strings(Utilities.GetName(soc))), id);
                 return new RequestResult(ResultTypes.OK);
             }

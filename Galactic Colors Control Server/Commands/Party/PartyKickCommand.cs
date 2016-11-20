@@ -24,7 +24,7 @@ namespace Galactic_Colors_Control_Server.Commands
                 return new RequestResult(ResultTypes.Error, Common.Strings("Access"));
 
             Socket target = null;
-            foreach (Socket client in Program.parties[partyId].clients)
+            foreach (Socket client in Server.parties[partyId].clients)
             {
                 if (Utilities.GetName(client) == args[2]) { target = client; }
             }

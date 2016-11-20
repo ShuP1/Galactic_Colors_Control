@@ -20,9 +20,9 @@ namespace Galactic_Colors_Control_Server.Commands
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
             string text = "";
-            text += "Server : " + (Program._open ? "open" : "close");
-            text += "Clients : " + Program.clients.Count + "/" + Program.config.size;
-            text += "Parties : " + Program.parties.Count;
+            text += "Server : " + (Server._open ? "open" : "close");
+            text += "Clients : " + Server.clients.Count + "/" + Server.config.size;
+            text += "Parties : " + Server.parties.Count;
             return new RequestResult(ResultTypes.OK, Common.Strings(text));
         }
     }

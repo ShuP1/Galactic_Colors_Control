@@ -23,9 +23,9 @@ namespace Galactic_Colors_Control_Server.Commands
             if (!Utilities.AccessParty(ref partyId, args, false, soc, server))
                 return new RequestResult(ResultTypes.Error, Common.Strings("Access"));
 
-            string[] data = new string[Program.parties[partyId].clients.Count];
+            string[] data = new string[Server.parties[partyId].clients.Count];
             int i = 0;
-            foreach (Socket client in Program.parties[partyId].clients)
+            foreach (Socket client in Server.parties[partyId].clients)
             {
                 data[i] = Utilities.GetName(client);
                 i++;

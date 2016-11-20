@@ -19,7 +19,7 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
-            if (!server && Program.clients[soc].partyID != -1)
+            if (!server && Server.clients[soc].partyID != -1)
                 return new RequestResult(ResultTypes.Error, Common.Strings("Allready"));
 
             int size;
@@ -29,23 +29,23 @@ namespace Galactic_Colors_Control_Server.Commands
             if (size < 1)
                 return new RequestResult(ResultTypes.Error, Common.Strings("TooSmall"));
 
-            if (size > Program.config.size)
+            if (size > Server.config.size)
                 return new RequestResult(ResultTypes.Error, Common.Strings("TooBig"));
 
-            if (Program.parties.Count >= Program.config.partysize)
+            if (Server.parties.Count >= Server.config.partysize)
                 return new RequestResult(ResultTypes.Error, Common.Strings("Full"));
 
-            Program.AddParty(new Party(args[2], size, Utilities.GetName(soc)));
-            Program.logger.Write("Party " + args[2] + " create with " + size + " slots as " + Program.GetPartyID(false), Logger.logType.info);
+            Server.AddParty(new Party(args[2], size, Utilities.GetName(soc)));
+            Server.logger.Write("Party " + args[2] + " create with " + size + " slots as " + Server.GetPartyID(false), Logger.logType.info);
             if (server)
             {
-                Program.selectedParty = Program.GetPartyID(false);
+                Server.selectedParty = Server.GetPartyID(false);
             }
             else
             {
-                Program.clients[soc].partyID = Program.GetPartyID(false);
+                Server.clients[soc].partyID = Server.GetPartyID(false);
             }
-            return new RequestResult(ResultTypes.OK, new string[3] { args[2], size.ToString(), (Program.GetPartyID(false)).ToString() });
+            return new RequestResult(ResultTypes.OK, new string[3] { args[2], size.ToString(), (Server.GetPartyID(false)).ToString() });
         }
     }
 }

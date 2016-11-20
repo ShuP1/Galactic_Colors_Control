@@ -22,7 +22,7 @@ namespace Galactic_Colors_Control_Server.Commands
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
             Socket target = null;
-            foreach (Socket client in Program.clients.Keys)
+            foreach (Socket client in Server.clients.Keys)
             {
                 if (Utilities.GetName(client) == args[2]) { target = client; }
             }
@@ -32,9 +32,9 @@ namespace Galactic_Colors_Control_Server.Commands
             string text = "";
             text += ("Name   : " + Utilities.GetName(target) + Environment.NewLine);
             text += ("IP     : " + ((IPEndPoint)target.LocalEndPoint).Address.ToString() + Environment.NewLine);
-            if (Program.clients[target].party != null)
+            if (Server.clients[target].party != null)
             {
-                text += ("Party : " + Program.clients[target].party + Environment.NewLine);
+                text += ("Party : " + Server.clients[target].party + Environment.NewLine);
             }
             return new RequestResult(ResultTypes.OK, Common.Strings(text));
         }
