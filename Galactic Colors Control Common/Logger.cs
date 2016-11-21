@@ -4,15 +4,14 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Galactic_Colors_Control_Common
 {
     public class Logger
     {
         public enum logType { dev, debug, info, warm, error, fatal }
+
         public enum logConsole { normal, show, hide }
 
         public struct Log
@@ -61,6 +60,7 @@ namespace Galactic_Colors_Control_Common
             {
                 //Sort old logs
                 string[] files = Directory.GetFiles(logPath);
+
                 foreach (string file in files)
                 {
                     if (Path.GetExtension(file) == ".log")
@@ -74,6 +74,7 @@ namespace Galactic_Colors_Control_Common
                                 int y;
                                 int m;
                                 int d;
+
                                 if (int.TryParse(new string(name.Take(4).ToArray()), out y) && int.TryParse(new string(name.Skip(5).Take(2).ToArray()), out m) && int.TryParse(new string(name.Skip(8).Take(2).ToArray()), out d))
                                 {
                                     if (!Directory.Exists(logPath + "/" + y + "/" + m + "/" + d))
@@ -87,6 +88,7 @@ namespace Galactic_Colors_Control_Common
                     }
                 }
             }
+
             int i = 0;
             while (File.Exists(logPath + "/" + DateTime.UtcNow.ToString("yyyy-MM-dd-", CultureInfo.InvariantCulture) + i + ".log")) { i++; }
             logPath = logPath + "/" + DateTime.UtcNow.ToString("yyyy-MM-dd-", CultureInfo.InvariantCulture) + i + ".log";
@@ -141,7 +143,8 @@ namespace Galactic_Colors_Control_Common
             {
                 while (toWriteLogs.Count > 0)
                 {
-                    Log log = toWriteLogs[0];
+                    Log log = toWriteLogs[0]; //Saved log -> any lock need
+
                     if (log.type >= logLevel)
                     {
                         File.AppendAllText(logPath, DateTime.UtcNow.ToString("[yyyy-MM-dd]", CultureInfo.InvariantCulture) + " [" + log.type.ToString().ToUpper() + "]: " + log.text + Environment.NewLine);

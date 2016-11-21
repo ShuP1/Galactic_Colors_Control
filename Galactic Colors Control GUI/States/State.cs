@@ -9,12 +9,10 @@ namespace Galactic_Colors_Control_GUI.States
     {
         public virtual void Draw(SpriteBatch spritebatch)
         {
-
         }
 
         public virtual void Update()
         {
-           
         }
     }
 }

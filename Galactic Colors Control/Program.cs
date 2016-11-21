@@ -18,6 +18,8 @@ namespace Galactic_Colors_Control
         private Socket ClientSocket = new Socket
             (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
+        private object ClientSocket_lock = new object();
+
         public string IP = null; //Server IP
         public int PORT = 0; //Server Port
 
@@ -43,7 +45,11 @@ namespace Galactic_Colors_Control
         public bool isRunning { get { return _run; } }
 
         private int RequestId = 0;
+        private object RequestId_lock = new object();
+
         private List<ResultData> Results = new List<ResultData>();
+        private object Results_lock = new object();
+
         private Thread RecieveThread; //Main Thread
         public EventHandler OnEvent; //Execute on EventData reception (must be short or async)
 
@@ -64,7 +70,9 @@ namespace Galactic_Colors_Control
         public string ValidateHost(string text)
         {
             if (text == null) { text = ""; } //Prevent NullException
+
             string[] parts = text.Split(new char[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries); //Split IP and Port
+
             if (parts.Length == 0) //Default config (localhost)
             {
                 parts = new string[] { "" };
@@ -140,9 +148,12 @@ namespace Galactic_Colors_Control
         /// </summary>
         private void ResetSocket()
         {
-            ClientSocket.Close();
-            ClientSocket = new Socket
-            (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            lock (ClientSocket_lock)
+            {
+                ClientSocket.Close();
+                ClientSocket = new Socket
+                (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            }
         }
 
         /// <summary>
@@ -153,12 +164,15 @@ namespace Galactic_Colors_Control
             try { Send(new RequestData(GetRequestId(), new string[1] { "exit" })); } catch { }// Tell the server we are exiting
             _run = false; //Stopping Thread
             RecieveThread.Join(2000);
-            try
+            lock (ClientSocket_lock)
             {
-                ClientSocket.Shutdown(SocketShutdown.Both);
-                ClientSocket.Close();
+                try
+                {
+                    ClientSocket.Shutdown(SocketShutdown.Both);
+                    ClientSocket.Close();
+                }
+                catch { }
             }
-            catch { }
             ResetHost();
         }
 
@@ -169,7 +183,7 @@ namespace Galactic_Colors_Control
         /// <returns>ResultData or Timeout</returns>
         public ResultData Request(string[] args)
         {
-            switch(args[0])
+            switch (args[0])
             {
                 case "exit":
                     ExitHost();
@@ -181,7 +195,6 @@ namespace Galactic_Colors_Control
                 default:
                     return Execute(args);
             }
-           
         }
 
         /// <summary>
@@ -190,18 +203,23 @@ namespace Galactic_Colors_Control
         private ResultData Execute(string[] args)
         {
             RequestData req = new RequestData(GetRequestId(), args);
+
             if (!Send(req))
                 return new ResultData(req.id, ResultTypes.Error, Common.Strings("Send Exception"));
 
             DateTime timeoutDate = DateTime.Now.AddMilliseconds(config.timeout); //Create timeout DataTime
+
             while (timeoutDate > DateTime.Now)
             {
-                foreach (ResultData res in Results.ToArray()) //Check all results
+                lock (Results_lock)
                 {
-                    if (res.id == req.id)
+                    foreach (ResultData res in Results.ToArray()) //Check all results
                     {
-                        Results.Remove(res);
-                        return res;
+                        if (res.id == req.id)
+                        {
+                            Results.Remove(res);
+                            return res;
+                        }
                     }
                 }
                 Thread.Sleep(config.refresh);
@@ -252,6 +270,7 @@ namespace Galactic_Colors_Control
             {
                 var buffer = new byte[2048];
                 int received = 0;
+
                 try
                 {
                     received = ClientSocket.Receive(buffer, SocketFlags.None);
@@ -266,21 +285,26 @@ namespace Galactic_Colors_Control
                 }
                 if (received == 0) return;
                 _errorCount = 0;
+
                 var data = new byte[received];
                 Array.Copy(buffer, data, received);
 
                 Data packet = Data.FromBytes(ref data); //Create Data object from recieve bytes
+
                 if (packet != null)
                 {
                     switch (packet.GetType().Name)
                     {
                         case "EventData":
+
                             EventData eve = (EventData)packet;
+
                             if (OnEvent != null)
                                 OnEvent.Invoke(this, new EventDataArgs(eve));
                             break;
 
                         case "ResultData":
+
                             ResultData res = (ResultData)packet;
                             ResultAdd(res);
                             break;
@@ -296,7 +320,10 @@ namespace Galactic_Colors_Control
 
         public int GetRequestId(bool indent = true)
         {
-            if (indent) { RequestId++; }
+            lock (RequestId_lock)
+            {
+                if (indent) { RequestId++; }
+            }
             return RequestId;
         }
 
@@ -305,8 +332,11 @@ namespace Galactic_Colors_Control
         /// </summary>
         public void ResultAdd(ResultData res)
         {
-            while (Results.Count + 1 > config.resultsBuffer) { Results.RemoveAt(0); } //Removes firsts
-            Results.Add(res);
+            lock (Results_lock)
+            {
+                while (Results.Count + 1 > config.resultsBuffer) { Results.RemoveAt(0); } //Removes firsts
+                Results.Add(res);
+            }
         }
     }
 }

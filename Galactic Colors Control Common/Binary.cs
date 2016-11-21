@@ -9,12 +9,34 @@ namespace Galactic_Colors_Control_Common
     /// </summary>
     public static class Binary
     {
-        public static bool ToBool(ref byte[] bytes)
+        public static bool TryToBool(ref byte[] bytes, out bool res)
         {
+            if (bytes.Length < 1)
+            {
+                res = false;
+                return false;
+            }
+
             byte[] data = new byte[1];
             data = bytes.Take(1).ToArray();
             RemoveFirst(ref bytes, 1);
-            return data[1] == 1 ? true : false;
+            if (data[1] == 1)
+            {
+                res = true;
+            }
+            else
+            {
+                if (data[1] == 0)
+                {
+                    res = false;
+                }
+                else
+                {
+                    res = false;
+                    return false;
+                }
+            }
+            return true;
         }
 
         ///<remarks>1 byte</remarks>
@@ -23,12 +45,19 @@ namespace Galactic_Colors_Control_Common
             return x ? new byte[1] { 1 } : new byte[1] { 0 };
         }
 
-        public static string ToString(ref byte[] bytes)
+        public static bool TryToString(ref byte[] bytes, out string res)
         {
-            int len = ToInt(ref bytes);
-            string text = Encoding.ASCII.GetString(bytes.Take(len).ToArray());
+            res = null;
+            int len;
+            if (!TryToInt(ref bytes, out len))
+                return false;
+
+            if (bytes.Length < len)
+                return false;
+
+            res = Encoding.ASCII.GetString(bytes.Take(len).ToArray());
             RemoveFirst(ref bytes, len);
-            return text;
+            return res != null;
         }
 
         ///<remarks>len(in bytes) + string</remarks>
@@ -38,19 +67,19 @@ namespace Galactic_Colors_Control_Common
             return AddBytes(FromInt(data.Length), data);
         }
 
-        public static int ToInt(ref byte[] bytes)
+        public static bool TryToInt(ref byte[] bytes, out int res)
         {
-            if (bytes == null)
-                return -1;
+            res = int.MinValue;
 
             if (bytes.Length < 4)
-                return -1;
+                return false;
 
             byte[] data = new byte[4];
             data = bytes.Take(4).ToArray();
             data.Reverse();
+            res = BitConverter.ToInt32(data, 0);
             RemoveFirst(ref bytes, 4);
-            return BitConverter.ToInt32(data, 0);
+            return res != int.MinValue;
         }
 
         ///<remarks>4 bytes</remarks>
@@ -61,18 +90,24 @@ namespace Galactic_Colors_Control_Common
             return data;
         }
 
-        public static string[] ToStringArray(ref byte[] bytes)
+        public static bool TryToStringArray(ref byte[] bytes, out string[] data)
         {
-            int len = ToInt(ref bytes);
-            if (len < 1 || len > 10000)
-                return new string[0];
+            data = null;
 
-            string[] data = new string[len];
+            int len;
+            if (!TryToInt(ref bytes, out len))
+                return false;
+
+            if (len < 1 || len > 10000)
+                return false;
+
+            data = new string[len];
             for (int i = 0; i < len; i++)
             {
-                data[i] = ToString(ref bytes);
+                if (!TryToString(ref bytes, out data[i]))
+                    return false;
             }
-            return data;
+            return data != null;
         }
 
         public static byte[] FromStringArray(string[] array)
@@ -88,15 +123,20 @@ namespace Galactic_Colors_Control_Common
             return data;
         }
 
-        public static int[] ToIntArray(ref byte[] bytes)
+        public static bool TryToIntArray(ref byte[] bytes, out int[] res)
         {
-            int len = ToInt(ref bytes);
-            int[] data = new int[len];
+            res = null;
+            int len;
+            if (!TryToInt(ref bytes, out len))
+                return false;
+
+            res = new int[len];
             for (int i = 0; i < len; i++)
             {
-                data[i] = ToInt(ref bytes);
+                if (!TryToInt(ref bytes, out res[i]))
+                    return false;
             }
-            return data;
+            return res != null;
         }
 
         public static byte[] FromIntArray(int[] array)
@@ -123,9 +163,16 @@ namespace Galactic_Colors_Control_Common
 
         public static void RemoveFirst(ref byte[] bytes, int count)
         {
-            byte[] newbytes = new byte[bytes.Length - count];
-            newbytes = bytes.Skip(count).ToArray();
-            bytes = newbytes;
+            if (bytes.Length - count < 0)
+            {
+                bytes = new byte[0] { };
+            }
+            else
+            {
+                byte[] newbytes = new byte[bytes.Length - count];
+                newbytes = bytes.Skip(count).ToArray();
+                bytes = newbytes;
+            }
         }
     }
 }

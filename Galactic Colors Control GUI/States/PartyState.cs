@@ -1,11 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Galactic_Colors_Control_Common;
+using Galactic_Colors_Control_Common.Protocol;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MyMonoGame.GUI;
-using System.Threading;
-using System;
-using Galactic_Colors_Control_Common.Protocol;
-using Galactic_Colors_Control_Common;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Galactic_Colors_Control_GUI.States
 {
@@ -59,7 +58,7 @@ namespace Galactic_Colors_Control_GUI.States
                 else
                 {
                     Game.singleton.GUI.Box(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 2 - 300, 300, 600), Game.singleton.buttonsSprites[0]);
-                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 140, Game.singleton.ScreenHeight / 2 - 290, 100, 40), Game.singleton.buttonsSprites[0] ,Game.singleton.multilang.Get("Update", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White)))
+                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 140, Game.singleton.ScreenHeight / 2 - 290, 100, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Update", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White)))
                     {
                         if (!locked)
                         {
@@ -77,13 +76,15 @@ namespace Galactic_Colors_Control_GUI.States
                     }
 
                     //TODO Game.singleton.GUI.TextField(new Rectangle(Game.singleton.ScreenWidth / 2 + 40, Game.singleton.ScreenHeight / 2 - 290, 100, 40), ref password, Game.singleton.fonts.basic, null, Manager.textAlign.centerCenter, Game.singleton.multilang.Get("Password", Game.singleton.config.lang));
-                    if (parties.Count > 0) {
-                        if (parties.Count > 10) {
+                    if (parties.Count > 0)
+                    {
+                        if (parties.Count > 10)
+                        {
                             //TODO page change
                         }
                         for (int i = (page - 1) * 10; i < page * 10 && i < parties.Count; i++)
                         {
-                            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 100, Game.singleton.ScreenHeight / 2 - 240 + i*50, 200, 40), Game.singleton.buttonsSprites[0], parties[i].text, Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White)))
+                            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 100, Game.singleton.ScreenHeight / 2 - 240 + i * 50, 200, 40), Game.singleton.buttonsSprites[0], parties[i].text, Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White)))
                             {
                                 locked = true;
                                 id = parties[i].id;
@@ -118,7 +119,8 @@ namespace Galactic_Colors_Control_GUI.States
             showLoading = true;
             page = 1;
             ResultData res = Game.singleton.client.Request(new string[2] { "party", "list" });
-            if (res.type == ResultTypes.OK) {
+            if (res.type == ResultTypes.OK)
+            {
                 parties.Clear();
                 foreach (string str in res.result)
                 {
@@ -143,7 +145,7 @@ namespace Galactic_Colors_Control_GUI.States
             showLoading = true;
             if (id != -1)
             {
-                string[] request = password != null ? new string[4] { "party", "join", id.ToString() , password } : new string[3] { "party", "join", id.ToString() };
+                string[] request = password != null ? new string[4] { "party", "join", id.ToString(), password } : new string[3] { "party", "join", id.ToString() };
                 ResultData res = Game.singleton.client.Request(request);
                 if (res.type == ResultTypes.OK)
                 {

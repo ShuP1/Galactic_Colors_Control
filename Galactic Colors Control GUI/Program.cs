@@ -10,6 +10,7 @@ namespace Galactic_Colors_Control_GUI
     {
         public static bool _dev = false;
         public static bool _debug = false;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -21,11 +22,11 @@ namespace Galactic_Colors_Control_GUI
                 switch (args[0])
                 {
                     case "--debug":
-                        _debug = true;                     
+                        _debug = true;
                         break;
 
                     case "--dev":
-                        _dev = true;              
+                        _dev = true;
                         break;
 
                     default:

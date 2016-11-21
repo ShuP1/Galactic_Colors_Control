@@ -2,10 +2,10 @@
 using Galactic_Colors_Control_Common.Protocol;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MyMonoGame.GUI;
-using System.Threading;
-using System;
 using Microsoft.Xna.Framework.Input;
+using MyMonoGame.GUI;
+using System;
+using System.Threading;
 
 namespace Galactic_Colors_Control_GUI.States
 {
@@ -56,7 +56,8 @@ namespace Galactic_Colors_Control_GUI.States
 
         public override void Update()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape) || (!Game.singleton.client.isRunning)) {
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape) || (!Game.singleton.client.isRunning))
+            {
                 Game.singleton.client.ExitHost();
                 Game.singleton.gameState = new MainMenuState();
             }
@@ -99,7 +100,8 @@ namespace Galactic_Colors_Control_GUI.States
                 message.title = Game.singleton.multilang.Get("ServerKick", Game.singleton.config.lang);
                 message.text = Common.ArrayToString(eve.data);
                 showOKMessage = true;
-            }else
+            }
+            else
             {
                 ChatText(Game.singleton.multilang.GetEventText(eve, Game.singleton.config.lang));
             }

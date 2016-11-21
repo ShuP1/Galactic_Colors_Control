@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
+
 //TODO gui parties pages
 
 namespace Galactic_Colors_Control_Server
@@ -24,11 +25,13 @@ namespace Galactic_Colors_Control_Server
         private static readonly byte[] buffer = new byte[BUFFER_SIZE];
 
         public static Dictionary<Socket, Client> clients { get; private set; } = new Dictionary<Socket, Client>();
+        public static object clients_lock = new object();
 
         private static int partyID = 0;
+        private static object partyID_lock = new object();
 
-        public static Dictionary<int, Party> parties { get; private set; } = new Dictionary<int, Party>();
-        public static int selectedParty = -1;
+        public static Dictionary<int, Party> parties { get; private set; } = new Dictionary<int, Party>(); //TODO add lock
+        public static int selectedParty = -1; //TODO add lock
 
         public static Config config = new Config();
         public static Logger logger = new Logger();
@@ -129,6 +132,7 @@ namespace Galactic_Colors_Control_Server
         private static void AcceptCallback(IAsyncResult AR)
         {
             Socket socket;
+
             try
             {
                 socket = serverSocket.EndAccept(AR);
@@ -187,15 +191,9 @@ namespace Galactic_Colors_Control_Server
             {
                 received = current.EndReceive(AR);
             }
-            catch (SocketException)
+            catch (Exception e)
             {
-                logger.Write("Client forcefully disconnected from " + Utilities.GetName(current) + " : SocketException", Logger.logType.info);
-                string username = Utilities.GetName(current);
-                bool connected = clients[current].status != -1;
-                logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.debug);
-                current.Close(); // Don't shutdown because the socket may be disposed and its disconnected anyway.
-                clients.Remove(current);
-                if (connected) { Utilities.Broadcast(new EventData(EventTypes.ServerLeave, Common.Strings(username))); }
+                RemoveClient(current, e.GetType().Name);
                 return;
             }
 
@@ -203,11 +201,13 @@ namespace Galactic_Colors_Control_Server
             Array.Copy(buffer, data, received);
 
             Data packet = Data.FromBytes(ref data);
+
             if (packet != null)
             {
                 switch (packet.GetType().Name)
                 {
                     case "RequestData":
+
                         RequestData req = (RequestData)packet;
                         Utilities.Send(current, new ResultData(req.id, Commands.Manager.Execute(req.args, current)));
                         break;
@@ -221,7 +221,6 @@ namespace Galactic_Colors_Control_Server
             {
                 logger.Write("Wrong packet from " + Utilities.GetName(current), Logger.logType.error);
             }
-
             if (clients.ContainsKey(current)) { current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current); }
         }
 
@@ -251,16 +250,33 @@ namespace Galactic_Colors_Control_Server
                     {
                         if ((current.Poll(10, SelectMode.SelectRead) && current.Available == 0) || !current.Connected)
                         {
-                            string username = Utilities.GetName(current);
-                            logger.Write("Client forcefully disconnected from " + username + " : NotConnected", Logger.logType.info);
-                            bool connected = clients[current].status != -1;
-                            logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.debug);
-                            current.Close(); // Don't shutdown because the socket may be disposed and its disconnected anyway.
-                            clients.Remove(current);
-                            if (connected) { Utilities.Broadcast(new EventData(EventTypes.ServerLeave, Common.Strings(username))); }
+                            RemoveClient(current, "NotConnected");
                         }
-                    }catch { }
+                    }
+                    catch { }
                     Thread.Sleep(200);
+                }
+            }
+        }
+
+        public static void RemoveClient(Socket current, string reason = null)
+        {
+            //TODO add leave party for check empty parties
+            lock (clients_lock)
+            {
+                if (clients.ContainsKey(current))
+                {
+                    string username = Utilities.GetName(current);
+                    logger.Write("Client forcefully disconnected from " + username + (reason != null ? " : " + reason : ""), Logger.logType.info);
+                    bool connected = clients[current].status != -1;
+                    logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.debug);
+                    current.Close(); // Don't shutdown because the socket may be disposed and its disconnected anyway.
+                    clients.Remove(current);
+                    if (connected) { Utilities.Broadcast(new EventData(EventTypes.ServerLeave, Common.Strings(username))); }
+                }
+                else
+                {             
+                    logger.Write("Client forcefully disconnected : ObjectDisposedException", Logger.logType.warm);
                 }
             }
         }
@@ -276,8 +292,11 @@ namespace Galactic_Colors_Control_Server
 
         public static int GetPartyID(bool indent = true)
         {
-            if (indent) { partyID++; }
-            return partyID;
+            lock (partyID_lock)
+            {
+                if (indent) { partyID++; }
+                return partyID;
+            }
         }
     }
 }

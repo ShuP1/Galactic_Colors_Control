@@ -19,14 +19,7 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
-            soc.Shutdown(SocketShutdown.Both);
-            Server.logger.Write("Client disconnected from " + Utilities.GetName(soc), Logger.logType.info);
-            string username = Utilities.GetName(soc);
-            bool connected = Server.clients[soc].status != -1;
-            soc.Close();
-            Server.clients.Remove(soc);
-            if (connected) { Utilities.Broadcast(new EventData(EventTypes.ServerLeave, Common.Strings(username))); }
-            Server.logger.Write("Size: " + Server.clients.Count + "/" + Server.config.size, Logger.logType.debug);
+            Server.RemoveClient(soc);
             return new RequestResult(ResultTypes.OK);
         }
     }

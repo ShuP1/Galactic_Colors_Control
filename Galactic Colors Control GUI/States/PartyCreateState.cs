@@ -1,11 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.Threading;
-using System;
-using MyMonoGame.GUI;
+﻿using Galactic_Colors_Control_Common;
 using Galactic_Colors_Control_Common.Protocol;
-using Galactic_Colors_Control_Common;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using MyMonoGame.GUI;
+using System.Threading;
 
 namespace Galactic_Colors_Control_GUI.States
 {
@@ -68,7 +66,7 @@ namespace Galactic_Colors_Control_GUI.States
         private void CreateParty()
         {
             showLoading = true;
-            if(name != null)
+            if (name != null)
             {
                 int count;
                 string party = name;

@@ -1,11 +1,10 @@
-﻿using System;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Galactic_Colors_Control;
+using Galactic_Colors_Control_Common;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MyMonoGame.GUI;
 using System.Reflection;
-using Galactic_Colors_Control;
 using System.Threading;
-using Galactic_Colors_Control_Common;
 
 namespace Galactic_Colors_Control_GUI.States
 {
@@ -34,7 +33,8 @@ namespace Galactic_Colors_Control_GUI.States
                     }).Start();
                 }
             }
-            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 + 20, 150, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Options", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.White, Color.Blue))) {
+            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 + 20, 150, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Options", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.White, Color.Blue)))
+            {
                 Game.singleton.GUI.ResetFocus();
                 Game.singleton.gameState = new OptionsState();
             }

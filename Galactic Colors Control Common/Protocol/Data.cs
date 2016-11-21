@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Galactic_Colors_Control_Common.Protocol
+﻿namespace Galactic_Colors_Control_Common.Protocol
 {
     /// <summary>
     /// Packet Master Class
@@ -8,14 +6,18 @@ namespace Galactic_Colors_Control_Common.Protocol
     public class Data
     {
         public enum DataType { Request, Result, Event };
-        
+
         /// <summary>
         /// Create Packet from bytes
         /// </summary>
         /// <param name="bytes">row bytes (remove used bytes)</param>
         public static Data FromBytes(ref byte[] bytes)
         {
-            switch ((DataType)Binary.ToInt(ref bytes))
+            int type;
+            if (!Binary.TryToInt(ref bytes, out type))
+                return null;
+
+            switch ((DataType)type)
             {
                 case DataType.Request:
                     return new RequestData(ref bytes);

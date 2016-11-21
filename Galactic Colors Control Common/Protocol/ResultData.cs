@@ -27,9 +27,16 @@
 
         public ResultData(ref byte[] bytes)
         {
-            id = Binary.ToInt(ref bytes);
-            type = (ResultTypes)Binary.ToInt(ref bytes);
-            result = Binary.ToStringArray(ref bytes);
+            if (!Binary.TryToInt(ref bytes, out id))
+                return;
+
+            int ntype;
+            if (!Binary.TryToInt(ref bytes, out ntype))
+                return;
+
+            type = (ResultTypes)ntype;
+            if (!Binary.TryToStringArray(ref bytes, out result))
+                return;
         }
 
         public override byte[] ToBytes()

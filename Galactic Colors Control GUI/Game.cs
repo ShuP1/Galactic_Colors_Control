@@ -41,7 +41,7 @@ namespace Galactic_Colors_Control_GUI
 
         private bool isFullScreen = false;
 
-        public States.State gameState = new States.TitleState(new States.MainMenuState(), new TimeSpan(0,0,5));
+        public States.State gameState = new States.TitleState(new States.MainMenuState(), new TimeSpan(0, 0, 5));
 
         private int _ScreenWidth = 1280;
         private int _ScreenHeight = 720;
@@ -209,7 +209,7 @@ namespace Galactic_Colors_Control_GUI
 
             GUI.Draw(spriteBatch);
             gameState.Draw(spriteBatch);
-           
+
             Color ActiveColor = IsActive ? Color.Green : Color.Red;
             GUI.Label(new MyMonoGame.Vector(10, ScreenHeight - 20), (1 / (float)gameTime.ElapsedGameTime.TotalSeconds).ToString(), fonts.small, new MyMonoGame.Colors(ActiveColor));
             spriteBatch.Draw(pointerSprites[0], new Rectangle(Mouse.GetState().X - 10, Mouse.GetState().Y - 10, 20, 20), Color.Red);

@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace Galactic_Colors_Control_GUI
 {
@@ -46,7 +46,7 @@ namespace Galactic_Colors_Control_GUI
                 if (backgroundY[index] > backSprites[index].Height) { backgroundY[index] = 0; }
                 if (backgroundX[index] < 0) { backgroundX[index] = backSprites[index].Width; }
                 if (backgroundY[index] < 0) { backgroundY[index] = backSprites[index].Height; }
-            }      
+            }
         }
 
         /// <summary>

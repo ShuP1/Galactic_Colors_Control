@@ -39,8 +39,11 @@ namespace Galactic_Colors_Control_Server.Commands
             if (allreadyconnected)
                 return new RequestResult(ResultTypes.Error, Common.Strings("AllreadyTaken"));
 
-            Server.clients[soc].status = 0;
-            Server.clients[soc].pseudo = args[1];
+            lock (Server.clients_lock)
+            {
+                Server.clients[soc].status = 0;
+                Server.clients[soc].pseudo = args[1];
+            }
             Utilities.Broadcast(new EventData(EventTypes.ServerJoin, Common.Strings(args[1])));
             Server.logger.Write("Identified as " + Utilities.GetName(soc) + " form " + ((IPEndPoint)soc.LocalEndPoint).Address.ToString(), Logger.logType.info);
             return new RequestResult(ResultTypes.OK, Common.Strings(args[1]));

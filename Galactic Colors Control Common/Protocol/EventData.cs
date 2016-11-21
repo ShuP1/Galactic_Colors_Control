@@ -27,8 +27,14 @@
 
         public EventData(ref byte[] bytes)
         {
-            type = (EventTypes)Binary.ToInt(ref bytes);
-            data = Binary.ToStringArray(ref bytes);
+            int ntype;
+            if (!Binary.TryToInt(ref bytes, out ntype))
+                return;
+
+            type = (EventTypes)ntype;
+
+            if (!Binary.TryToStringArray(ref bytes, out data))
+                return;
         }
 
         public override byte[] ToBytes()

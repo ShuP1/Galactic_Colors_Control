@@ -1,9 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Galactic_Colors_Control_Common;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MyMonoGame.GUI;
 using System.Threading;
-using System;
-using Galactic_Colors_Control_Common;
 
 namespace Galactic_Colors_Control_GUI.States
 {
@@ -11,6 +10,7 @@ namespace Galactic_Colors_Control_GUI.States
     {
         public string title;
         public string text;
+
         public Message(string Title, string Text = "")
         {
             title = Title;
@@ -42,7 +42,7 @@ namespace Galactic_Colors_Control_GUI.States
                 if (showOKMessage)
                 {
                     Game.singleton.GUI.Box(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 4 + 50, 300, 150), Game.singleton.buttonsSprites[0]);
-                    Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 60), message.title, Game.singleton.fonts.basic , null, Manager.textAlign.bottomCenter);
+                    Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 60), message.title, Game.singleton.fonts.basic, null, Manager.textAlign.bottomCenter);
                     Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 100), message.text, Game.singleton.fonts.small, null, Manager.textAlign.bottomCenter);
                     if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 140, Game.singleton.ScreenHeight / 4 + 150, 280, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("OK", Game.singleton.config.lang), Game.singleton.fonts.basic)) { locked = false; Game.singleton.GUI.ResetFocus(); showOKMessage = false; }
                 }
@@ -71,7 +71,8 @@ namespace Galactic_Colors_Control_GUI.States
                     }
                     else
                     {
-                        if (Game.singleton.GUI.TextField(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 - 30, 150, 40), ref adress, Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White), Manager.textAlign.centerCenter, Game.singleton.multilang.Get("EnterHostname", Game.singleton.config.lang))) {
+                        if (Game.singleton.GUI.TextField(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 - 30, 150, 40), ref adress, Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White), Manager.textAlign.centerCenter, Game.singleton.multilang.Get("EnterHostname", Game.singleton.config.lang)))
+                        {
                             if (!locked)
                             {
                                 locked = true;

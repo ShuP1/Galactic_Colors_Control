@@ -16,8 +16,11 @@
 
         public RequestData(ref byte[] bytes)
         {
-            id = Binary.ToInt(ref bytes);
-            args = Binary.ToStringArray(ref bytes);
+            if (!Binary.TryToInt(ref bytes, out id))
+                return;
+
+            if (!Binary.TryToStringArray(ref bytes, out args))
+                return;
         }
 
         public override byte[] ToBytes()
