@@ -38,13 +38,15 @@ namespace Galactic_Colors_Control_Common
         public bool run { get { return _run; } }
         private static bool _debug = false;
         private static bool _dev = false;
+        private bool haveConsole = false;
 
         /// <summary>
         /// Create log file and start logger thread
         /// </summary>
         /// <param name="LogPath">Absolute path to logs directory</param>
-        public void Initialise(string LogPath, ConsoleColor[] backColor, ConsoleColor[] foreColor, logType LogLevel, bool debug, bool dev)
+        public void Initialise(string LogPath, ConsoleColor[] backColor, ConsoleColor[] foreColor, logType LogLevel, bool debug, bool dev, bool haveconsole = true)
         {
+            haveConsole = haveconsole;
             logPath = LogPath;
             logBackColor = backColor;
             logForeColor = foreColor;
@@ -168,12 +170,8 @@ namespace Galactic_Colors_Control_Common
 
         private void ConsoleWrite(Log log)
         {
-            Console.BackgroundColor = logBackColor[(int)log.type];
-            Console.ForegroundColor = logForeColor[(int)log.type];
-            Console.Write("\b");
-            Console.WriteLine(DateTime.UtcNow.ToString("[yyyy-MM-dd]", CultureInfo.InvariantCulture) + ": " + log.text);
-            Common.ConsoleResetColor();
-            Console.Write(">");
+            if (haveConsole)
+                Console.Write(new ColorStrings(new ColorString(DateTime.UtcNow.ToString("[yyyy-MM-dd]", CultureInfo.InvariantCulture) + ": " + log.text, logForeColor[(int)log.type], logBackColor[(int)log.type])));
         }
     }
 }

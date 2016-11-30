@@ -1,5 +1,4 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
 using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands

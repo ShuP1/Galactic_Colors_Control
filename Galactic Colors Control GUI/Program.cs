@@ -1,5 +1,6 @@
 ﻿using Galactic_Colors_Control_Common;
 using System;
+using Console = Galactic_Colors_Control_Common.Console;
 
 namespace Galactic_Colors_Control_GUI
 {
@@ -30,7 +31,7 @@ namespace Galactic_Colors_Control_GUI
                         break;
 
                     default:
-                        Common.ConsoleWrite("Use --debug or --dev");
+                        Console.Write(new ColorStrings(new ColorString("Use"), new ColorString(" --debug", System.ConsoleColor.Red), new ColorString(" or"), new ColorString(" --dev", System.ConsoleColor.White, System.ConsoleColor.Red)));
                         break;
                 }
             }

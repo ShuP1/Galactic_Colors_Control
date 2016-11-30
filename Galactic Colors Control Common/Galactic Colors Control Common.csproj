@@ -49,6 +49,7 @@
     </Compile>
     <Compile Include="Binary.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="Console.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MultiLang.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

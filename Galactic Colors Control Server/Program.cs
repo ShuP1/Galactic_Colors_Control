@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
+using Console = Galactic_Colors_Control_Common.Console;
 
 //TODO gui parties pages
 
@@ -65,12 +66,11 @@ namespace Galactic_Colors_Control_Server
                         break;
 
                     default:
-                        Common.ConsoleWrite("Use --debug or --dev");
+                        Console.Write(new ColorStrings(new ColorString("Use"), new ColorString(" --debug", System.ConsoleColor.Red), new ColorString(" or"), new ColorString(" --dev", System.ConsoleColor.White, System.ConsoleColor.Red)));
                         break;
                 }
             }
             if (Type.GetType("Mono.Runtime") != null) { logger.Write("Using Mono", Logger.logType.warm, Logger.logConsole.show); }
-            Console.Write(">");
             SetupServer();
             ConsoleLoop();
             CloseAllSockets();
@@ -99,10 +99,9 @@ namespace Galactic_Colors_Control_Server
         {
             while (_run)
             {
-                string ConsoleInput = Console.ReadLine();
-                Console.Write(">");
+                string ConsoleInput = Console.Read();
                 string[] args = Common.SplitArgs(ConsoleInput);
-                Common.ConsoleWrite(multilang.GetResultText(new ResultData(-1, Commands.Manager.Execute(args, null, true)), config.lang));
+                Console.Write(new ColorStrings(multilang.GetResultText(new ResultData(-1, Commands.Manager.Execute(args, null, true)), config.lang)));
                 ConsoleInput = null;
             }
         }
@@ -275,7 +274,7 @@ namespace Galactic_Colors_Control_Server
                     if (connected) { Utilities.Broadcast(new EventData(EventTypes.ServerLeave, Common.Strings(username))); }
                 }
                 else
-                {             
+                {
                     logger.Write("Client forcefully disconnected : ObjectDisposedException", Logger.logType.warm);
                 }
             }

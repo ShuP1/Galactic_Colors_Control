@@ -1,7 +1,7 @@
 ﻿using Galactic_Colors_Control_Common;
 using Galactic_Colors_Control_Common.Protocol;
-using System;
 using System.Net.Sockets;
+using Console = Galactic_Colors_Control_Common.Console;
 
 namespace Galactic_Colors_Control_Server.Commands
 {
@@ -22,8 +22,7 @@ namespace Galactic_Colors_Control_Server.Commands
         {
             if (server)
             {
-                Console.Clear();
-                Console.Write(">");
+                Console.ClearOutput();
                 return new RequestResult(ResultTypes.OK);
             }
             else

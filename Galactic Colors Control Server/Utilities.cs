@@ -3,6 +3,7 @@ using Galactic_Colors_Control_Common.Protocol;
 using System;
 using System.Net;
 using System.Net.Sockets;
+using Console = Galactic_Colors_Control_Common.Console;
 
 namespace Galactic_Colors_Control_Server
 {
@@ -89,11 +90,11 @@ namespace Galactic_Colors_Control_Server
             switch (packet.GetType().Name)
             {
                 case "EventData":
-                    Common.ConsoleWrite(Server.multilang.GetEventText((EventData)packet, Server.config.lang));
+                    Console.Write(new ColorStrings(Server.multilang.GetEventText((EventData)packet, Server.config.lang)));
                     break;
 
                 default:
-                    Common.ConsoleWrite(packet.ToSmallString());
+                    Console.Write(new ColorStrings(packet.ToSmallString()));
                     break;
             }
         }
@@ -119,11 +120,11 @@ namespace Galactic_Colors_Control_Server
                 switch (data.GetType().Name)
                 {
                     case "EventData":
-                        Common.ConsoleWrite(Server.multilang.GetEventText((EventData)data, Server.config.lang));
+                        Console.Write(new ColorStrings(Server.multilang.GetEventText((EventData)data, Server.config.lang)));
                         break;
 
                     default:
-                        Common.ConsoleWrite(data.ToSmallString());
+                        Console.Write(new ColorStrings(data.ToSmallString()));
                         break;
                 }
             }
@@ -140,7 +141,7 @@ namespace Galactic_Colors_Control_Server
         {
             if (server)
             {
-                Common.ConsoleWrite(data.ToSmallString());
+                Console.Write(new ColorStrings(data.ToSmallString()));
             }
             else
             {
