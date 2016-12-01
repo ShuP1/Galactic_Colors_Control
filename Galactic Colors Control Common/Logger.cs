@@ -164,7 +164,6 @@ namespace Galactic_Colors_Control_Common
                     }
                     toWriteLogs.Remove(log);
                 }
-                Thread.Sleep(200);
             }
         }
 

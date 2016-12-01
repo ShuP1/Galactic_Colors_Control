@@ -27,17 +27,15 @@ namespace Galactic_Colors_Control
         {
             public int resultsBuffer; //Max amount of waiting results
             public int timeout; //Request timeout in ms
-            public int refresh; //Threads sleep in ms
 
-            public CoreConfig(int buffer, int time, int speed)
+            public CoreConfig(int buffer, int time)
             {
                 resultsBuffer = buffer;
                 timeout = time;
-                refresh = speed;
             }
         }
 
-        public CoreConfig config = new CoreConfig(20, 2000, 200); //Set default config
+        public CoreConfig config = new CoreConfig(20, 2000); //Set default config
 
         private int _errorCount = 0; //Leave if > 5
 
@@ -222,7 +220,6 @@ namespace Galactic_Colors_Control
                         }
                     }
                 }
-                Thread.Sleep(config.refresh);
             }
             return new ResultData(req.id, ResultTypes.Error, Common.Strings("Timeout"));
         }
@@ -313,7 +310,6 @@ namespace Galactic_Colors_Control
                             break;
                     }
                 }
-                Thread.Sleep(config.refresh);
             }
             //TODOOutput.Add("/*exit*/");
         }

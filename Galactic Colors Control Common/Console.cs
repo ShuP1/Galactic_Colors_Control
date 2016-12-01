@@ -9,6 +9,7 @@ namespace Galactic_Colors_Control_Common
         private static string inputBuffer = "";
         private static List<ColorStrings> outputBuffer = new List<ColorStrings>();
         public static string Title { get { return Cons.Title; } set { Cons.Title = value; } }
+        private static object locker = new object();
 
         public static void Write(ColorStrings Text)
         {
@@ -34,6 +35,7 @@ namespace Galactic_Colors_Control_Common
                         inputBuffer += key.KeyChar;
                         break;
                 }
+                Update();
                 key = Cons.ReadKey();
             }
             Cons.WriteLine();
@@ -44,13 +46,16 @@ namespace Galactic_Colors_Control_Common
 
         private static void Update()
         {
-            Cons.Clear();
-            Cons.SetCursorPosition(0, 0);
-            foreach (ColorStrings output in outputBuffer) { output.Write(); }
-            SetInputPos();
-            Cons.ForegroundColor = ConsoleColor.White;
-            Cons.BackgroundColor = ConsoleColor.Black;
-            Cons.Write("> " + inputBuffer);
+            lock (locker)
+            {
+                Cons.Clear();
+                Cons.SetCursorPosition(0, 0);
+                foreach (ColorStrings output in outputBuffer) { output.Write(); }
+                SetInputPos();
+                Cons.ForegroundColor = ConsoleColor.White;
+                Cons.BackgroundColor = ConsoleColor.Black;
+                Cons.Write("> " + inputBuffer);
+            }
         }
 
         private static void SetInputPos()
