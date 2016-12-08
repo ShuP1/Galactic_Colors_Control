@@ -32,6 +32,16 @@ Linux
 mono <program>.exe --args
 ```
 
+### Build
+
+[Teamcity server](http://sheychen.ddns.net:8111?guest=1) is self hosted on a raspberry pi.
+It's slow and can be off.
+
+| Name  | Status |
+|:---|--------|
+| Realease | [![Build Status](http://sheychen.ddns.net:8111/app/rest/builds/buildType:GalacticColorsControl_Build/statusIcon)](http://sheychen.ddns.net:8111/viewType.html?buildTypeId=GalacticColorsControl_Build&guest=1) |
+| Develop | [![Build Status](http://sheychen.ddns.net:8111/app/rest/builds/buildType:GalacticColorsControl_BuildDevelop/statusIcon)](http://sheychen.ddns.net:8111/viewType.html?buildTypeId=GalacticColorsControl_BuildDevelop&guest=1) |
+
 ## Test With
 
 * Windows 10 x64
