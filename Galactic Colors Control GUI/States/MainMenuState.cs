@@ -10,16 +10,15 @@ namespace Galactic_Colors_Control_GUI.States
 {
     public class MainMenuState : State
     {
-        public static Texture2D logoSprite;
         private bool locked = false;
 
         public override void Draw(SpriteBatch spritebatch)
         {
             Game.singleton.background.Draw(spritebatch);
-            Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4), Game.singleton.multilang.Get("GCC", Game.singleton.config.lang), Game.singleton.fonts.title, new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
-            Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 40), Game.singleton.multilang.Get("GUI", Game.singleton.config.lang) + " " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
-            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth - 64, Game.singleton.ScreenHeight - 74, 64, 64), logoSprite)) { System.Diagnostics.Process.Start("https://sheychen.shost.ca/"); }
-            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 - 30, 150, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Play", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.White, Color.Green)))
+            Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4), Game.singleton.multilang.Get("GCC", Game.singleton.config.lang), Game.singleton.GUI.content.GetFont("title"), new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
+            Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 40), Game.singleton.multilang.Get("GUI", Game.singleton.config.lang) + " " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Game.singleton.GUI.content.GetFont("basic"), new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
+            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth - 64, Game.singleton.ScreenHeight - 74, 64, 64), Game.singleton.GUI.content.GetTexture("logoSmall"))) { System.Diagnostics.Process.Start("https://sheychen.shost.ca/"); }
+            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 - 30, 150, 40), Game.singleton.GUI.content.GetBox("Default"), Game.singleton.multilang.Get("Play", Game.singleton.config.lang), Game.singleton.GUI.content.GetFont("basic"), new MyMonoGame.Colors(Color.White, Color.Green)))
             {
                 if (!locked)
                 {
@@ -33,12 +32,12 @@ namespace Galactic_Colors_Control_GUI.States
                     }).Start();
                 }
             }
-            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 + 20, 150, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Options", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.White, Color.Blue)))
+            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 + 20, 150, 40), Game.singleton.GUI.content.GetBox("Default"), Game.singleton.multilang.Get("Options", Game.singleton.config.lang), Game.singleton.GUI.content.GetFont("basic"), new MyMonoGame.Colors(Color.White, Color.Blue)))
             {
                 Game.singleton.GUI.ResetFocus();
                 Game.singleton.gameState = new OptionsState();
             }
-            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 + 70, 150, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Exit", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.White, Color.Red)))
+            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 + 70, 150, 40), Game.singleton.GUI.content.GetBox("Default"), Game.singleton.multilang.Get("Exit", Game.singleton.config.lang), Game.singleton.GUI.content.GetFont("basic"), new MyMonoGame.Colors(Color.White, Color.Red)))
             {
                 if (!locked)
                 {

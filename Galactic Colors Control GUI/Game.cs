@@ -1,10 +1,10 @@
 ﻿using Galactic_Colors_Control;
 using Galactic_Colors_Control_Common;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MyMonoGame;
 using MyMonoGame.GUI;
 using System;
 using System.IO;
@@ -23,14 +23,6 @@ namespace Galactic_Colors_Control_GUI
         private SpriteBatch spriteBatch;
         private ContentManager content;
 
-        private SoundEffect[] effects = new SoundEffect[4]; //click, hover, explosion,...
-
-        public Fonts fonts;
-
-        internal static Texture2D nullSprite;
-
-        private Texture2D[] pointerSprites = new Texture2D[1];
-        public boxSprites[] buttonsSprites = new boxSprites[1];
         public Background background;
 
         public MultiLang multilang = new MultiLang();
@@ -80,8 +72,6 @@ namespace Galactic_Colors_Control_GUI
             multilang.Load();
             if (Program._debug) { logger.Write("CLIENT IS IN DEBUG MODE !", Logger.logType.error, Logger.logConsole.show); }
             if (Program._dev) { logger.Write("CLIENT IS IN DEV MODE !", Logger.logType.error, Logger.logConsole.show); }
-            nullSprite = new Texture2D(GraphicsDevice, 1, 1);
-            nullSprite.SetData(new Color[1 * 1] { Color.White });
 
             GUI.Initialise();
             base.Initialize();
@@ -96,82 +86,55 @@ namespace Galactic_Colors_Control_GUI
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            GUI.content.Initialise(content, GraphicsDevice);
+
             //Need OpenAL Update for Windows 10 at least
-            effects[0] = content.Load<SoundEffect>("Sounds/alert");
-            effects[1] = content.Load<SoundEffect>("Sounds/bip");
-            effects[2] = content.Load<SoundEffect>("Sounds/change");
-            effects[3] = content.Load<SoundEffect>("Sounds/valid");
+            GUI.content.AddSound("alert");
+            GUI.content.AddSound("bip");
+            GUI.content.AddSound("change");
+            GUI.content.AddSound("valid");
 
-            fonts.small = content.Load<SpriteFont>("Fonts/small");
-            fonts.basic = content.Load<SpriteFont>("Fonts/basic");
-            fonts.title = content.Load<SpriteFont>("Fonts/title");
+            GUI.content.AddFont("small");
+            GUI.content.AddFont("basic");
+            GUI.content.AddFont("title");
 
-            for (int i = 0; i < pointerSprites.Length; i++)
-            {
-                pointerSprites[i] = content.Load<Texture2D>("Textures/Hub/pointer" + i);
-            }
+            GUI.content.AddTexture("pointer", "Hub/pointer0");
 
-            Texture2D[] backSprites = new Texture2D[2];
-            backSprites[0] = content.Load<Texture2D>("Textures/background0");
-            backSprites[1] = content.Load<Texture2D>("Textures/background1");
+            GUI.content.AddTexture("background0");
+            GUI.content.AddTexture("background1");
 
-            States.MainMenuState.logoSprite = content.Load<Texture2D>("Textures/LogoSmall");
+            GUI.content.AddTexture("logoSmall", "LogoSmall");
 
-            for (int i = 0; i < buttonsSprites.Length; i++)
-            {
-                buttonsSprites[i].topLeft = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/topLeft");
-                buttonsSprites[i].topCenter = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/topCenter");
-                buttonsSprites[i].topRight = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/topRight");
-                buttonsSprites[i].centerLeft = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/centerLeft");
-                buttonsSprites[i].centerCenter = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/centerCenter");
-                buttonsSprites[i].centerRight = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/centerRight");
-                buttonsSprites[i].bottomLeft = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/bottomLeft");
-                buttonsSprites[i].bottomCenter = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/bottomCenter");
-                buttonsSprites[i].bottomRight = content.Load<Texture2D>("Textures/Hub/Buttons/" + i + "/bottomRight");
-            }
+            GUI.content.AddBox("Default", "Hub/Buttons/0");
 
             //Load from files
             if (Directory.Exists("Skin/" + config.skin))
             {
                 if (Directory.Exists("Skin/" + config.skin + "/Sounds"))
                 {
-                    Utilities.SoundFromMp3("Skin/" + config.skin + "/Sounds/alert.mp3", ref effects[0]);
-                    Utilities.SoundFromMp3("Skin/" + config.skin + "/Sounds/bip.mp3", ref effects[1]);
-                    Utilities.SoundFromMp3("Skin/" + config.skin + "/Sounds/change.mp3", ref effects[2]);
-                    Utilities.SoundFromMp3("Skin/" + config.skin + "/Sounds/valid.mp3", ref effects[3]);
+                    GUI.content.EditSound("alert", MyMonoGame.Utilities.FromFile.SoundFromMp3("Skin/" + config.skin + "/Sounds/alert.mp3"));
+                    GUI.content.EditSound("bip", MyMonoGame.Utilities.FromFile.SoundFromMp3("Skin/" + config.skin + "/Sounds/bip.mp3"));
+                    GUI.content.EditSound("change", MyMonoGame.Utilities.FromFile.SoundFromMp3("Skin/" + config.skin + "/Sounds/change.mp3"));
+                    GUI.content.EditSound("valid", MyMonoGame.Utilities.FromFile.SoundFromMp3("Skin/" + config.skin + "/Sounds/valid.mp3"));
                 }
 
                 if (Directory.Exists("Skin/" + config.skin + "/Textures"))
                 {
-                    Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/background0.png", ref backSprites[0], GraphicsDevice);
-                    Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/background1.png", ref backSprites[1], GraphicsDevice);
+                    GUI.content.EditTexture("background0", MyMonoGame.Utilities.FromFile.SpriteFromPng("Skin/" + config.skin + "Textures/background0.png", GraphicsDevice));
+                    GUI.content.EditTexture("background1", MyMonoGame.Utilities.FromFile.SpriteFromPng("Skin/" + config.skin + "Textures/background1.png", GraphicsDevice));
                     if (Directory.Exists("Skin/" + config.skin + "/Textures/Hub/"))
                     {
                         if (Directory.Exists("Skin/" + config.skin + "/Textures/Hub/Buttons"))
                         {
-                            for (int i = 0; i < buttonsSprites.Length; i++)
-                            {
-                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/topLeft.png", ref buttonsSprites[i].topLeft, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/topCenter.png", ref buttonsSprites[i].topCenter, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/topRight.png", ref buttonsSprites[i].topRight, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/centerLeft.png", ref buttonsSprites[i].centerLeft, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/centerCenter.png", ref buttonsSprites[i].centerCenter, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/centerRight.png", ref buttonsSprites[i].centerRight, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/bottomLeft.png", ref buttonsSprites[i].bottomLeft, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/bottomCenter.png", ref buttonsSprites[i].bottomCenter, GraphicsDevice);
-                                Utilities.SpriteFromPng("Skin/" + config.skin + "Textures/Hub/Buttons/" + i + "/bottomRight.png", ref buttonsSprites[i].bottomRight, GraphicsDevice);
-                            }
+                            GUI.content.EditBox("Default", MyMonoGame.Utilities.FromFile.BoxFormFolder("Skin/" + config.skin + "Textures/Hub/Buttons/0", GraphicsDevice));
                         }
 
-                        for (int i = 0; i < pointerSprites.Length; i++)
-                        {
-                            Utilities.SpriteFromPng("Skin/" + config.skin + "/Textures/Hub/pointer" + i + ".png", ref pointerSprites[i], GraphicsDevice);
-                        }
+                        GUI.content.EditTexture("pointer", MyMonoGame.Utilities.FromFile.SpriteFromPng("Skin/" + config.skin + "/Textures/Hub/pointer0.png", GraphicsDevice));
                     }
                 }
             }
 
-            background = new Background(backSprites, new double[2] { 1, 2 }); //Background initialisation
+            background = new Background(new Texture2D[2] { GUI.content.GetTexture("background0"), GUI.content.GetTexture("background1") }, new double[2] { 1, 2 }); //Background initialisation
             background.speedX = 1;
         }
 
@@ -191,8 +154,8 @@ namespace Galactic_Colors_Control_GUI
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            gameState.Update();
             GUI.Update();
+            gameState.Update();
 
             base.Update(gameTime);
         }
@@ -210,9 +173,12 @@ namespace Galactic_Colors_Control_GUI
             GUI.Draw(spriteBatch);
             gameState.Draw(spriteBatch);
 
+#if DEBUG
             Color ActiveColor = IsActive ? Color.Green : Color.Red;
-            GUI.Label(new MyMonoGame.Vector(10, ScreenHeight - 20), (1 / (float)gameTime.ElapsedGameTime.TotalSeconds).ToString(), fonts.small, new MyMonoGame.Colors(ActiveColor));
-            spriteBatch.Draw(pointerSprites[0], new Rectangle(Mouse.GetState().X - 10, Mouse.GetState().Y - 10, 20, 20), Color.Red);
+            GUI.Label(new Vector(10, ScreenHeight - 20), (1 / (float)gameTime.ElapsedGameTime.TotalSeconds).ToString(), GUI.content.GetFont("small"), new MyMonoGame.Colors(ActiveColor));
+#endif
+
+            spriteBatch.Draw(GUI.content.GetTexture("pointer"), new Rectangle(Mouse.GetState().X - 10, Mouse.GetState().Y - 10, 20, 20), Color.Red);
 
             spriteBatch.End();
 

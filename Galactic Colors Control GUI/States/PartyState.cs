@@ -40,25 +40,25 @@ namespace Galactic_Colors_Control_GUI.States
         public override void Draw(SpriteBatch spritebatch)
         {
             Game.singleton.background.Draw(spritebatch);
-            Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4), Game.singleton.multilang.Get("GCC", Game.singleton.config.lang), Game.singleton.fonts.title, new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
+            Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4), Game.singleton.multilang.Get("GCC", Game.singleton.config.lang), Game.singleton.GUI.content.GetFont("title"), new MyMonoGame.Colors(Color.White), Manager.textAlign.centerCenter);
             if (showLoading)
             {
-                Game.singleton.GUI.Box(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 4 + 50, 300, 50), Game.singleton.buttonsSprites[0]);
-                Game.singleton.GUI.Label(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 4 + 50, 300, 50), Game.singleton.multilang.Get("Loading", Game.singleton.config.lang), Game.singleton.fonts.basic);
+                Game.singleton.GUI.Box(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 4 + 50, 300, 50), Game.singleton.GUI.content.GetBox("Default"));
+                Game.singleton.GUI.Label(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 4 + 50, 300, 50), Game.singleton.multilang.Get("Loading", Game.singleton.config.lang), Game.singleton.GUI.content.GetFont("basic"));
             }
             else
             {
                 if (showOKMessage)
                 {
-                    Game.singleton.GUI.Box(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 4 + 50, 300, 150), Game.singleton.buttonsSprites[0]);
-                    Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 60), message.title, Game.singleton.fonts.basic, null, Manager.textAlign.bottomCenter);
-                    Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 100), message.text, Game.singleton.fonts.small, null, Manager.textAlign.bottomCenter);
-                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 140, Game.singleton.ScreenHeight / 4 + 150, 280, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("OK", Game.singleton.config.lang), Game.singleton.fonts.basic)) { Game.singleton.GUI.ResetFocus(); showOKMessage = false; }
+                    Game.singleton.GUI.Box(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 4 + 50, 300, 150), Game.singleton.GUI.content.GetBox("Default"));
+                    Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 60), message.title, Game.singleton.GUI.content.GetFont("basic"), null, Manager.textAlign.bottomCenter);
+                    Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 4 + 100), message.text, Game.singleton.GUI.content.GetFont("small"), null, Manager.textAlign.bottomCenter);
+                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 140, Game.singleton.ScreenHeight / 4 + 150, 280, 40), Game.singleton.GUI.content.GetBox("Default"), Game.singleton.multilang.Get("OK", Game.singleton.config.lang), Game.singleton.GUI.content.GetFont("basic"))) { Game.singleton.GUI.ResetFocus(); showOKMessage = false; }
                 }
                 else
                 {
-                    Game.singleton.GUI.Box(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 2 - 300, 300, 600), Game.singleton.buttonsSprites[0]);
-                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 140, Game.singleton.ScreenHeight / 2 - 290, 100, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Update", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White)))
+                    Game.singleton.GUI.Box(new Rectangle(Game.singleton.ScreenWidth / 2 - 150, Game.singleton.ScreenHeight / 2 - 300, 300, 600), Game.singleton.GUI.content.GetBox("Default"));
+                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 140, Game.singleton.ScreenHeight / 2 - 290, 100, 40), Game.singleton.GUI.content.GetBox("Default"), Game.singleton.multilang.Get("Update", Game.singleton.config.lang), Game.singleton.GUI.content.GetFont("basic"), new MyMonoGame.Colors(Color.LightGray, Color.White)))
                     {
                         if (!locked)
                         {
@@ -66,7 +66,7 @@ namespace Galactic_Colors_Control_GUI.States
                             new Thread(UpdateParty).Start();
                         }
                     }
-                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 + 40, Game.singleton.ScreenHeight / 2 - 290, 100, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Create", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White)))
+                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 + 40, Game.singleton.ScreenHeight / 2 - 290, 100, 40), Game.singleton.GUI.content.GetBox("Default"), Game.singleton.multilang.Get("Create", Game.singleton.config.lang), Game.singleton.GUI.content.GetFont("basic"), new MyMonoGame.Colors(Color.LightGray, Color.White)))
                     {
                         if (!locked)
                         {
@@ -75,7 +75,7 @@ namespace Galactic_Colors_Control_GUI.States
                         }
                     }
 
-                    //TODO Game.singleton.GUI.TextField(new Rectangle(Game.singleton.ScreenWidth / 2 + 40, Game.singleton.ScreenHeight / 2 - 290, 100, 40), ref password, Game.singleton.fonts.basic, null, Manager.textAlign.centerCenter, Game.singleton.multilang.Get("Password", Game.singleton.config.lang));
+                    //TODO Game.singleton.GUI.TextField(new Rectangle(Game.singleton.ScreenWidth / 2 + 40, Game.singleton.ScreenHeight / 2 - 290, 100, 40), ref password, Game.singleton.GUI.content.GetFont("basic"), null, Manager.textAlign.centerCenter, Game.singleton.multilang.Get("Password", Game.singleton.config.lang));
                     if (parties.Count > 0)
                     {
                         if (parties.Count > 10)
@@ -84,7 +84,7 @@ namespace Galactic_Colors_Control_GUI.States
                         }
                         for (int i = (page - 1) * 10; i < page * 10 && i < parties.Count; i++)
                         {
-                            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 100, Game.singleton.ScreenHeight / 2 - 240 + i * 50, 200, 40), Game.singleton.buttonsSprites[0], parties[i].text, Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White)))
+                            if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 100, Game.singleton.ScreenHeight / 2 - 240 + i * 50, 200, 40), Game.singleton.GUI.content.GetBox("Default"), parties[i].text, Game.singleton.GUI.content.GetFont("basic"), new MyMonoGame.Colors(Color.LightGray, Color.White)))
                             {
                                 locked = true;
                                 id = parties[i].id;
@@ -94,9 +94,9 @@ namespace Galactic_Colors_Control_GUI.States
                     }
                     else
                     {
-                        Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 2 - 240), Game.singleton.multilang.Get("AnyParty", Game.singleton.config.lang), Game.singleton.fonts.basic, null, Manager.textAlign.centerCenter);
+                        Game.singleton.GUI.Label(new MyMonoGame.Vector(Game.singleton.ScreenWidth / 2, Game.singleton.ScreenHeight / 2 - 240), Game.singleton.multilang.Get("AnyParty", Game.singleton.config.lang), Game.singleton.GUI.content.GetFont("basic"), null, Manager.textAlign.centerCenter);
                     }
-                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 + 240, 150, 40), Game.singleton.buttonsSprites[0], Game.singleton.multilang.Get("Back", Game.singleton.config.lang), Game.singleton.fonts.basic, new MyMonoGame.Colors(Color.LightGray, Color.White)))
+                    if (Game.singleton.GUI.Button(new Rectangle(Game.singleton.ScreenWidth / 2 - 75, Game.singleton.ScreenHeight / 2 + 240, 150, 40), Game.singleton.GUI.content.GetBox("Default"), Game.singleton.multilang.Get("Back", Game.singleton.config.lang), Game.singleton.GUI.content.GetFont("basic"), new MyMonoGame.Colors(Color.LightGray, Color.White)))
                     {
                         if (!locked)
                         {
