@@ -33,7 +33,7 @@ namespace Galactic_Colors_Control_Server
         public static string GetName(Socket soc)
         {
             if (soc == null)
-                return Server.multilang.Get("Server", Server.config.lang);
+                return Server.multilang.GetWord("Server", Server.config.lang);
 
             if (!Server.clients.ContainsKey(soc))
                 return "?";
@@ -90,7 +90,7 @@ namespace Galactic_Colors_Control_Server
             switch (packet.GetType().Name)
             {
                 case "EventData":
-                    Console.Write(new ColorStrings(Server.multilang.GetEventText((EventData)packet, Server.config.lang)));
+                    Console.Write(new ColorStrings(Parser.GetEventText((EventData)packet, Server.config.lang, Server.multilang)));
                     break;
 
                 default:
@@ -120,7 +120,7 @@ namespace Galactic_Colors_Control_Server
                 switch (data.GetType().Name)
                 {
                     case "EventData":
-                        Console.Write(new ColorStrings(Server.multilang.GetEventText((EventData)data, Server.config.lang)));
+                        Console.Write(new ColorStrings(Parser.GetEventText((EventData)data, Server.config.lang, Server.multilang)));
                         break;
 
                     default:

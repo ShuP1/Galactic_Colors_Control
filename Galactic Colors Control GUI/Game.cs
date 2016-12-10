@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MyCommon;
 using MyMonoGame;
 using MyMonoGame.GUI;
 using System;
@@ -69,7 +70,7 @@ namespace Galactic_Colors_Control_GUI
             config = config.Load();
             logger.Write("Galactic Colors Control GUI " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Logger.logType.fatal);
             logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel, Program._debug, Program._dev, false);
-            multilang.Load();
+            multilang.Initialise(Common.dictionary);
             if (Program._debug) { logger.Write("CLIENT IS IN DEBUG MODE !", Logger.logType.error, Logger.logConsole.show); }
             if (Program._dev) { logger.Write("CLIENT IS IN DEV MODE !", Logger.logType.error, Logger.logConsole.show); }
 

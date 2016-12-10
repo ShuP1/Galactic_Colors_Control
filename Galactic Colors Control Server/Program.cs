@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
+using MyCommon;
 using Console = Galactic_Colors_Control_Common.Console;
 
 //TODO gui parties pages
@@ -50,7 +51,7 @@ namespace Galactic_Colors_Control_Server
             logger.Write(Console.Title + " " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Logger.logType.fatal);
             config = config.Load();
             logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel, _debug, _dev);
-            multilang.Load();
+            multilang.Initialise(Common.dictionary);
             if (args.Length > 0)
             {
                 switch (args[0])
@@ -101,7 +102,7 @@ namespace Galactic_Colors_Control_Server
             {
                 string ConsoleInput = Console.Read();
                 string[] args = Common.SplitArgs(ConsoleInput);
-                Console.Write(new ColorStrings(multilang.GetResultText(new ResultData(-1, Commands.Manager.Execute(args, null, true)), config.lang)));
+                Console.Write(new ColorStrings(Parser.GetResultText(new ResultData(-1, Commands.Manager.Execute(args, null, true)), config.lang, multilang)));
                 ConsoleInput = null;
             }
         }

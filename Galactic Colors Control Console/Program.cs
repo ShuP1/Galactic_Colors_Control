@@ -4,6 +4,7 @@ using Galactic_Colors_Control_Common.Protocol;
 using System.Reflection;
 using System.Threading;
 using Consol = Galactic_Colors_Control_Common.Console;
+using MyCommon;
 
 namespace Galactic_Colors_Control_Console
 {
@@ -29,7 +30,7 @@ namespace Galactic_Colors_Control_Console
             logger.Write("Console " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Logger.logType.error);
             config = config.Load();
             logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel, _debug, _dev);
-            multilang.Load();
+            multilang.Initialise(Common.dictionary);
             client.OnEvent += new System.EventHandler(OnEvent); //Set OnEvent function
             if (args.Length > 0)
             {
@@ -54,7 +55,7 @@ namespace Galactic_Colors_Control_Console
             while (!hostSet) //Request hostname
             {
                 Thread.Sleep(100);
-                Consol.Write(new ColorStrings(multilang.Get("EnterHostname", config.lang) + ":"));
+                Consol.Write(new ColorStrings(multilang.GetWord("EnterHostname", config.lang) + ":"));
                 string host = client.ValidateHost(System.Console.ReadLine());
                 if (host[0] == '*')
                 {
@@ -66,7 +67,7 @@ namespace Galactic_Colors_Control_Console
                 else
                 {
                     logger.Write("Validate " + host, Logger.logType.info);
-                    Consol.Write(new ColorStrings(new ColorString(multilang.Get("Use", config.lang) + " "), new ColorString(host, System.ConsoleColor.Blue), new ColorString("? "), new ColorString("y", System.ConsoleColor.Green), new ColorString("/"), new ColorString("n", System.ConsoleColor.Red)));
+                    Consol.Write(new ColorStrings(new ColorString(multilang.GetWord("Use", config.lang) + " "), new ColorString(host, System.ConsoleColor.Blue), new ColorString("? "), new ColorString("y", System.ConsoleColor.Green), new ColorString("/"), new ColorString("n", System.ConsoleColor.Red)));
                     System.ConsoleKeyInfo c = new System.ConsoleKeyInfo();
                     while (c.Key != System.ConsoleKey.Y && c.Key != System.ConsoleKey.N)
                     {
@@ -82,7 +83,7 @@ namespace Galactic_Colors_Control_Console
                     }
                 }
             }
-            Consol.Write(new ColorStrings(multilang.Get("Loading", config.lang)));
+            Consol.Write(new ColorStrings(multilang.GetWord("Loading", config.lang)));
             if (client.ConnectHost()) //Try connection
             {
                 logger.Write("Connected", Logger.logType.warm);
@@ -91,7 +92,7 @@ namespace Galactic_Colors_Control_Console
                 //Identifaction
                 while (!connected)
                 {
-                    Consol.Write(new ColorStrings(multilang.Get("Username", config.lang) + ":"));
+                    Consol.Write(new ColorStrings(multilang.GetWord("Username", config.lang) + ":"));
                     string username = System.Console.ReadLine();
                     if (username.Length > 3)
                     {
@@ -100,20 +101,20 @@ namespace Galactic_Colors_Control_Console
                         else
                         {
                             logger.Write("Identification error " + res.result, Logger.logType.info);
-                            Consol.Write(new ColorStrings(new ColorString(multilang.GetResultText(res, config.lang), System.ConsoleColor.Red)));
+                            Consol.Write(new ColorStrings(new ColorString(Parser.GetResultText(res, config.lang, multilang), System.ConsoleColor.Red)));
                         }
                     }
                     else
                     {
-                        Consol.Write(new ColorStrings(new ColorString(multilang.Get("TooShort", config.lang), System.ConsoleColor.Red)));
+                        Consol.Write(new ColorStrings(new ColorString(multilang.GetWord("TooShort", config.lang), System.ConsoleColor.Red)));
                     }
                 }
                 bool inparty = false;
                 while (!inparty)
                 {
                     System.Console.Clear();
-                    Consol.Write(new ColorStrings(multilang.GetResultText(client.Request(new string[2] { "party", "list" }), config.lang)));
-                    Consol.Write(new ColorStrings(multilang.Get("Party", config.lang) + ":" + System.Environment.NewLine + "     (<id> [password] or 'c' for create)"));
+                    Consol.Write(new ColorStrings(Parser.GetResultText(client.Request(new string[2] { "party", "list" }), config.lang, multilang)));
+                    Consol.Write(new ColorStrings(multilang.GetWord("Party", config.lang) + ":" + System.Environment.NewLine + "     (<id> [password] or 'c' for create)"));
                     string[] data = Common.SplitArgs(System.Console.ReadLine());
                     if (data.Length > 0)
                     {
@@ -127,13 +128,13 @@ namespace Galactic_Colors_Control_Console
                                 if (createRes.type == ResultTypes.OK) { inparty = true; }
                                 else
                                 {
-                                    Consol.Write(new ColorStrings(new ColorString(multilang.GetResultText(createRes, config.lang), System.ConsoleColor.Red)));
+                                    Consol.Write(new ColorStrings(new ColorString(Parser.GetResultText(createRes, config.lang, multilang), System.ConsoleColor.Red)));
                                     System.Console.Read();
                                 }
                             }
                             else
                             {
-                                Consol.Write(new ColorStrings(new ColorString(multilang.Get("Format", config.lang), System.ConsoleColor.Red)));
+                                Consol.Write(new ColorStrings(new ColorString(multilang.GetWord("Format", config.lang), System.ConsoleColor.Red)));
                             }
                         }
                         else
@@ -146,12 +147,12 @@ namespace Galactic_Colors_Control_Console
                                 if (res.type == ResultTypes.OK) { inparty = true; }
                                 else
                                 {
-                                    Consol.Write(new ColorStrings(new ColorString(multilang.GetResultText(res, config.lang), System.ConsoleColor.Red)));
+                                    Consol.Write(new ColorStrings(new ColorString(Parser.GetResultText(res, config.lang, multilang), System.ConsoleColor.Red)));
                                 }
                             }
                             else
                             {
-                                Consol.Write(new ColorStrings(new ColorString(multilang.Get("Format", config.lang), System.ConsoleColor.Red)));
+                                Consol.Write(new ColorStrings(new ColorString(multilang.GetWord("Format", config.lang), System.ConsoleColor.Red)));
                             }
                         }
                     }
@@ -168,7 +169,7 @@ namespace Galactic_Colors_Control_Console
             else
             {
                 logger.Write("Connection error", Logger.logType.error);
-                Consol.Write(new ColorStrings(new ColorString(multilang.Get("CantConnect", config.lang), System.ConsoleColor.Red)));
+                Consol.Write(new ColorStrings(new ColorString(multilang.GetWord("CantConnect", config.lang), System.ConsoleColor.Red)));
             }
             run = false;
             logger.Join();
@@ -193,14 +194,14 @@ namespace Galactic_Colors_Control_Console
             {
                 req = Common.Strings("say", input);
             }
-            Consol.Write(new ColorStrings(multilang.GetResultText(client.Request(req), config.lang)));
+            Consol.Write(new ColorStrings(Parser.GetResultText(client.Request(req), config.lang, multilang)));
         }
 
         private static void OnEvent(object sender, System.EventArgs e)
         {
             //TODO add PartyKick
             EventData eve = ((EventDataArgs)e).Data;
-            Consol.Write(new ColorStrings(multilang.GetEventText(eve, config.lang)));
+            Consol.Write(new ColorStrings(Parser.GetEventText(eve, config.lang, multilang)));
         }
     }
 }
