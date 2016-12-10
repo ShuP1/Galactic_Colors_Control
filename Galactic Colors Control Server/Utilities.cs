@@ -3,7 +3,8 @@ using Galactic_Colors_Control_Common.Protocol;
 using System;
 using System.Net;
 using System.Net.Sockets;
-using Console = Galactic_Colors_Control_Common.Console;
+using Console = MyConsole.ConsoleIO;
+using MyConsole;
 
 namespace Galactic_Colors_Control_Server
 {

@@ -8,7 +8,8 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
 using MyCommon;
-using Console = Galactic_Colors_Control_Common.Console;
+using Console = MyConsole.ConsoleIO;
+using MyConsole;
 
 //TODO gui parties pages
 

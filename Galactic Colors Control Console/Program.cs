@@ -3,8 +3,9 @@ using Galactic_Colors_Control_Common;
 using Galactic_Colors_Control_Common.Protocol;
 using System.Reflection;
 using System.Threading;
-using Consol = Galactic_Colors_Control_Common.Console;
+using Consol = MyConsole.ConsoleIO;
 using MyCommon;
+using MyConsole;
 
 namespace Galactic_Colors_Control_Console
 {

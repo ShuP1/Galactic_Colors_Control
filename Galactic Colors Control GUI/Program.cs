@@ -1,6 +1,7 @@
 ﻿using Galactic_Colors_Control_Common;
 using System;
-using Console = Galactic_Colors_Control_Common.Console;
+using Console = MyConsole.ConsoleIO;
+using MyConsole;
 
 namespace Galactic_Colors_Control_GUI
 {
