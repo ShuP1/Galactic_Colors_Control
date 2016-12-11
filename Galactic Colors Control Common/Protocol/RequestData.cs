@@ -1,4 +1,6 @@
-﻿namespace Galactic_Colors_Control_Common.Protocol
+﻿using MyCommon;
+
+namespace Galactic_Colors_Control_Common.Protocol
 {
     /// <summary>
     /// Client to Server Data request packet 'allways' return ResultData
@@ -30,12 +32,12 @@
 
         public override string ToSmallString()
         {
-            return Common.ArrayToString(args);
+            return Strings.ArrayToString(args);
         }
 
         public override string ToLongString()
         {
-            return "Request : " + Common.ArrayToString(args) + "|" + id;
+            return "Request : " + Strings.ArrayToString(args) + "|" + id;
         }
     }
 }

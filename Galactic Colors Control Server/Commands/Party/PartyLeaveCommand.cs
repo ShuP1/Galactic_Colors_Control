@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
@@ -28,13 +28,13 @@ namespace Galactic_Colors_Control_Server.Commands
             {
                 int partyId = -1;
                 if (!Utilities.AccessParty(ref partyId, args, false, soc, server))
-                    return new RequestResult(ResultTypes.Error, Common.Strings("Access"));
+                    return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Access"));
 
                 if (Server.parties[partyId].IsOwner(Utilities.GetName(soc)))
-                    return new RequestResult(ResultTypes.Error, Common.Strings("Owner"));
+                    return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Owner"));
 
                 Server.clients[soc].partyID = -1;
-                Utilities.BroadcastParty(new EventData(EventTypes.PartyLeave, Common.Strings(Utilities.GetName(soc))), partyId);
+                Utilities.BroadcastParty(new EventData(EventTypes.PartyLeave, Strings.ArrayFromStrings(Utilities.GetName(soc))), partyId);
                 return new RequestResult(ResultTypes.OK);
             }
         }

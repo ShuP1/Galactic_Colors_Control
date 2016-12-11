@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,19 +59,19 @@ namespace Galactic_Colors_Control_Server.Commands
                         text += ("  " + (com.Group != 0 ? new string(' ', 4) : "") + com.Name + new string(' ', maxLen - com.Name.Length - (com.Group == 0 ? 0 : 4)) + " : " + com.DescText + Environment.NewLine);
                     }
                 }
-                return new RequestResult(ResultTypes.OK, Common.Strings(text));
+                return new RequestResult(ResultTypes.OK, Strings.ArrayFromStrings(text));
             }
             else
             {
                 ICommand command = null;
                 args = args.Skip(1).ToArray();
                 if (!Manager.TryGetCommand(args, ref command))
-                    return new RequestResult(ResultTypes.Error, Common.Strings("AnyCommand"));
+                    return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("AnyCommand"));
 
                 if (!Manager.CanAccess(command, soc, server))
-                    return new RequestResult(ResultTypes.Error, Common.Strings("AnyCommand"));
+                    return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("AnyCommand"));
 
-                return new RequestResult(ResultTypes.OK, Common.Strings(command.HelpText));
+                return new RequestResult(ResultTypes.OK, Strings.ArrayFromStrings(command.HelpText));
             }
         }
     }

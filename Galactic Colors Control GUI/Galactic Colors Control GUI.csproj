@@ -64,9 +64,6 @@
     <Reference Include="MyCommon">
       <HintPath>..\..\MyCommon\MyCommon\bin\Release\MyCommon.dll</HintPath>
     </Reference>
-    <Reference Include="MyConsole">
-      <HintPath>..\..\MyConsole\MyConsole\bin\Release\MyConsole.dll</HintPath>
-    </Reference>
     <Reference Include="MyMonoGame">
       <HintPath>..\..\MonoGame\MyMonoGameGUI\MyMonoGameGUI\bin\Release\MyMonoGame.dll</HintPath>
     </Reference>

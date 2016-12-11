@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
@@ -25,12 +25,12 @@ namespace Galactic_Colors_Control_Server.Commands
                 if (Utilities.GetName(client) == args[2]) { target = client; }
             }
             if (target == null)
-                return new RequestResult(ResultTypes.Error, Common.Strings("CantFind"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("CantFind"));
 
             Server.logger.Write(args[2] + " was kick by server.", Logger.logType.info, Logger.logConsole.show);
             if (args.Length > 2)
             {
-                Utilities.Send(target, new EventData(EventTypes.ServerKick, Common.Strings(args[3])));
+                Utilities.Send(target, new EventData(EventTypes.ServerKick, Strings.ArrayFromStrings(args[3])));
                 Server.logger.Write("because" + args[3], Logger.logType.debug);
             }
             else

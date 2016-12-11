@@ -1,4 +1,6 @@
-﻿namespace Galactic_Colors_Control_Common.Protocol
+﻿using MyCommon;
+
+namespace Galactic_Colors_Control_Common.Protocol
 {
     /// <summary>
     /// Packet Master Class

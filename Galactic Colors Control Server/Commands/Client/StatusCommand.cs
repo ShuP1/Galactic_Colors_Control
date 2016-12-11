@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -27,7 +27,7 @@ namespace Galactic_Colors_Control_Server.Commands
                 if (Utilities.GetName(client) == args[2]) { target = client; }
             }
             if (target == null)
-                return new RequestResult(ResultTypes.Error, Common.Strings("CantFind"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("CantFind"));
 
             string text = "";
             text += ("Name   : " + Utilities.GetName(target) + Environment.NewLine);
@@ -36,7 +36,7 @@ namespace Galactic_Colors_Control_Server.Commands
             {
                 text += ("Party : " + Server.clients[target].party + Environment.NewLine);
             }
-            return new RequestResult(ResultTypes.OK, Common.Strings(text));
+            return new RequestResult(ResultTypes.OK, Strings.ArrayFromStrings(text));
         }
     }
 }

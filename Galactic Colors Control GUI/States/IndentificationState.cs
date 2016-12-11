@@ -1,7 +1,7 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MyCommon;
 using MyMonoGame.GUI;
 using System.Threading;
 
@@ -85,7 +85,7 @@ namespace Galactic_Colors_Control_GUI.States
                     else
                     {
                         message.title = Game.singleton.multilang.GetWord("Error", Game.singleton.config.lang);
-                        message.text = Common.ArrayToString(res.result);
+                        message.text = Strings.ArrayToString(res.result);
                         showOKMessage = true;
                     }
                 }

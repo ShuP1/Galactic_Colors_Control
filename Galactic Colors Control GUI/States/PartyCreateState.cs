@@ -1,7 +1,7 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MyCommon;
 using MyMonoGame.GUI;
 using System.Threading;
 
@@ -77,14 +77,14 @@ namespace Galactic_Colors_Control_GUI.States
                     ResultData res = Game.singleton.client.Request(new string[4] { "party", "create", party, count.ToString() });
                     if (res.type == ResultTypes.OK)
                     {
-                        Game.singleton.logger.Write("Create party " + Common.ArrayToString(res.result), Logger.logType.info);
+                        Game.singleton.logger.Write("Create party " + Strings.ArrayToString(res.result), Logger.logType.info);
                         Game.singleton.gameState = new GameState();
                     }
                     else
                     {
-                        Game.singleton.logger.Write("Create error " + Common.ArrayToString(res.result), Logger.logType.error);
+                        Game.singleton.logger.Write("Create error " + Strings.ArrayToString(res.result), Logger.logType.error);
                         message.title = Game.singleton.multilang.GetWord("Error", Game.singleton.config.lang);
-                        message.text = Common.ArrayToString(res.result);
+                        message.text = Strings.ArrayToString(res.result);
                         showOKMessage = true;
                     }
                 }

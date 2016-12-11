@@ -1,4 +1,6 @@
-﻿namespace Galactic_Colors_Control_Common.Protocol
+﻿using MyCommon;
+
+namespace Galactic_Colors_Control_Common.Protocol
 {
     public enum EventTypes
     {
@@ -44,7 +46,7 @@
 
         public override string ToSmallString()
         {
-            return type.ToString() + "|" + Common.ArrayToString(data);
+            return type.ToString() + "|" + Strings.ArrayToString(data);
         }
 
         public override string ToLongString()

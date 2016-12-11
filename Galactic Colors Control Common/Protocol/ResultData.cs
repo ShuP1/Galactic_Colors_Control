@@ -1,4 +1,6 @@
-﻿namespace Galactic_Colors_Control_Common.Protocol
+﻿using MyCommon;
+
+namespace Galactic_Colors_Control_Common.Protocol
 {
     public enum ResultTypes { Error, OK }
 
@@ -46,12 +48,12 @@
 
         public override string ToSmallString()
         {
-            return type.ToString() + "|" + Common.ArrayToString(result);
+            return type.ToString() + "|" + Strings.ArrayToString(result);
         }
 
         public override string ToLongString()
         {
-            return "Result : " + type.ToString() + "|" + Common.ArrayToString(result) + "|" + id;
+            return "Result : " + type.ToString() + "|" + Strings.ArrayToString(result) + "|" + id;
         }
     }
 }

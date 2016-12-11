@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
@@ -21,7 +21,7 @@ namespace Galactic_Colors_Control_Server.Commands
         {
             int partyId = -1;
             if (!Utilities.AccessParty(ref partyId, args, true, soc, server))
-                return new RequestResult(ResultTypes.Error, Common.Strings("Access"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Access"));
 
             foreach (Socket client in Server.parties[partyId].clients)
             {

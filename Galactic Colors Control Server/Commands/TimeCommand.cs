@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System;
 using System.Net.Sockets;
 
@@ -20,7 +20,7 @@ namespace Galactic_Colors_Control_Server.Commands
 
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
-            return new RequestResult(ResultTypes.OK, Common.Strings(DateTime.Now.ToLongTimeString()));
+            return new RequestResult(ResultTypes.OK, Strings.ArrayFromStrings(DateTime.Now.ToLongTimeString()));
         }
     }
 }

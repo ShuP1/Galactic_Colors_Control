@@ -1,7 +1,7 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System.Net.Sockets;
-using Console = MyConsole.ConsoleIO;
+using Console = MyCommon.ConsoleIO;
 
 namespace Galactic_Colors_Control_Server.Commands
 {
@@ -27,7 +27,7 @@ namespace Galactic_Colors_Control_Server.Commands
             }
             else
             {
-                return new RequestResult(ResultTypes.Error, Common.Strings("ClientSide"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("ClientSide"));
             }
         }
     }

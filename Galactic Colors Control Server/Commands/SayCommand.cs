@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
@@ -20,14 +20,14 @@ namespace Galactic_Colors_Control_Server.Commands
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
             if (args[1].Length == 0)
-                return new RequestResult(ResultTypes.Error, Common.Strings("AnyMessage"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("AnyMessage"));
 
             if (!Utilities.IsConnect(soc))
-                return new RequestResult(ResultTypes.Error, Common.Strings("MustBeConnected"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("MustBeConnected"));
 
             int party = -1;
             party = Utilities.GetParty(soc);
-            Utilities.BroadcastParty(new EventData(EventTypes.ChatMessage, Common.Strings(Utilities.GetName(soc) + " : " + args[1])), party);
+            Utilities.BroadcastParty(new EventData(EventTypes.ChatMessage, Strings.ArrayFromStrings(Utilities.GetName(soc) + " : " + args[1])), party);
             return new RequestResult(ResultTypes.OK);
         }
     }

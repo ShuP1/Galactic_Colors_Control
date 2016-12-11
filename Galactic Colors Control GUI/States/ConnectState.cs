@@ -1,6 +1,6 @@
-﻿using Galactic_Colors_Control_Common;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MyCommon;
 using MyMonoGame.GUI;
 using System.Threading;
 

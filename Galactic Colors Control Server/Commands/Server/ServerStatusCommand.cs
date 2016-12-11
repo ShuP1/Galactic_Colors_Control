@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
@@ -23,7 +23,7 @@ namespace Galactic_Colors_Control_Server.Commands
             text += "Server : " + (Server._open ? "open" : "close");
             text += "Clients : " + Server.clients.Count + "/" + Server.config.size;
             text += "Parties : " + Server.parties.Count;
-            return new RequestResult(ResultTypes.OK, Common.Strings(text));
+            return new RequestResult(ResultTypes.OK, Strings.ArrayFromStrings(text));
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MyCommon;
 using MyMonoGame.GUI;
 using System.Collections.Generic;
 using System.Threading;
@@ -154,9 +154,9 @@ namespace Galactic_Colors_Control_GUI.States
                 }
                 else
                 {
-                    Game.singleton.logger.Write("Join error " + Common.ArrayToString(res.result), Logger.logType.error);
+                    Game.singleton.logger.Write("Join error " + Strings.ArrayToString(res.result), Logger.logType.error);
                     message.title = Game.singleton.multilang.GetWord("Error", Game.singleton.config.lang);
-                    message.text = Common.ArrayToString(res.result);
+                    message.text = Strings.ArrayToString(res.result);
                     showOKMessage = true;
                 }
             }

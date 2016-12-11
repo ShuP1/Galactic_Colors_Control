@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
@@ -20,20 +20,20 @@ namespace Galactic_Colors_Control_Server.Commands
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
             if (!server && Server.clients[soc].partyID != -1)
-                return new RequestResult(ResultTypes.Error, Common.Strings("Allready"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Allready"));
 
             int size;
             if (!int.TryParse(args[3], out size))
-                return new RequestResult(ResultTypes.Error, Common.Strings("Format"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Format"));
 
             if (size < 1)
-                return new RequestResult(ResultTypes.Error, Common.Strings("TooSmall"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("TooSmall"));
 
             if (size > Server.config.size)
-                return new RequestResult(ResultTypes.Error, Common.Strings("TooBig"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("TooBig"));
 
             if (Server.parties.Count >= Server.config.partysize)
-                return new RequestResult(ResultTypes.Error, Common.Strings("Full"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Full"));
 
             Server.AddParty(new Party(args[2], size, Utilities.GetName(soc)));
             Server.logger.Write("Party " + args[2] + " create with " + size + " slots as " + Server.GetPartyID(false), Logger.logType.info);

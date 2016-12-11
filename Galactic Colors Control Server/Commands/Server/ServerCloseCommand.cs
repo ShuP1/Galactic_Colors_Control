@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
@@ -20,7 +20,7 @@ namespace Galactic_Colors_Control_Server.Commands
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
             if (!Server._open)
-                return new RequestResult(ResultTypes.Error, Common.Strings("Allready"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Allready"));
 
             Server._open = false;
             Server.logger.Write("Server closed", Logger.logType.warm, Logger.logConsole.show);

@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System;
 using System.Net.Sockets;
 
@@ -21,14 +21,14 @@ namespace Galactic_Colors_Control_Server.Commands
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
             if ((server && Server.selectedParty != -1) || (!server && Server.clients[soc].partyID != -1))
-                return new RequestResult(ResultTypes.Error, Common.Strings("Allready"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Allready"));
 
             int id;
             if (!int.TryParse(args[2], out id))
-                return new RequestResult(ResultTypes.Error, Common.Strings("Format"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Format"));
 
             if (!Server.parties.ContainsKey(id))
-                return new RequestResult(ResultTypes.Error, Common.Strings("CantFind"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("CantFind"));
 
             Party party = Server.parties[id];
             if (args.Length == 3)
@@ -37,7 +37,7 @@ namespace Galactic_Colors_Control_Server.Commands
                 args[3] = "";
             }
             if (!server && !party.TestPassword(args[3]))
-                return new RequestResult(ResultTypes.Error, Common.Strings("Password"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Password"));
 
             if (server)
             {
@@ -47,13 +47,13 @@ namespace Galactic_Colors_Control_Server.Commands
             else
             {
                 if (!party.open)
-                    return new RequestResult(ResultTypes.Error, Common.Strings("Close"));
+                    return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Close"));
 
                 if (party.clients.Count + 1 > party.size)
-                    return new RequestResult(ResultTypes.Error, Common.Strings("Full"));
+                    return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Full"));
 
                 Server.clients[soc].partyID = id;
-                Utilities.BroadcastParty(new EventData(EventTypes.PartyJoin, Common.Strings(Utilities.GetName(soc))), id);
+                Utilities.BroadcastParty(new EventData(EventTypes.PartyJoin, Strings.ArrayFromStrings(Utilities.GetName(soc))), id);
                 return new RequestResult(ResultTypes.OK);
             }
         }

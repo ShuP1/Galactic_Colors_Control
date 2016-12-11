@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System;
 using System.Net.Sockets;
 
@@ -23,11 +23,11 @@ namespace Galactic_Colors_Control_Server.Commands
             if (Enum.TryParse(args[1], true, out Server.config.logLevel))
             {
                 Server.logger.ChangeLevel(Server.config.logLevel);
-                return new RequestResult(ResultTypes.OK, Common.Strings(Server.config.logLevel.ToString()));
+                return new RequestResult(ResultTypes.OK, Strings.ArrayFromStrings(Server.config.logLevel.ToString()));
             }
             else
             {
-                return new RequestResult(ResultTypes.Error, Common.Strings("IncorrectArgs"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("IncorrectArgs"));
             }
         }
     }

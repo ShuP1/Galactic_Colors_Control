@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System.Net;
 using System.Net.Sockets;
 
@@ -21,13 +21,13 @@ namespace Galactic_Colors_Control_Server.Commands
         public RequestResult Execute(string[] args, Socket soc, bool server = false)
         {
             if (Utilities.IsConnect(soc))
-                return new RequestResult(ResultTypes.Error, Common.Strings("Connected"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Connected"));
 
             if (args[2] != Protocol.version.ToString()) //Check client protocol version
-                return new RequestResult(ResultTypes.Error, Common.Strings("Version", Protocol.version.ToString()));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Version", Protocol.version.ToString()));
 
             if (args[1].Length < 3)
-                return new RequestResult(ResultTypes.Error, Common.Strings("TooShort"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("TooShort"));
 
             Server.logger.Write("Identifiaction request from " + Utilities.GetName(soc), Logger.logType.debug);
             bool allreadyconnected = false;
@@ -37,16 +37,16 @@ namespace Galactic_Colors_Control_Server.Commands
                 if (client.pseudo == args[1]) { allreadyconnected = true; break; }
             }
             if (allreadyconnected)
-                return new RequestResult(ResultTypes.Error, Common.Strings("AllreadyTaken"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("AllreadyTaken"));
 
             lock (Server.clients_lock)
             {
                 Server.clients[soc].status = 0;
                 Server.clients[soc].pseudo = args[1];
             }
-            Utilities.Broadcast(new EventData(EventTypes.ServerJoin, Common.Strings(args[1])));
+            Utilities.Broadcast(new EventData(EventTypes.ServerJoin, Strings.ArrayFromStrings(args[1])));
             Server.logger.Write("Identified as " + Utilities.GetName(soc) + " form " + ((IPEndPoint)soc.LocalEndPoint).Address.ToString(), Logger.logType.info);
-            return new RequestResult(ResultTypes.OK, Common.Strings(args[1]));
+            return new RequestResult(ResultTypes.OK, Strings.ArrayFromStrings(args[1]));
         }
     }
 }

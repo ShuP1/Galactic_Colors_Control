@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System.Net.Sockets;
 
 namespace Galactic_Colors_Control_Server.Commands
@@ -21,7 +21,7 @@ namespace Galactic_Colors_Control_Server.Commands
         {
             int partyId = -1;
             if (!Utilities.AccessParty(ref partyId, args, true, soc, server))
-                return new RequestResult(ResultTypes.Error, Common.Strings("Access"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Access"));
 
             Socket target = null;
             foreach (Socket client in Server.parties[partyId].clients)
@@ -29,9 +29,9 @@ namespace Galactic_Colors_Control_Server.Commands
                 if (Utilities.GetName(client) == args[2]) { target = client; }
             }
             if (target == null)
-                return new RequestResult(ResultTypes.Error, Common.Strings("CantFind"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("CantFind"));
 
-            Utilities.Send(target, new EventData(EventTypes.PartyKick, args.Length > 3 ? Common.Strings(args[2]) : null));
+            Utilities.Send(target, new EventData(EventTypes.PartyKick, args.Length > 3 ? Strings.ArrayFromStrings(args[2]) : null));
             return Manager.Execute(new string[2] { "party", "leave" }, target, false);
         }
     }

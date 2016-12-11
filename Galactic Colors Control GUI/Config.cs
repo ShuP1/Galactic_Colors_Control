@@ -1,4 +1,4 @@
-﻿using Galactic_Colors_Control_Common;
+﻿using MyCommon;
 using System;
 using System.IO;
 using System.Xml;

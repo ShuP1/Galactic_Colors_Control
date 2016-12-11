@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System;
 using System.Net.Sockets;
 
@@ -22,7 +22,7 @@ namespace Galactic_Colors_Control_Server.Commands
         {
             int partyId = -1;
             if (!Utilities.AccessParty(ref partyId, args, true, soc, server))
-                return new RequestResult(ResultTypes.Error, Common.Strings("Access"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Access"));
 
             if (args.Length == 3)
             {
@@ -31,7 +31,7 @@ namespace Galactic_Colors_Control_Server.Commands
             }
 
             if (!Server.parties[partyId].SetPassword(args[2], args[3]))
-                return new RequestResult(ResultTypes.Error, Common.Strings("Password"));
+                return new RequestResult(ResultTypes.Error, Strings.ArrayFromStrings("Password"));
 
             return new RequestResult(ResultTypes.OK);
         }

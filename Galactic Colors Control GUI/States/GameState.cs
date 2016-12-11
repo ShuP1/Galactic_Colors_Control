@@ -1,8 +1,8 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MyCommon;
 using MyMonoGame.GUI;
 using System;
 using System.Threading;
@@ -78,12 +78,12 @@ namespace Galactic_Colors_Control_GUI.States
             if (request[0] == Game.singleton.config.commandChar)
             {
                 request = request.Substring(1);
-                res = Game.singleton.client.Request(Common.SplitArgs(request));
+                res = Game.singleton.client.Request(Strings.SplitArgs(request));
                 ChatText(Parser.GetResultText(res, Game.singleton.config.lang, Game.singleton.multilang));
             }
             else
             {
-                res = Game.singleton.client.Request(Common.Strings("say", request));
+                res = Game.singleton.client.Request(Strings.ArrayFromStrings("say", request));
                 if (res.type != ResultTypes.OK)
                 {
                     ChatText(Parser.GetResultText(res, Game.singleton.config.lang, Game.singleton.multilang));
@@ -98,7 +98,7 @@ namespace Galactic_Colors_Control_GUI.States
             {
                 Game.singleton.logger.Write("Server kick" + eve.data, Logger.logType.warm);
                 message.title = Game.singleton.multilang.GetWord("ServerKick", Game.singleton.config.lang);
-                message.text = Common.ArrayToString(eve.data);
+                message.text = Strings.ArrayToString(eve.data);
                 showOKMessage = true;
             }
             else

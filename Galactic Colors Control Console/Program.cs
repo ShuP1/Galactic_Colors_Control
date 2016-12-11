@@ -1,11 +1,10 @@
 ﻿using Galactic_Colors_Control;
 using Galactic_Colors_Control_Common;
 using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System.Reflection;
 using System.Threading;
-using Consol = MyConsole.ConsoleIO;
-using MyCommon;
-using MyConsole;
+using Consol = MyCommon.ConsoleIO;
 
 namespace Galactic_Colors_Control_Console
 {
@@ -116,13 +115,13 @@ namespace Galactic_Colors_Control_Console
                     System.Console.Clear();
                     Consol.Write(new ColorStrings(Parser.GetResultText(client.Request(new string[2] { "party", "list" }), config.lang, multilang)));
                     Consol.Write(new ColorStrings(multilang.GetWord("Party", config.lang) + ":" + System.Environment.NewLine + "     (<id> [password] or 'c' for create)"));
-                    string[] data = Common.SplitArgs(System.Console.ReadLine());
+                    string[] data = Strings.SplitArgs(System.Console.ReadLine());
                     if (data.Length > 0)
                     {
                         if (data[0] == "c")
                         {
                             Consol.Write(new ColorStrings("<party name> <player count>:"));
-                            string[] split = Common.SplitArgs(System.Console.ReadLine());
+                            string[] split = Strings.SplitArgs(System.Console.ReadLine());
                             if (split.Length == 2)
                             {
                                 ResultData createRes = client.Request(new string[4] { "party", "create", split[0], split[1] });
@@ -189,11 +188,11 @@ namespace Galactic_Colors_Control_Console
             if (input[0] == config.commandChar)
             {
                 input = input.Substring(1);
-                req = Common.SplitArgs(input);
+                req = Strings.SplitArgs(input);
             }
             else
             {
-                req = Common.Strings("say", input);
+                req = Strings.ArrayFromStrings("say", input);
             }
             Consol.Write(new ColorStrings(Parser.GetResultText(client.Request(req), config.lang, multilang)));
         }

@@ -1,10 +1,9 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System;
 using System.Net;
 using System.Net.Sockets;
-using Console = MyConsole.ConsoleIO;
-using MyConsole;
+using Console = MyCommon.ConsoleIO;
 
 namespace Galactic_Colors_Control_Server
 {

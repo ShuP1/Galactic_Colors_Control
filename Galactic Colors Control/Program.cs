@@ -1,5 +1,5 @@
-﻿using Galactic_Colors_Control_Common;
-using Galactic_Colors_Control_Common.Protocol;
+﻿using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -203,7 +203,7 @@ namespace Galactic_Colors_Control
             RequestData req = new RequestData(GetRequestId(), args);
 
             if (!Send(req))
-                return new ResultData(req.id, ResultTypes.Error, Common.Strings("Send Exception"));
+                return new ResultData(req.id, ResultTypes.Error, Strings.ArrayFromStrings("Send Exception"));
 
             DateTime timeoutDate = DateTime.Now.AddMilliseconds(config.timeout); //Create timeout DataTime
 
@@ -221,7 +221,7 @@ namespace Galactic_Colors_Control
                     }
                 }
             }
-            return new ResultData(req.id, ResultTypes.Error, Common.Strings("Timeout"));
+            return new ResultData(req.id, ResultTypes.Error, Strings.ArrayFromStrings("Timeout"));
         }
 
         /// <summary>
@@ -235,9 +235,9 @@ namespace Galactic_Colors_Control
 
             reply = ping.Send(IP);
             if (reply.Status == IPStatus.Success)
-                return new ResultData(GetRequestId(), ResultTypes.OK, Common.SplitArgs(reply.RoundtripTime.ToString() + "ms"));
+                return new ResultData(GetRequestId(), ResultTypes.OK, Strings.SplitArgs(reply.RoundtripTime.ToString() + "ms"));
 
-            return new ResultData(GetRequestId(), ResultTypes.Error, Common.SplitArgs("Timeout"));
+            return new ResultData(GetRequestId(), ResultTypes.Error, Strings.SplitArgs("Timeout"));
         }
 
         /// <summary>

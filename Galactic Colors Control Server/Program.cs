@@ -1,5 +1,6 @@
 ﻿using Galactic_Colors_Control_Common;
 using Galactic_Colors_Control_Common.Protocol;
+using MyCommon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
-using MyCommon;
-using Console = MyConsole.ConsoleIO;
-using MyConsole;
+using Console = MyCommon.ConsoleIO;
 
 //TODO gui parties pages
 
@@ -102,7 +101,7 @@ namespace Galactic_Colors_Control_Server
             while (_run)
             {
                 string ConsoleInput = Console.Read();
-                string[] args = Common.SplitArgs(ConsoleInput);
+                string[] args = Strings.SplitArgs(ConsoleInput);
                 Console.Write(new ColorStrings(Parser.GetResultText(new ResultData(-1, Commands.Manager.Execute(args, null, true)), config.lang, multilang)));
                 ConsoleInput = null;
             }
@@ -114,7 +113,7 @@ namespace Galactic_Colors_Control_Server
         private static void CloseAllSockets()
         {
             logger.Write("Stoping server", Logger.logType.warm, Logger.logConsole.show);
-            Utilities.Broadcast(new EventData(EventTypes.ServerKick, Common.Strings("Close")));
+            Utilities.Broadcast(new EventData(EventTypes.ServerKick, Strings.ArrayFromStrings("Close")));
             config.Save();
             foreach (Socket socket in clients.Keys)
             {
@@ -151,14 +150,14 @@ namespace Galactic_Colors_Control_Server
                 else
                 {
                     logger.Write("Client can't join from " + ((IPEndPoint)socket.LocalEndPoint).Address.ToString() + " no more space", Logger.logType.warm);
-                    Utilities.Send(socket, new EventData(EventTypes.ServerKick, Common.Strings("Space")));
+                    Utilities.Send(socket, new EventData(EventTypes.ServerKick, Strings.ArrayFromStrings("Space")));
                     socket.Close();
                 }
             }
             else
             {
                 logger.Write("Client can't join from " + ((IPEndPoint)socket.LocalEndPoint).Address.ToString() + " server closed", Logger.logType.info);
-                Utilities.Send(socket, new EventData(EventTypes.ServerKick, Common.Strings("Close")));
+                Utilities.Send(socket, new EventData(EventTypes.ServerKick, Strings.ArrayFromStrings("Close")));
                 socket.Close();
             }
             serverSocket.BeginAccept(AcceptCallback, null);
@@ -273,7 +272,7 @@ namespace Galactic_Colors_Control_Server
                     logger.Write("Size: " + clients.Count + "/" + config.size, Logger.logType.debug);
                     current.Close(); // Don't shutdown because the socket may be disposed and its disconnected anyway.
                     clients.Remove(current);
-                    if (connected) { Utilities.Broadcast(new EventData(EventTypes.ServerLeave, Common.Strings(username))); }
+                    if (connected) { Utilities.Broadcast(new EventData(EventTypes.ServerLeave, Strings.ArrayFromStrings(username))); }
                 }
                 else
                 {

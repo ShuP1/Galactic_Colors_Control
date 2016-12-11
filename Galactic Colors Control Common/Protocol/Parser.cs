@@ -6,7 +6,7 @@ namespace Galactic_Colors_Control_Common.Protocol
     {
         public static string GetEventText(EventData eve, int lang, MultiLang dico)
         {
-            string data = Common.ArrayToString(eve.data);
+            string data = Strings.ArrayToString(eve.data);
             switch (eve.type)
             {
                 case EventTypes.ChatMessage:
@@ -25,7 +25,7 @@ namespace Galactic_Colors_Control_Common.Protocol
 
         public static string GetResultText(ResultData res, int lang, MultiLang dico)
         {
-            string data = Common.ArrayToString(res.result);
+            string data = Strings.ArrayToString(res.result);
             if (res.type == ResultTypes.Error)
                 data = dico.GetWord("Error", lang) + ": " + data;
             return data;
