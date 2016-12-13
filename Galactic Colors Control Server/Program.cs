@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
+using System.Xml;
 using Console = MyCommon.ConsoleIO;
 
 //TODO gui parties pages
@@ -49,7 +50,8 @@ namespace Galactic_Colors_Control_Server
         {
             Console.Title = "Galactic Colors Control Server";
             logger.Write(Console.Title + " " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Logger.logType.fatal);
-            config = config.Load();
+            config = XmlManager.Load<Config>(AppDomain.CurrentDomain.BaseDirectory + "Config.xml", XmlManager.LoadMode.ReadCreateOrReplace, XmlReader.Create("ConfigSchema.xsd"), logger);
+            config.PostSave();
             logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel, _debug, _dev);
             multilang.Initialise(Common.dictionary);
             if (args.Length > 0)
@@ -114,7 +116,9 @@ namespace Galactic_Colors_Control_Server
         {
             logger.Write("Stoping server", Logger.logType.warm, Logger.logConsole.show);
             Utilities.Broadcast(new EventData(EventTypes.ServerKick, Strings.ArrayFromStrings("Close")));
-            config.Save();
+            config.PreSave();
+            XmlManager.Save(config, AppDomain.CurrentDomain.BaseDirectory + "Config.xml", logger);
+            config.PostSave();
             foreach (Socket socket in clients.Keys)
             {
                 socket.Shutdown(SocketShutdown.Both);

@@ -9,6 +9,7 @@ using MyMonoGame.GUI;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Xml;
 
 namespace Galactic_Colors_Control_GUI
 {
@@ -66,7 +67,8 @@ namespace Galactic_Colors_Control_GUI
         /// </summary>
         protected override void Initialize()
         {
-            config = config.Load();
+            config = XmlManager.Load<Config>(AppDomain.CurrentDomain.BaseDirectory + "Config.xml", XmlManager.LoadMode.ReadCreateOrReplace, XmlReader.Create("ConfigSchema.xsd"), logger);
+            config.PostSave();
             logger.Write("Galactic Colors Control GUI " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Logger.logType.fatal);
             logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel, Program._debug, Program._dev, false);
             multilang.Initialise(Common.dictionary);

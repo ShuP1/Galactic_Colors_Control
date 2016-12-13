@@ -2,8 +2,10 @@
 using Galactic_Colors_Control_Common;
 using Galactic_Colors_Control_Common.Protocol;
 using MyCommon;
+using System;
 using System.Reflection;
 using System.Threading;
+using System.Xml;
 using Consol = MyCommon.ConsoleIO;
 
 namespace Galactic_Colors_Control_Console
@@ -28,7 +30,8 @@ namespace Galactic_Colors_Control_Console
             System.Console.Write(">");
             logger.Write(System.Console.Title, Logger.logType.fatal);
             logger.Write("Console " + Assembly.GetEntryAssembly().GetName().Version.ToString(), Logger.logType.error);
-            config = config.Load();
+            config = XmlManager.Load<Config>(AppDomain.CurrentDomain.BaseDirectory + "Config.xml", XmlManager.LoadMode.ReadCreateOrReplace, XmlReader.Create("ConfigSchema.xsd"), logger);
+            config.PostSave();
             logger.Initialise(config.logPath, config.logBackColor, config.logForeColor, config.logLevel, _debug, _dev);
             multilang.Initialise(Common.dictionary);
             client.OnEvent += new System.EventHandler(OnEvent); //Set OnEvent function
@@ -172,6 +175,9 @@ namespace Galactic_Colors_Control_Console
                 Consol.Write(new ColorStrings(new ColorString(multilang.GetWord("CantConnect", config.lang), System.ConsoleColor.Red)));
             }
             run = false;
+            config.PreSave();
+            XmlManager.Save(config, AppDomain.CurrentDomain.BaseDirectory + "Config.xml", logger);
+            config.PostSave();
             logger.Join();
             System.Console.Read();
         }

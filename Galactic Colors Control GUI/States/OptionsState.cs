@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using MyMonoGame.GUI;
 using System.Threading;
+using MyCommon;
+using System;
 
 namespace Galactic_Colors_Control_GUI.States
 {
@@ -24,7 +26,9 @@ namespace Galactic_Colors_Control_GUI.States
                 {
                     locked = true;
                     Game.singleton.GUI.ResetFocus();
-                    Game.singleton.config.Save();
+                    Game.singleton.config.PreSave();
+                    XmlManager.Save(Game.singleton.config, AppDomain.CurrentDomain.BaseDirectory + "Config.xml", Game.singleton.logger);
+                    Game.singleton.config.PostSave();
                     new Thread(() =>
                     {
                         while (!Utilities.DoubleTo(ref Game.singleton.background.speedX, 1, 0.1)) { Thread.Sleep(20); }

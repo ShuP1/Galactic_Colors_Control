@@ -1,7 +1,5 @@
 ﻿using MyCommon;
 using System;
-using System.IO;
-using System.Xml;
 using System.Xml.Serialization;
 
 namespace Galactic_Colors_Control_Server
@@ -18,102 +16,15 @@ namespace Galactic_Colors_Control_Server
         public int lang = 1;
         public int partysize = 10;
 
-        /// <summary>
-        /// Load config from xml file
-        /// App.config is too easy
-        /// </summary>
-        /// <returns>Loaded config</returns>
-        public Config Load()
+        public void PreSave()
         {
-            Server.logger.Write("Loading config", Logger.logType.info);
-            Config config = new Config();
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Config.xml"))
-            {
-                if (CorrectConfig())
-                {
-                    XmlSerializer xs = new XmlSerializer(typeof(Config));
-                    using (StreamReader re = new StreamReader(AppDomain.CurrentDomain.BaseDirectory + "Config.xml"))
-                    {
-                        config = xs.Deserialize(re) as Config;
-                    };
-                }
-                else
-                {
-                    Server.logger.Write("Old config in Config.xml.old", Logger.logType.warm);
-                    File.Delete(AppDomain.CurrentDomain.BaseDirectory + "Config.xml.old");
-                    File.Move(AppDomain.CurrentDomain.BaseDirectory + "Config.xml", AppDomain.CurrentDomain.BaseDirectory + "Config.xml.old");
-                    config.Save();
-                }
-            }
-            else
-            {
-                Server.logger.Write("Any config file", Logger.logType.error);
-                config.Save();
-            }
-            if (Server._debug) { config.logLevel = Logger.logType.debug; }
-            if (Server._dev) { config.logLevel = Logger.logType.dev; }
-            return config;
+            if (Server._debug || Server._dev) { logLevel = Logger.logType.info; }
         }
 
-        /// <summary>
-        /// Write actual config in xml file
-        /// </summary>
-        public void Save()
+        public void PostSave()
         {
-            XmlSerializer xs = new XmlSerializer(typeof(Config));
-            if (Server._debug || Server._dev) { logLevel = Logger.logType.info; }
-            using (StreamWriter st = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "Config.xml"))
-            {
-                xs.Serialize(st, this);
-            };
             if (Server._debug) { logLevel = Logger.logType.debug; }
             if (Server._dev) { logLevel = Logger.logType.dev; }
-        }
-
-        /// <summary>
-        /// Check config format using Schema
-        /// </summary>
-        public bool CorrectConfig()
-        {
-            bool isCorrect = false;
-
-            using (Stream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "Config.xml", FileMode.Open))
-            {
-                XmlReader re = new XmlTextReader(fs);
-                XmlSerializer xs = new XmlSerializer(typeof(Config));
-                try
-                {
-                    isCorrect = xs.CanDeserialize(re);
-                }
-                catch (XmlException e)
-                {
-                    isCorrect = false;
-                    Server.logger.Write("Error: " + e.Message, Logger.logType.error);
-                }
-            }
-
-            if (isCorrect)
-            {
-                try
-                {
-                    XmlDocument d = new XmlDocument();
-                    d.Load(AppDomain.CurrentDomain.BaseDirectory + "Config.xml");
-                    d.Schemas.Add("", XmlReader.Create("ConfigSchema.xsd"));
-
-                    d.Validate((o, e) =>
-                    {
-                        Server.logger.Write("Error: " + e.Message, Logger.logType.error);
-                        isCorrect = false;
-                    });
-                }
-                catch (XmlException e)
-                {
-                    isCorrect = false;
-                    Server.logger.Write("Error: " + e.Message, Logger.logType.error);
-                }
-            }
-
-            return isCorrect;
         }
     }
 }
